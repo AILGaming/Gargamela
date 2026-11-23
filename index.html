@@ -1,0 +1,1220 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Гаргамелка: Мем Хайка</title>
+<link rel="icon" href="assets/elf-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@500;800;900&display=swap" rel="stylesheet">
+<style>
+  :root { --pink:#ff4fb0; --gold:#ffd23f; --red:#e63946; --ink:#111; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; overflow:hidden; background:#0d1a10; font-family:'Rubik', system-ui, sans-serif; color:#fff; user-select:none; }
+  canvas#game { display:block; }
+  .hidden { display:none !important; }
+
+  /* HUD */
+  #hud { position:fixed; inset:0; pointer-events:none; }
+  #status { position:absolute; left:18px; top:16px; display:flex; gap:12px; align-items:center; }
+  #portrait { width:74px; height:74px; border-radius:50%; border:4px solid var(--pink); background:#222 url(assets/hag.jpg) 47% 24% / 330% no-repeat; box-shadow:0 4px 14px #0008; }
+  .bars { display:flex; flex-direction:column; gap:6px; }
+  .bar { width:230px; height:16px; background:#0009; border:2px solid #000; border-radius:4px; overflow:hidden; position:relative; }
+  .bar > i { position:absolute; inset:0; transform-origin:left; display:block; }
+  #hpbar > i { background:linear-gradient(#ff6b6b,#c1121f); }
+  #stbar > i { background:linear-gradient(#8ecae6,#219ebc); }
+  .bar span { position:absolute; inset:0; font-size:11px; font-weight:800; line-height:13px; padding-left:6px; text-shadow:0 1px 2px #000; }
+  #name { font-family:'Russo One'; font-size:15px; text-shadow:0 2px 3px #000; color:var(--pink); }
+
+  #right { position:absolute; right:18px; top:14px; text-align:right; }
+  #stars { font-size:34px; letter-spacing:2px; text-shadow:0 2px 0 #000, 0 0 8px #000; }
+  #stars b { color:#ffffff30; font-weight:400; }
+  #stars b.on { color:var(--gold); }
+  #stars.flash b.on { animation:flash .25s steps(2) 8; }
+  @keyframes flash { 50% { color:#fff; } }
+  .stat { font-family:'Russo One'; font-size:22px; text-shadow:0 2px 0 #000, 0 0 6px #000; line-height:1.25; }
+  .stat small { font-family:'Rubik'; font-size:12px; font-weight:800; opacity:.85; letter-spacing:.5px; display:block; margin-top:4px; }
+  #money { color:#9ef01a; }
+
+  #ticker { position:absolute; top:18px; left:50%; transform:translateX(-50%); font-weight:800; font-size:17px; background:#000a; padding:6px 14px; border-radius:20px; white-space:nowrap; transition:opacity .4s; }
+  #banner { position:absolute; top:26%; left:50%; transform:translate(-50%,-50%); font-family:'Russo One'; font-size:44px; color:var(--gold); text-shadow:0 4px 0 #000, 0 0 20px #000; text-align:center; opacity:0; transition:opacity .3s; white-space:nowrap; }
+  #hideState { position:absolute; bottom:120px; left:50%; transform:translateX(-50%); font-weight:900; font-size:20px; text-shadow:0 2px 3px #000; text-align:center; }
+  #hideState .tbar { width:220px; height:8px; margin:6px auto 0; background:#0008; border-radius:4px; overflow:hidden; }
+  #hideState .tbar i { display:block; height:100%; background:var(--gold); transform-origin:left; }
+  #prompt { position:absolute; bottom:80px; left:50%; transform:translateX(-50%); font-weight:800; font-size:16px; background:#000b; padding:6px 12px; border-radius:6px; }
+  #prompt kbd, .keys kbd { background:#fff; color:#000; border-radius:4px; padding:1px 6px; font-family:'Russo One'; font-size:13px; box-shadow:0 2px 0 #888; }
+  #radar { position:absolute; left:18px; bottom:18px; width:190px; height:190px; border-radius:50%; border:4px solid #000; box-shadow:0 0 0 2px #fff4, 0 6px 16px #0009; }
+  #flash { position:fixed; inset:0; background:radial-gradient(transparent 40%, #ff000088); opacity:0; pointer-events:none; transition:opacity .15s; }
+  #popups div { position:absolute; transform:translate(-50%,-50%); font-weight:900; font-size:16px; white-space:nowrap; text-shadow:0 2px 0 #000, 0 0 4px #000; pointer-events:none; }
+  #popups .price { color:#9ef01a; font-size:13px; display:block; text-align:center; }
+  #hint { position:absolute; right:18px; bottom:16px; font-size:12px; font-weight:800; opacity:.75; text-align:right; text-shadow:0 1px 2px #000; line-height:1.7; }
+
+  /* Screens */
+  .screen { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, #1a0f1fcc, #000e); z-index:10; padding:16px; overflow:auto; }
+  .card { display:flex; gap:28px; max-width:980px; width:100%; align-items:center; flex-wrap:wrap; justify-content:center; }
+  .poster { width:300px; max-width:80vw; border:8px solid #f1e3c4; outline:3px solid #000; transform:rotate(-3deg); box-shadow:0 14px 40px #000; position:relative; background:#f1e3c4; }
+  .poster img { width:100%; display:block; }
+  .poster .wanted { font-family:'Russo One'; color:#5a1a00; text-align:center; font-size:30px; padding:4px 0 2px; letter-spacing:3px; }
+  .poster .reward { font-family:'Russo One'; color:#5a1a00; text-align:center; font-size:13px; padding:4px; }
+  .copy { flex:1; min-width:280px; max-width:520px; }
+  h1 { font-family:'Russo One'; font-size:52px; line-height:1; margin:0 0 6px; color:var(--pink); text-shadow:0 5px 0 #000, 0 0 30px #ff4fb066; }
+  h1 em { display:block; font-style:normal; color:var(--gold); font-size:34px; }
+  .lead { font-size:16px; line-height:1.5; opacity:.92; margin:12px 0 16px; }
+  .keys { display:grid; grid-template-columns:auto 1fr; gap:7px 12px; font-size:14px; margin-bottom:22px; align-items:center; }
+  button.go { font-family:'Russo One'; font-size:26px; padding:14px 34px; border:none; border-radius:10px; background:var(--pink); color:#fff; cursor:pointer; box-shadow:0 6px 0 #a3196b, 0 10px 24px #000a; text-shadow:0 2px 0 #0006; }
+  button.go:hover { transform:translateY(-2px); }
+  button.go:active { transform:translateY(4px); box-shadow:0 2px 0 #a3196b; }
+  .elfnote { display:flex; gap:10px; align-items:center; font-size:13px; opacity:.85; margin-top:18px; }
+  .elfnote img { width:34px; }
+
+  #over .poster { transform:rotate(3deg); }
+  #over .poster img { aspect-ratio:0.69; object-fit:cover; object-position:top; }
+  .bigstat { font-family:'Russo One'; font-size:15px; margin:14px 0; background:#ffffff10; border-radius:10px; padding:14px 16px; line-height:1.55; }
+  .bigstat .money { font-size:34px; color:#9ef01a; display:block; line-height:1.15; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 18px; font-size:14px; margin-bottom:18px; }
+  .grid div span { display:block; font-family:'Russo One'; font-size:22px; color:var(--gold); }
+  #best { font-size:13px; opacity:.8; margin-left:14px; }
+  #pause { z-index:11; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud" class="hidden">
+  <div id="status">
+    <div id="portrait"></div>
+    <div class="bars">
+      <div id="name">ГАРГАМЕЛКА</div>
+      <div class="bar" id="hpbar"><i></i><span>ЖИВОТ</span></div>
+      <div class="bar" id="stbar"><i></i><span>ДЪХ</span></div>
+    </div>
+  </div>
+  <div id="right">
+    <div id="stars"><b>★</b><b>★</b><b>★</b><b>★</b><b>★</b></div>
+    <div class="stat" id="time">0:00</div>
+    <div class="stat" id="score">0</div>
+    <div class="stat" id="money">0.00 €<small id="memecount">0 мемета хвърлени · 0 елфи</small></div>
+  </div>
+  <div id="ticker" style="opacity:0"></div>
+  <div id="banner"></div>
+  <div id="hideState"></div>
+  <div id="prompt" class="hidden"></div>
+  <canvas id="radar" width="380" height="380"></canvas>
+  <div id="popups"></div>
+  <div id="hint">WASD бягай · SHIFT спринт · SPACE скок<br>E скрий се в къщичка · храсти = прикритие<br>мишка = камера · P пауза</div>
+</div>
+<div id="flash"></div>
+
+<div id="title" class="screen">
+  <div class="card">
+    <div class="poster">
+      <div class="wanted">ИЗДИРВА СЕ</div>
+      <img src="assets/hag.jpg" alt="Гаргамелка">
+      <div class="reward">ЖИВА ИЛИ СМЕМЕНА</div>
+    </div>
+    <div class="copy">
+      <h1>ГАРГАМЕЛКА<em>МЕМ ХАЙКА</em></h1>
+      <p class="lead">Цялото село на Елфите е по петите ти. Те нямат оръжия — имат <b>мемета</b>. И всяко мемe струва пари.
+        Не можеш да спечелиш. Можеш само да бягаш, да се криеш и да оцелееш колкото се може по-дълго.</p>
+      <div class="keys">
+        <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>бягай</span>
+        <span><kbd>SHIFT</kbd></span><span>спринт (харчи дъх)</span>
+        <span><kbd>SPACE</kbd></span><span>скок</span>
+        <span><kbd>E</kbd></span><span>скрий се в гъбена къщичка (за кратко)</span>
+        <span>🌿</span><span>влез в храст — елфите не те виждат, докато не те надушат</span>
+        <span>🖱️</span><span>камера (кликни в играта за заключване на мишката)</span>
+      </div>
+      <button class="go" id="startBtn">БЯГАЙ!</button>
+      <div class="elfnote"><img src="assets/elf-logo.png" alt=""><span>Елфите са вдъхновени от <b>BG Elves</b> — elves.bg</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="pause" class="screen hidden"><div style="text-align:center"><h1>ПАУЗА</h1><button class="go" id="resumeBtn">ПРОДЪЛЖИ</button></div></div>
+
+<div id="over" class="screen hidden">
+  <div class="card">
+    <div class="poster">
+      <div class="wanted">СМЕМЕНА</div>
+      <img src="assets/hag-scream.jpg" alt="">
+      <div class="reward" id="epitaph">ТРОЛКАТА ПАДНА</div>
+    </div>
+    <div class="copy">
+      <h1>КРАЙ<em id="overTime">0:00 на свобода</em></h1>
+      <div class="bigstat">
+        За да те свалят, Елфите изстреляха <b id="oThrown">0</b> мемета на обща стойност
+        <span class="money" id="oSpent">0.00 €</span>
+        <span id="oLev" style="opacity:.75;font-size:13px">≈ 0.00 лв.</span>
+      </div>
+      <div class="grid">
+        <div>Точки<span id="oScore">0</span></div>
+        <div>Улучени мемета<span id="oHits">0</span></div>
+        <div>Цена на попаденията<span id="oHitCost">0 €</span></div>
+        <div>Точност на Елфите<span id="oAcc">0%</span></div>
+        <div>Мобилизирани Елфи<span id="oElves">0</span></div>
+        <div>Избегнати мемета<span id="oDodge">0</span></div>
+        <div>Любим мем на Елфите<span id="oFav">—</span></div>
+        <div>Цена на 1 точка живот<span id="oPerHp">0 €</span></div>
+      </div>
+      <button class="go" id="againBtn">ПАК! (R)</button><span id="best"></span>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ---------------- helpers ---------------- */
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rng = mulberry32(20261123);
+const rr = (a, b) => a + (b - a) * rng();
+const R = (a, b) => a + (b - a) * Math.random();
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const fmtT = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const eur = v => v.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+const angDiff = (a, b) => { let d = b - a; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; return d; };
+
+/* ---------------- renderer / scene ---------------- */
+const canvas = $('game');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const scene = new THREE.Scene();
+const SKY = 0xa8daf5;
+scene.background = new THREE.Color(SKY);
+scene.fog = new THREE.Fog(SKY, 70, 200);
+const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 500);
+
+scene.add(new THREE.HemisphereLight(0xe8f6ff, 0x4d7a2e, 1.0));
+const sun = new THREE.DirectionalLight(0xfff0d0, 2.0);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -55, right: 55, top: 55, bottom: -55, near: 1, far: 220 });
+sun.shadow.bias = -0.0005;
+scene.add(sun, sun.target);
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+const matCache = new Map();
+function M(color, opts = {}) {
+  const key = color + JSON.stringify(opts);
+  if (!matCache.has(key)) matCache.set(key, new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, ...opts }));
+  return matCache.get(key);
+}
+const GEO = {
+  sph: new THREE.SphereGeometry(1, 18, 14),
+  sphLo: new THREE.SphereGeometry(1, 10, 8),
+  half: new THREE.SphereGeometry(1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2),
+  cyl: new THREE.CylinderGeometry(1, 1, 1, 14),
+  cone: new THREE.ConeGeometry(1, 1, 7),
+  box: new THREE.BoxGeometry(1, 1, 1),
+};
+function part(geo, mat, parent, x = 0, y = 0, z = 0, sx = 1, sy = sx, sz = sx, shadow = true) {
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(x, y, z); m.scale.set(sx, sy, sz);
+  m.castShadow = shadow;
+  parent.add(m);
+  return m;
+}
+function canvasTex(w, h, draw) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return t;
+}
+
+/* ---------------- world layout ---------------- */
+const WORLD = 108;
+const PATHS = [];
+function addPoly(pts) { for (let i = 0; i < pts.length - 1; i++) PATHS.push([pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1]]); }
+{ const ring = []; for (let i = 0; i <= 48; i++) { const a = i / 48 * Math.PI * 2; const r = 40 + Math.sin(a * 3) * 3; ring.push([Math.cos(a) * r, Math.sin(a) * r]); } addPoly(ring); }
+for (const a0 of [0.3, 1.35, 2.4, 3.45, 4.5, 5.5]) {
+  const pts = []; for (let r = 9; r <= 112; r += 6) { const a = a0 + Math.sin(r * 0.06 + a0) * 0.12; pts.push([Math.cos(a) * r, Math.sin(a) * r]); } addPoly(pts);
+}
+function segDist(px, pz, s) {
+  const dx = s[2] - s[0], dz = s[3] - s[1]; const l2 = dx * dx + dz * dz;
+  const t = clamp(((px - s[0]) * dx + (pz - s[1]) * dz) / l2, 0, 1);
+  return [Math.hypot(px - s[0] - dx * t, pz - s[1] - dz * t), s[0] + dx * t, s[1] + dz * t];
+}
+function pathInfo(x, z) {
+  if (Math.hypot(x, z) < 11) return { d: 0, x: 0, z: 0 };
+  let best = { d: 1e9, x: 0, z: 0 };
+  for (const s of PATHS) { const [d, nx, nz] = segDist(x, z, s); if (d < best.d) best = { d, x: nx, z: nz }; }
+  return best;
+}
+
+/* ground */
+const GS = 260, GPX = 2048;
+const groundTex = canvasTex(GPX, GPX, (g, w) => {
+  const k = w / GS, X = v => (v + GS / 2) * k;
+  g.fillStyle = '#6aa83c'; g.fillRect(0, 0, w, w);
+  for (let i = 0; i < 26000; i++) {
+    const x = Math.random() * w, y = Math.random() * w;
+    g.fillStyle = pick(['#5e9a33', '#78b848', '#5a8f30', '#83c055', '#6fae3f']);
+    g.fillRect(x, y, 2 + Math.random() * 3, 5 + Math.random() * 7);
+  }
+  for (let i = 0; i < 90; i++) { // darker patches
+    g.fillStyle = 'rgba(40,80,20,0.12)'; g.beginPath(); g.arc(Math.random() * w, Math.random() * w, 20 + Math.random() * 60, 0, 7); g.fill();
+  }
+  const strokePaths = (width, color) => {
+    g.strokeStyle = color; g.lineWidth = width * k; g.lineCap = 'round'; g.lineJoin = 'round';
+    for (const s of PATHS) { g.beginPath(); g.moveTo(X(s[0]), X(s[1])); g.lineTo(X(s[2]), X(s[3])); g.stroke(); }
+    g.fillStyle = color; g.beginPath(); g.arc(X(0), X(0), (11 + width / 2 - 2.5) * k, 0, 7); g.fill();
+  };
+  strokePaths(6.2, '#a88552'); strokePaths(5, '#d9b77c');
+  for (let i = 0; i < 3000; i++) { // pebbles
+    const s = pick(PATHS), t = Math.random();
+    const x = X(s[0] + (s[2] - s[0]) * t + R(-2.2, 2.2)), y = X(s[1] + (s[3] - s[1]) * t + R(-2.2, 2.2));
+    g.fillStyle = pick(['#b9a98f', '#9c8c74', '#c8bca6', '#8d7a5e']);
+    g.beginPath(); g.ellipse(x, y, R(1.5, 4), R(1, 2.5), R(0, 3), 0, 7); g.fill();
+  }
+});
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(GS, GS), new THREE.MeshStandardMaterial({ map: groundTex, roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const outer = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), M(0x5a8f30, { roughness: 1 }));
+outer.rotation.x = -Math.PI / 2; outer.position.y = -0.05; scene.add(outer);
+
+const SOLIDS = [];   // {x,z,r}
+const HOUSES = [];
+const BUSHES = [];
+const VTREES = [];
+
+/* mushroom houses */
+function makeHouse(capColor, s) {
+  const g = new THREE.Group();
+  const cream = M(0xf1e6cf);
+  const wood = M(0x7a4b26);
+  const body = part(new THREE.CylinderGeometry(2.6, 3.05, 4.2, 22), cream, g, 0, 2.1, 0);
+  body.receiveShadow = true;
+  const cap = part(GEO.half, M(capColor, { roughness: 0.6 }), g, 0, 3.7, 0, 4.4, 3.3, 4.4);
+  cap.receiveShadow = true;
+  part(new THREE.CylinderGeometry(4.4, 3.4, 0.5, 24), M(0x8b5a3c), g, 0, 3.55, 0);
+  const spotM = M(0xf4e8cc, { roughness: 0.7 });
+  for (let i = 0; i < 11; i++) {
+    const th = rr(0, Math.PI * 2), ph = rr(0.25, 1.35);
+    const n = new THREE.Vector3(Math.sin(ph) * Math.cos(th), Math.cos(ph), Math.sin(ph) * Math.sin(th));
+    const p = new THREE.Vector3(n.x * 4.4, 3.7 + n.y * 3.3, n.z * 4.4);
+    const sp = part(GEO.sphLo, spotM, g, p.x, p.y, p.z, 1, 1, 1, false);
+    const sz = rr(0.55, 1.05); sp.scale.set(sz, sz, 0.18);
+    sp.lookAt(p.clone().add(new THREE.Vector3(n.x * 4.4, n.y * 3.3, n.z * 4.4)));
+  }
+  // door + steps + windows (door faces +z)
+  part(GEO.box, wood, g, 0, 1.15, 2.95, 1.3, 2.3, 0.25);
+  part(GEO.box, M(0x5c3317), g, 0, 2.45, 2.95, 1.6, 0.25, 0.35);
+  part(GEO.sph, M(0xd4a017, { metalness: 0.6, roughness: 0.3 }), g, 0.4, 1.15, 3.1, 0.08);
+  part(GEO.box, M(0xa8a39a), g, 0, 0.15, 3.6, 1.8, 0.3, 0.9);
+  part(GEO.box, M(0xa8a39a), g, 0, 0.05, 4.2, 2.0, 0.15, 0.8);
+  for (const a of [-1.1, 1.1, Math.PI]) {
+    const w = new THREE.Group(); w.rotation.y = a; g.add(w);
+    part(GEO.box, M(0x9fd2ee, { roughness: 0.2, metalness: 0.1 }), w, 0, 2.3, 2.75, 0.95, 0.95, 0.12, false);
+    part(GEO.box, wood, w, 0, 2.3, 2.79, 1.15, 0.12, 0.14, false);
+    part(GEO.box, wood, w, 0, 2.3, 2.79, 0.12, 1.15, 0.14, false);
+    part(GEO.box, wood, w, 0, 2.85, 2.8, 1.25, 0.15, 0.2, false);
+  }
+  if (rng() < 0.6) {
+    part(GEO.cyl, M(0x8f8a82), g, 1.6, 6.3, -1.0, 0.3, 2.0, 0.3);
+    part(GEO.cyl, M(0x6f6a62), g, 1.6, 7.35, -1.0, 0.38, 0.25, 0.38);
+  }
+  if (rng() < 0.6) { // dormer window
+    const d = new THREE.Group(); d.position.set(0, 5.1, 2.6); d.rotation.x = -0.35; g.add(d);
+    part(GEO.box, M(0x8a5a35), d, 0, 0, 0, 1.4, 1.1, 1.2);
+    part(GEO.box, M(0x9fd2ee, { roughness: 0.2 }), d, 0, 0, 0.62, 0.8, 0.7, 0.05, false);
+    const roof = part(new THREE.ConeGeometry(1.1, 0.7, 4), M(0x5c3317), d, 0, 0.9, 0, 1, 1, 1);
+    roof.rotation.y = Math.PI / 4;
+  }
+  g.scale.setScalar(s);
+  return g;
+}
+
+/* trees */
+function makeTree(s) {
+  const g = new THREE.Group();
+  const bark = M(0x6b4a2b);
+  part(new THREE.CylinderGeometry(0.9, 1.5, 13, 10), bark, g, 0, 6.5, 0);
+  for (let i = 0; i < 4; i++) { const a = i / 4 * Math.PI * 2 + rr(0, 1); const root = part(GEO.cone, bark, g, Math.cos(a) * 1.4, 0.6, Math.sin(a) * 1.4, 0.6, 1.6, 0.6); root.rotation.set(Math.sin(a) * 0.8, 0, -Math.cos(a) * 0.8); }
+  for (let i = 0; i < 2; i++) part(GEO.sphLo, M(0xc79b6b), g, rr(-0.4, 0.4), rr(3, 8), 1.2, 0.8, 0.18, 0.6).rotation.y = rr(-0.5, 0.5);
+  const leaf = [M(0x3f7d2a), M(0x4f9433), M(0x356b24)];
+  for (let i = 0; i < 5; i++) part(GEO.sphLo, pick(leaf), g, rr(-3, 3), rr(13, 17), rr(-3, 3), rr(3.5, 5.5));
+  g.scale.setScalar(s);
+  return g;
+}
+
+/* bushes */
+function makeBush(r) {
+  const g = new THREE.Group(); const leaf = [M(0x4c8f2f), M(0x5aa23a), M(0x3e7a26)];
+  for (let i = 0; i < 5; i++) part(GEO.sphLo, pick(leaf), g, rr(-0.5, 0.5) * r, r * rr(0.55, 0.85), rr(-0.5, 0.5) * r, r * rr(0.55, 0.75));
+  for (let i = 0; i < 4; i++) part(GEO.sphLo, M(pick([0xff6fa8, 0xffd23f, 0xffffff])), g, rr(-0.7, 0.7) * r, r * rr(0.8, 1.25), rr(-0.7, 0.7) * r, 0.12, 0.12, 0.12, false);
+  return g;
+}
+
+function freeSpot(x, z, minD) {
+  if (Math.hypot(x, z) > WORLD - 4) return false;
+  for (const s of SOLIDS) if (Math.hypot(x - s.x, z - s.z) < s.r + minD) return false;
+  return true;
+}
+
+// houses
+let tries = 0;
+while (HOUSES.length < 30 && tries++ < 6000) {
+  const a = rr(0, Math.PI * 2), r = rr(16, 98);
+  const x = Math.cos(a) * r, z = Math.sin(a) * r;
+  const pi = pathInfo(x, z);
+  if (pi.d < 7.5 || pi.d > 13) continue;
+  const s = rr(0.85, 1.2);
+  if (!freeSpot(x, z, 6 * s)) continue;
+  const h = makeHouse(pick([0xd7372b, 0xe8661c, 0xd7372b, 0xef7f1a, 0xc2272d]), s);
+  const rot = Math.atan2(pi.x - x, pi.z - z);
+  h.position.set(x, 0, z); h.rotation.y = rot; scene.add(h);
+  const door = new THREE.Vector3(Math.sin(rot) * 4.6 * s + x, 0, Math.cos(rot) * 4.6 * s + z);
+  const hs = { x, z, r: 3.1 * s, mesh: h, door, usedUntil: 0, shake: 0, isHouse: true };
+  HOUSES.push(hs); SOLIDS.push(hs);
+}
+// boundary forest
+for (let i = 0; i < 80; i++) {
+  const a = i / 80 * Math.PI * 2 + rr(-0.03, 0.03), r = rr(113, 132);
+  const t = makeTree(rr(1.0, 1.4)); t.position.set(Math.cos(a) * r, 0, Math.sin(a) * r); t.rotation.y = rr(0, 6); scene.add(t);
+}
+tries = 0;
+while (VTREES.length < 22 && tries++ < 4000) {
+  const x = rr(-100, 100), z = rr(-100, 100);
+  if (pathInfo(x, z).d < 6 || !freeSpot(x, z, 7)) continue;
+  const s = rr(0.8, 1.15); const t = makeTree(s); t.position.set(x, 0, z); t.rotation.y = rr(0, 6); scene.add(t);
+  const o = { x, z, r: 1.4 * s }; VTREES.push(o); SOLIDS.push(o);
+}
+// flagpole on the plaza
+{
+  const g = new THREE.Group(); scene.add(g);
+  part(GEO.cyl, M(0xcccccc, { metalness: 0.7, roughness: 0.3 }), g, 0, 6, 0, 0.12, 12, 0.12);
+  const flag = new THREE.Group(); flag.position.set(0, 10.8, 0); g.add(flag);
+  [[0xffffff, 0.8], [0x00966e, 0], [0xd62612, -0.8]].forEach(([c, y]) => part(GEO.box, M(c), flag, 1.6, y, 0, 3, 0.8, 0.06));
+  part(new THREE.CylinderGeometry(1.4, 1.8, 0.6, 16), M(0xa8a39a), g, 0, 0.3, 0);
+  SOLIDS.push({ x: 0, z: 0, r: 1.6 });
+  scene.userData.flag = flag;
+}
+// bushes
+tries = 0;
+while (BUSHES.length < 34 && tries++ < 6000) {
+  const x = rr(-100, 100), z = rr(-100, 100);
+  if (pathInfo(x, z).d < 4 || !freeSpot(x, z, 3.5)) continue;
+  if (BUSHES.some(b => Math.hypot(b.x - x, b.z - z) < 9)) continue;
+  const r = rr(1.7, 2.3); const m = makeBush(r); m.position.set(x, 0, z); scene.add(m);
+  BUSHES.push({ x, z, r, mesh: m, exposedUntil: 0, wob: 0 });
+}
+// decorative little mushrooms + flowers (instanced)
+{
+  const N = 260;
+  const stems = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.08, 0.11, 0.35, 6), M(0xf3ead7), N);
+  const caps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.28, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), M(0xffffff, { roughness: 0.6 }), N);
+  const flowers = new THREE.InstancedMesh(new THREE.SphereGeometry(0.13, 6, 5), M(0xffffff), 500);
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), p = new THREE.Vector3(), col = new THREE.Color();
+  let n = 0, f = 0, guard = 0;
+  while ((n < N || f < 500) && guard++ < 20000) {
+    const x = rr(-105, 105), z = rr(-105, 105);
+    if (pathInfo(x, z).d < 3.4 || !freeSpot(x, z, 0.6)) continue;
+    if (n < N) {
+      const s = rr(0.7, 1.8);
+      m4.compose(p.set(x, 0.17 * s, z), q.identity(), sc.set(s, s, s)); stems.setMatrixAt(n, m4);
+      m4.compose(p.set(x, 0.32 * s, z), q.identity(), sc.set(s, s * 0.8, s)); caps.setMatrixAt(n, m4);
+      caps.setColorAt(n, col.set(pick([0xd7372b, 0xe8661c, 0xc2272d, 0xb5651d]))); n++;
+    } else {
+      m4.compose(p.set(x, 0.12, z), q.identity(), sc.set(1, 1, 1)); flowers.setMatrixAt(f, m4);
+      flowers.setColorAt(f, col.set(pick([0xff6fa8, 0xffd23f, 0xffffff, 0xe85d04, 0xa29bfe]))); f++;
+    }
+  }
+  scene.add(stems, caps, flowers);
+}
+
+/* ---------------- characters ---------------- */
+function makeHag() {
+  const root = new THREE.Group();
+  const body = new THREE.Group(); root.add(body);
+  const black = M(0x1c1b22, { roughness: 0.95 }), pants = M(0x15151a), purple = M(0x8e3b9e), shoe = M(0xa63a8f, { roughness: 0.5 });
+  const skin = M(0xd99d76, { roughness: 0.7 }), sole = M(0xeeeeee), pinkA = M(0xff4fb0, { roughness: 0.9 }), pinkB = M(0xff86cf, { roughness: 0.9 }), pinkC = M(0xe0399a, { roughness: 0.9 });
+  const legs = [], arms = [];
+  for (const sx of [-1, 1]) {
+    const leg = new THREE.Group(); leg.position.set(sx * 0.17, 0.95, 0); body.add(leg);
+    part(new THREE.CylinderGeometry(0.14, 0.12, 0.82, 10), pants, leg, 0, -0.41, 0);
+    part(GEO.cyl, purple, leg, 0, -0.8, 0, 0.155, 0.17, 0.155);
+    part(GEO.box, shoe, leg, 0, -0.89, 0.07, 0.23, 0.15, 0.42);
+    part(GEO.box, sole, leg, 0, -0.96, 0.07, 0.24, 0.05, 0.44);
+    legs.push(leg);
+  }
+  part(new THREE.CylinderGeometry(0.37, 0.35, 0.3, 14), pants, body, 0, 1.0, 0);
+  part(new THREE.CylinderGeometry(0.31, 0.38, 0.82, 14), black, body, 0, 1.43, 0);
+  for (const sx of [-1, 1]) part(GEO.sph, black, body, sx * 0.32, 1.76, 0, 0.16);
+  part(GEO.sph, black, body, 0, 1.8, -0.2, 0.28, 0.2, 0.2); // hood
+  part(GEO.cyl, skin, body, 0, 1.86, 0.02, 0.1, 0.15, 0.1);
+  // purple bow
+  for (const sx of [-1, 1]) part(GEO.sph, purple, body, sx * 0.11, 1.08, 0.35, 0.12, 0.08, 0.05);
+  part(GEO.sph, purple, body, 0, 1.08, 0.37, 0.05);
+  for (const sx of [-1, 1]) { const rb = part(GEO.box, purple, body, sx * 0.05, 0.93, 0.36, 0.05, 0.22, 0.02); rb.rotation.z = sx * 0.25; }
+  for (const sx of [-1, 1]) {
+    const arm = new THREE.Group(); arm.position.set(sx * 0.42, 1.72, 0); arm.rotation.z = sx * 0.12; body.add(arm);
+    part(new THREE.CylinderGeometry(0.11, 0.09, 0.64, 10), black, arm, 0, -0.32, 0);
+    part(GEO.sph, skin, arm, 0, -0.68, 0.02, 0.1, 0.11, 0.08);
+    arms.push(arm);
+  }
+  const head = new THREE.Group(); head.position.set(0, 2.06, 0.02); body.add(head);
+  part(GEO.sph, skin, head, 0, 0, 0, 0.25, 0.29, 0.25);
+  part(GEO.sph, skin, head, 0, -0.2, 0.1, 0.12, 0.12, 0.11); // chin
+  const nose = part(new THREE.ConeGeometry(0.075, 0.36, 10), skin, head, 0, -0.03, 0.33);
+  nose.rotation.x = Math.PI / 2 + 0.4;
+  part(GEO.sph, skin, head, 0, -0.11, 0.46, 0.04); // nose tip wart
+  for (const sx of [-1, 1]) {
+    part(GEO.sph, new THREE.MeshBasicMaterial({ color: 0xffffff }), head, sx * 0.095, 0.06, 0.2, 0.065, 0.06, 0.05, false);
+    part(GEO.sph, M(0x111111), head, sx * 0.075, 0.045, 0.245, 0.018, 0.018, 0.018, false);
+    const gl = part(new THREE.TorusGeometry(0.085, 0.016, 8, 18), M(0x333333, { metalness: 0.6, roughness: 0.3 }), head, sx * 0.1, 0.06, 0.255, 1, 1, 1, false);
+    const brow = part(GEO.box, M(0x2a1a10), head, sx * 0.1, 0.17, 0.235, 0.15, 0.035, 0.03, false); brow.rotation.z = -sx * 0.45;
+    part(GEO.sph, skin, head, sx * 0.25, 0, 0, 0.05, 0.08, 0.04);
+  }
+  part(GEO.box, M(0x6b6b6b), head, 0, 0.06, 0.27, 0.04, 0.015, 0.015, false);
+  part(GEO.sph, M(0x7a1010), head, 0, -0.14, 0.22, 0.09, 0.05, 0.04, false); // shouting mouth
+  part(GEO.sph, M(0xb32020), head, 0, -0.1, 0.225, 0.09, 0.015, 0.035, false);
+  // wild pink hair
+  part(GEO.sph, pinkA, head, 0, 0.07, -0.05, 0.29, 0.28, 0.29);
+  const up = new THREE.Vector3(0, 1, 0);
+  for (let i = 0; i < 46; i++) {
+    let d;
+    do { d = new THREE.Vector3(R(-1, 1), R(-0.35, 1), R(-1, 0.55)).normalize(); } while (d.z > 0.45 && d.y < 0.55);
+    const h = R(0.3, 0.62), r = R(0.06, 0.11);
+    const c = part(GEO.cone, pick([pinkA, pinkB, pinkC]), head, 0, 0, 0, r, h, r);
+    c.quaternion.setFromUnitVectors(up, d);
+    c.position.copy(d).multiplyScalar(0.24 + h * 0.4).add(new THREE.Vector3(0, 0.06, -0.04));
+  }
+  root.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  const stuck = new THREE.Group(); body.add(stuck);
+  return { root, body, legs, arms, head, stuck };
+}
+
+const camoTex = canvasTex(128, 128, (g, w) => {
+  g.fillStyle = '#5b6b3a'; g.fillRect(0, 0, w, w);
+  for (let i = 0; i < 40; i++) { g.fillStyle = pick(['#3d4a27', '#7a6a45', '#2e3320', '#6d7d45']); g.beginPath(); g.ellipse(Math.random() * w, Math.random() * w, R(6, 18), R(4, 10), R(0, 3), 0, 7); g.fill(); }
+});
+camoTex.wrapS = camoTex.wrapT = THREE.RepeatWrapping;
+const ELF_M = {
+  camo: new THREE.MeshStandardMaterial({ map: camoTex, roughness: 0.95 }),
+  cream: M(0xf6e7cf), black: M(0x151515), boot: M(0x2b2118),
+  beret: M(0x7a1f2b), beanie: M(0x2f8f5b), cap: M(0x1d1d1d), belt: M(0x3b2f1e),
+  furs: [M(0xd88a3a), M(0xe09a4a), M(0xc9772f), M(0xe2a55a)],
+};
+function makeElf() {
+  const root = new THREE.Group(); const body = new THREE.Group(); root.add(body);
+  const fur = pick(ELF_M.furs);
+  const legs = [], arms = [];
+  for (const sx of [-1, 1]) {
+    const leg = new THREE.Group(); leg.position.set(sx * 0.12, 0.4, 0); body.add(leg);
+    part(GEO.cyl, ELF_M.camo, leg, 0, -0.17, 0, 0.095, 0.34, 0.095, false);
+    part(GEO.box, ELF_M.boot, leg, 0, -0.35, 0.04, 0.15, 0.11, 0.24, false);
+    legs.push(leg);
+  }
+  part(new THREE.CylinderGeometry(0.24, 0.3, 0.56, 12), ELF_M.camo, body, 0, 0.68, 0);
+  part(GEO.cyl, ELF_M.belt, body, 0, 0.46, 0, 0.3, 0.07, 0.3, false);
+  part(GEO.sph, ELF_M.cream, body, 0, 0.8, 0.2, 0.13, 0.12, 0.08, false);
+  for (const sx of [-1, 1]) {
+    const arm = new THREE.Group(); arm.position.set(sx * 0.29, 0.9, 0); arm.rotation.z = sx * 0.2; body.add(arm);
+    part(GEO.cyl, ELF_M.camo, arm, 0, -0.19, 0, 0.075, 0.38, 0.075, false);
+    part(GEO.sph, fur, arm, 0, -0.41, 0, 0.075, 0.075, 0.075, false);
+    arms.push(arm);
+  }
+  const tail = part(new THREE.TorusGeometry(0.13, 0.055, 8, 14, Math.PI * 1.6), fur, body, 0, 0.62, -0.32, 1, 1, 1, false);
+  tail.rotation.y = Math.PI / 2;
+  const head = new THREE.Group(); head.position.set(0, 1.22, 0.02); body.add(head);
+  part(GEO.sph, fur, head, 0, 0, 0, 0.31, 0.28, 0.29);
+  part(GEO.sph, ELF_M.cream, head, 0, -0.08, 0.1, 0.27, 0.19, 0.22, false);
+  part(GEO.sph, ELF_M.cream, head, 0, -0.07, 0.27, 0.13, 0.1, 0.13, false);
+  part(GEO.sph, ELF_M.black, head, 0, -0.02, 0.4, 0.05, 0.04, 0.04, false);
+  part(GEO.box, ELF_M.black, head, 0, -0.12, 0.36, 0.08, 0.012, 0.012, false);
+  for (const sx of [-1, 1]) {
+    part(GEO.sph, ELF_M.black, head, sx * 0.11, 0.06, 0.25, 0.04, 0.045, 0.03, false);
+    part(GEO.sph, ELF_M.cream, head, sx * 0.1, 0.14, 0.24, 0.035, 0.022, 0.02, false);
+    const ear = part(GEO.cone, fur, head, sx * 0.19, 0.29, -0.02, 0.1, 0.24, 0.07, false); ear.rotation.z = -sx * 0.35;
+    const inner = part(GEO.cone, ELF_M.cream, head, sx * 0.185, 0.27, 0.02, 0.055, 0.15, 0.03, false); inner.rotation.z = -sx * 0.35;
+  }
+  const hatRoll = Math.random();
+  if (hatRoll < 0.65) {
+    const b = new THREE.Group(); b.position.set(-0.04, 0.26, -0.02); b.rotation.set(-0.1, 0, 0.28); head.add(b);
+    part(GEO.cyl, ELF_M.beret, b, 0, 0, 0, 0.3, 0.1, 0.31, false);
+    part(GEO.sph, ELF_M.beret, b, 0.03, 0.05, 0, 0.29, 0.07, 0.3, false);
+    [[0xffffff, 0.035], [0x00966e, 0], [0xd62612, -0.035]].forEach(([c, y]) => part(GEO.box, M(c), b, 0.17, y + 0.01, 0.24, 0.09, 0.035, 0.02, false));
+  } else if (hatRoll < 0.85) {
+    part(GEO.half, ELF_M.beanie, head, 0, 0.1, -0.01, 0.31, 0.27, 0.3, false);
+    part(GEO.cyl, M(0x23704a), head, 0, 0.12, -0.01, 0.32, 0.07, 0.31, false);
+  } else {
+    part(GEO.half, ELF_M.cap, head, 0, 0.12, -0.01, 0.3, 0.2, 0.3, false);
+    part(GEO.box, ELF_M.cap, head, 0, 0.13, 0.28, 0.3, 0.025, 0.24, false);
+  }
+  return { root, body, legs, arms, head };
+}
+
+/* ---------------- memes ---------------- */
+const MEMES = [
+  { name: 'Much Wow', emoji: '🐕', top: 'МНОГО ЛЪЖИ', bot: 'ТАКЪВ ТРОЛ', price: 0.5, dmg: 6, bg: '#f4c95d', w: 3 },
+  { name: 'Факт-чек', emoji: '✅', top: 'ФАКТ ЧЕК:', bot: 'НЕВЯРНО', price: 5, dmg: 12, bg: '#2b9348', w: 2 },
+  { name: 'Една копейка', emoji: '🪙', top: 'ПЛАТЕНО С', bot: '1 КОПЕЙКА', price: 0.01, dmg: 3, bg: '#b08d57', w: 3 },
+  { name: 'Проблем?', emoji: '🧌', top: 'ПРОБЛЕМ?', bot: 'ТРОЛФЕЙС', price: 1, dmg: 7, bg: '#d9d9d9', w: 3 },
+  { name: 'Клоун', emoji: '🤡', top: 'ГЕОПОЛИТИЧЕСКИ', bot: 'ЕКСПЕРТ', price: 2, dmg: 8, bg: '#ff8fab', w: 2 },
+  { name: 'Моаи', emoji: '🗿', top: 'ТИ СЛЕД', bot: 'ФАКТИТЕ', price: 1.5, dmg: 8, bg: '#8ecae6', w: 2 },
+  { name: 'Всичко гори', emoji: '🔥', top: 'ВСИЧКО Е', bot: 'НАРЕД', price: 3, dmg: 10, bg: '#e85d04', w: 2 },
+  { name: 'Ботоферма', emoji: '🤖', top: 'ВИЖДАМ', bot: 'БОТ', price: 2.5, dmg: 9, bg: '#577590', w: 2 },
+  { name: 'Пинокио', emoji: '🤥', top: 'ИЗТОЧНИК:', bot: 'НЯМА', price: 4, dmg: 11, bg: '#ffb703', w: 1.5 },
+  { name: 'МЕГА МЕМ', emoji: '💥', top: 'МЕГА', bot: 'МЕМ', price: 25, dmg: 24, bg: '#9d0208', w: 0, big: true },
+];
+for (const m of MEMES) {
+  m.tex = canvasTex(256, 256, (g, w) => {
+    g.fillStyle = '#fff'; g.fillRect(0, 0, w, w);
+    g.fillStyle = m.bg; g.fillRect(10, 10, w - 20, w - 20);
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = '120px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.fillText(m.emoji, w / 2, w / 2 + 6);
+    const cap = (t, y) => {
+      let size = 34; g.font = `900 ${size}px Impact, "Arial Black", sans-serif`;
+      while (g.measureText(t).width > w - 30 && size > 14) { size -= 2; g.font = `900 ${size}px Impact, "Arial Black", sans-serif`; }
+      g.lineWidth = 6; g.strokeStyle = '#000'; g.strokeText(t, w / 2, y); g.fillStyle = '#fff'; g.fillText(t, w / 2, y);
+    };
+    if (m.top) cap(m.top, 36); if (m.bot) cap(m.bot, w - 34);
+  });
+  m.mat = new THREE.MeshBasicMaterial({ map: m.tex, side: THREE.DoubleSide, transparent: true });
+}
+const memeGeo = new THREE.PlaneGeometry(1, 1);
+function pickMeme(allowBig) {
+  const pool = MEMES.filter(m => m.w > 0 || (allowBig && m.big));
+  const ws = pool.map(m => m.big ? 0.35 : m.w); let t = Math.random() * ws.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < pool.length; i++) { t -= ws[i]; if (t <= 0) return pool[i]; }
+  return pool[0];
+}
+
+/* warning ring for meme rain */
+const ringGeo = new THREE.RingGeometry(0.9, 1.2, 28);
+
+/* ---------------- audio ---------------- */
+let AC = null;
+function snd(f = 440, d = 0.1, type = 'square', v = 0.05, slide = 0) {
+  if (!AC) return;
+  const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, f + slide), t + d);
+  g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  o.connect(g).connect(AC.destination); o.start(t); o.stop(t + d + 0.02);
+}
+const sfx = {
+  throw: v => snd(R(500, 700), 0.12, 'triangle', 0.04 * v, 600),
+  hit: () => { snd(160, 0.18, 'sawtooth', 0.12, -100); snd(R(700, 900), 0.08, 'square', 0.05, -400); },
+  woof: v => { snd(R(380, 460), 0.07, 'square', 0.05 * v, -150); setTimeout(() => snd(R(330, 400), 0.09, 'square', 0.05 * v, -180), 110); },
+  splat: v => snd(R(90, 140), 0.1, 'triangle', 0.06 * v, -50),
+  star: () => { [660, 880, 1100].forEach((f, i) => setTimeout(() => snd(f, 0.12, 'square', 0.05), i * 90)); },
+  die: () => { [500, 400, 300, 200, 120].forEach((f, i) => setTimeout(() => snd(f, 0.25, 'sawtooth', 0.08), i * 150)); },
+};
+
+/* ---------------- input ---------------- */
+const keys = {};
+let yaw = Math.PI, pitch = 0.42, mouseDown = false;
+addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'Space') e.preventDefault();
+  if (e.code === 'KeyE' && state === 'play') interact();
+  if (e.code === 'KeyP' && (state === 'play' || state === 'paused')) togglePause();
+  if (e.code === 'KeyR' && state === 'over') startGame();
+});
+addEventListener('keyup', e => { keys[e.code] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+canvas.addEventListener('mousedown', () => { mouseDown = true; if (state === 'play' && document.pointerLockElement !== canvas) canvas.requestPointerLock?.(); });
+addEventListener('mouseup', () => mouseDown = false);
+addEventListener('mousemove', e => {
+  if (state !== 'play') return;
+  if (document.pointerLockElement === canvas || mouseDown) {
+    yaw -= e.movementX * 0.0028;
+    pitch = clamp(pitch + e.movementY * 0.0022, 0.08, 1.15);
+  }
+});
+
+/* ---------------- game state ---------------- */
+let state = 'title';
+const hag = makeHag(); scene.add(hag.root);
+const P = { pos: new THREE.Vector3(), vel: new THREE.Vector3(), vy: 0, face: 0, hp: 100, st: 100, hidden: false, bush: null, house: null, houseT: 0, houseMax: 9, phase: 0, flinch: 0, exhausted: false };
+const G = {};
+const elves = [], memes = [], splats = [], rains = [], popups = [];
+
+function clearWorld() {
+  for (const e of elves) scene.remove(e.m.root);
+  for (const m of memes) scene.remove(m.mesh);
+  for (const s of splats) scene.remove(s.mesh);
+  for (const r of rains) scene.remove(r.ring);
+  elves.length = memes.length = splats.length = rains.length = 0;
+  for (const p of popups) p.el.remove(); popups.length = 0;
+  hag.stuck.clear();
+}
+
+function resetGame() {
+  clearWorld();
+  Object.assign(G, {
+    t: 0, spent: 0, thrown: 0, hits: 0, hitCost: 0, dodges: 0, elvesTotal: 0, byType: {},
+    lastKnown: new THREE.Vector3(), lastSeenT: -999, spawnCd: 2, stars: 1, shake: 0, apoc: false,
+    rainCd: 0, deadT: 0, houseKnown: false, tickerT: 0, slow: 1, regenBlock: 0,
+  });
+  Object.assign(P, { hp: 100, st: 100, vy: 0, hidden: false, bush: null, house: null, houseT: 0, flinch: 0, exhausted: false, face: Math.PI });
+  P.pos.set(0, 0, 18); P.vel.set(0, 0, 0);
+  hag.root.visible = true; hag.root.rotation.set(0, 0, 0); hag.body.position.set(0, 0, 0); hag.body.rotation.set(0, 0, 0);
+  for (const h of HOUSES) h.usedUntil = 0;
+  for (const b of BUSHES) b.exposedUntil = 0;
+  yaw = 0; pitch = 0.42;
+  for (let i = 0; i < 3; i++) spawnElf(true);
+  updateStars(true);
+}
+
+function startGame() {
+  if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { } }
+  AC?.resume?.();
+  resetGame();
+  state = 'play';
+  $('title').classList.add('hidden'); $('over').classList.add('hidden'); $('pause').classList.add('hidden');
+  $('hud').classList.remove('hidden');
+  canvas.requestPointerLock?.();
+  ticker('Елфите те забелязаха! БЯГАЙ!');
+}
+$('startBtn').onclick = startGame;
+$('againBtn').onclick = startGame;
+$('resumeBtn').onclick = () => togglePause();
+function togglePause() {
+  if (state === 'play') { state = 'paused'; $('pause').classList.remove('hidden'); document.exitPointerLock?.(); }
+  else if (state === 'paused') { state = 'play'; $('pause').classList.add('hidden'); canvas.requestPointerLock?.(); }
+}
+
+/* ---------------- UI helpers ---------------- */
+function ticker(text) { const t = $('ticker'); t.textContent = text; t.style.opacity = 1; G.tickerT = 3.2; }
+let bannerT = 0;
+function banner(text, color = '#ffd23f') { const b = $('banner'); b.innerHTML = text; b.style.color = color; b.style.opacity = 1; bannerT = 2.6; }
+function popup(pos, html, color = '#fff') {
+  const el = document.createElement('div'); el.innerHTML = html; el.style.color = color; $('popups').appendChild(el);
+  popups.push({ el, pos: pos.clone(), t: 0 });
+}
+function updateStars(silent) {
+  const t = G.t;
+  const s = t < 20 ? 1 : t < 50 ? 2 : t < 90 ? 3 : t < 135 ? 4 : 5;
+  if (s !== G.stars || silent) {
+    const prev = G.stars; G.stars = s;
+    [...$('stars').children].forEach((b, i) => b.classList.toggle('on', i < s));
+    if (!silent && s > prev) {
+      $('stars').classList.remove('flash'); void $('stars').offsetWidth; $('stars').classList.add('flash');
+      sfx.star();
+      const msgs = { 2: 'ЕЛФИТЕ СЕ ОРГАНИЗИРАТ', 3: 'ТЕЛЕГРАМ ГРУПАТА ГОРИ', 4: 'МЕМЕ БАТАЛЬОН', 5: 'ЦЯЛОТО СЕЛО Е СРЕЩУ ТЕБ' };
+      banner('★'.repeat(s) + '<br><span style="font-size:24px">' + msgs[s] + '</span>');
+    }
+  }
+}
+
+const SHOUTS = ['Хвани тролката!', 'Мем в лицето!', 'Фактите са на наша страна!', 'Much wow, такава бабичка!', 'Бързо в Телеграм групата!',
+  'Ще те смемим!', 'Копейката бяга!', 'Вижте я, вижте я!', 'Някой да донесе още мемета!', 'Източник? Няма източник!', 'Бау! Бау! Факт-чек!', 'Розовата коса е там!'];
+
+/* ---------------- spawning ---------------- */
+function spawnElf(initial) {
+  const m = makeElf();
+  let x = 0, z = 0;
+  for (let i = 0; i < 40; i++) {
+    const a = R(0, Math.PI * 2), r = initial ? R(28, 40) : R(40, 65);
+    x = P.pos.x + Math.cos(a) * r; z = P.pos.z + Math.sin(a) * r;
+    if (Math.hypot(x, z) < WORLD - 3 && freeSpot(x, z, 1)) break;
+  }
+  const s = R(0.9, 1.12);
+  m.root.position.set(x, 0, z); m.root.scale.setScalar(0.01); scene.add(m.root);
+  const e = {
+    m, pos: m.root.position, s, face: 0, cd: R(1, 2.5), seeT: 0, sees: false, phase: R(0, 6), throwT: 0,
+    speed: R(4.8, 5.6), strafe: Math.random() < 0.5 ? -1 : 1, off: new THREE.Vector3(R(-5, 5), 0, R(-5, 5)),
+    wander: new THREE.Vector3(x, 0, z), wanderT: 0, born: 0, id: ++G.elvesTotal, cheer: R(0, 6),
+  };
+  elves.push(e);
+  if (!initial && Math.random() < 0.35) ticker(`Елф #${e.id}: „${pick(SHOUTS)}“`);
+  return e;
+}
+
+/* ---------------- collisions / LOS ---------------- */
+function collide(p, r) {
+  for (const s of SOLIDS) {
+    const dx = p.x - s.x, dz = p.z - s.z, RR = s.r + r, d2 = dx * dx + dz * dz;
+    if (d2 < RR * RR) { const d = Math.sqrt(d2) || 0.001; p.x = s.x + dx / d * RR; p.z = s.z + dz / d * RR; }
+  }
+  const d = Math.hypot(p.x, p.z); if (d > WORLD) { p.x *= WORLD / d; p.z *= WORLD / d; }
+}
+function los(ax, az, bx, bz) {
+  const dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+  for (const h of SOLIDS) {
+    if (h.r < 1.2) continue;
+    const t = clamp(((h.x - ax) * dx + (h.z - az) * dz) / l2, 0, 1);
+    const px = ax + dx * t - h.x, pz = az + dz * t - h.z;
+    if (px * px + pz * pz < (h.r - 0.3) ** 2) return false;
+  }
+  return true;
+}
+
+/* ---------------- throwing ---------------- */
+const tmpV = new THREE.Vector3(), chestV = new THREE.Vector3();
+function launchMeme(start, aim, type, T, thrower) {
+  const g = 14;
+  const vel = new THREE.Vector3((aim.x - start.x) / T, (aim.y - start.y + 0.5 * g * T * T) / T, (aim.z - start.z) / T);
+  const mesh = new THREE.Mesh(memeGeo, type.mat);
+  const size = type.big ? 1.9 : 0.95; mesh.scale.setScalar(size);
+  mesh.position.copy(start); scene.add(mesh);
+  memes.push({ mesh, vel, type, life: 0, spin: R(-9, 9), size, thrower });
+  G.spent += type.price; G.thrown++; G.byType[type.name] = (G.byType[type.name] || 0) + 1;
+}
+function elfThrow(e, target, lead) {
+  const start = tmpV.set(e.pos.x, 1.1 * e.s, e.pos.z).clone();
+  const type = pickMeme(G.stars >= 3);
+  const dist = Math.hypot(target.x - start.x, target.z - start.z);
+  const T = clamp(dist / R(15, 19), 0.35, 1.6);
+  const spread = Math.max(0.35, 2.4 - G.t / 90) * (P.bush ? 1.4 : 1);
+  const aim = new THREE.Vector3(
+    target.x + (lead ? P.vel.x * T * R(0.5, 1.0) : 0) + R(-spread, spread),
+    (target.y || 0) + 1.2,
+    target.z + (lead ? P.vel.z * T * R(0.5, 1.0) : 0) + R(-spread, spread));
+  launchMeme(start, aim, type, T, e);
+  e.throwT = 0.35;
+  const near = clamp(1 - Math.hypot(e.pos.x - P.pos.x, e.pos.z - P.pos.z) / 40, 0, 1);
+  if (near > 0.05) sfx.throw(near);
+}
+
+/* ---------------- interactions ---------------- */
+function nearDoor() {
+  let best = null, bd = 2.8;
+  for (const h of HOUSES) { const d = Math.hypot(h.door.x - P.pos.x, h.door.z - P.pos.z); if (d < bd) { bd = d; best = h; } }
+  return best;
+}
+function interact() {
+  if (P.house) { exitHouse(false); return; }
+  const h = nearDoor();
+  if (!h) return;
+  if (h.usedUntil > G.t) { ticker('Тази къщичка вече е под наблюдение от Елфите!'); return; }
+  P.house = h; P.houseT = 0;
+  G.houseKnown = G.t - G.lastSeenT < 1.2;
+  P.houseMax = G.apoc ? 3 : clamp(10 - G.stars, 4, 9);
+  hag.root.visible = false;
+  if (G.houseKnown) { G.lastKnown.copy(h.door); G.lastSeenT = G.t; ticker('Елфите видяха къде се скри… обграждат къщичката!'); }
+  else ticker('Скри се. Шш-шт…');
+}
+function exitHouse(forced) {
+  const h = P.house; if (!h) return;
+  P.house = null; hag.root.visible = true;
+  P.pos.set(h.door.x, 0, h.door.z);
+  h.usedUntil = G.t + 25;
+  if (forced) { banner('ИЗКАРАХА ТЕ С МЕМЕТА!', '#ff6b6b'); G.lastKnown.copy(P.pos); G.lastSeenT = G.t; }
+}
+
+function hitPlayer(m) {
+  const dmg = m.type.dmg;
+  P.hp -= dmg; G.hits++; G.hitCost += m.type.price; P.flinch = 0.35; G.shake = Math.min(1, G.shake + (m.type.big ? 0.9 : 0.45));
+  G.regenBlock = 4;
+  tmpV.copy(m.vel).setY(0).normalize().multiplyScalar(m.type.big ? 7 : 3); P.vel.add(tmpV);
+  popup(P.pos.clone().add(new THREE.Vector3(0, 2.7, 0)), `-${dmg} ❤ ${m.type.name}<span class="price">+${eur(m.type.price)}</span>`, m.type.big ? '#ff4d4d' : '#fff');
+  $('flash').style.opacity = 1; setTimeout(() => $('flash').style.opacity = 0, 120);
+  sfx.hit();
+  // stick a small copy of the meme on her
+  const s = new THREE.Mesh(memeGeo, m.type.mat);
+  const side = Math.random() < 0.5 ? 1 : -1;
+  s.scale.setScalar(0.42); s.position.set(R(-0.22, 0.22), R(1.15, 1.7), side * 0.39); s.rotation.set(0, side < 0 ? Math.PI : 0, R(-0.6, 0.6));
+  hag.stuck.add(s); if (hag.stuck.children.length > 16) hag.stuck.remove(hag.stuck.children[0]);
+  G.lastKnown.copy(P.pos); G.lastSeenT = G.t;
+  if (P.bush) P.bush.exposedUntil = G.t + 12;
+  if (P.hp <= 0) die();
+}
+
+function die() {
+  P.hp = 0; state = 'dead'; G.deadT = 0; P.house = null; hag.root.visible = true;
+  sfx.die(); banner('СМЕМЕНА!', '#ff4fb0');
+  document.exitPointerLock?.();
+}
+function showOver() {
+  state = 'over';
+  const score = calcScore();
+  $('overTime').textContent = `${fmtT(G.t)} на свобода`;
+  $('oThrown').textContent = G.thrown.toLocaleString('bg-BG');
+  $('oSpent').textContent = eur(G.spent);
+  $('oLev').textContent = `≈ ${(G.spent * 1.95583).toLocaleString('bg-BG', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} лв. (по стария курс)`;
+  $('oScore').textContent = score.toLocaleString('bg-BG');
+  $('oHits').textContent = G.hits;
+  $('oHitCost').textContent = eur(G.hitCost);
+  $('oAcc').textContent = (G.thrown ? Math.round(G.hits / G.thrown * 100) : 0) + '%';
+  $('oElves').textContent = G.elvesTotal;
+  $('oDodge').textContent = G.dodges;
+  const fav = Object.entries(G.byType).sort((a, b) => b[1] - a[1])[0];
+  $('oFav').textContent = fav ? `${fav[0]} ×${fav[1]}` : '—';
+  $('oPerHp').textContent = eur(G.spent / 100);
+  const eps = ['ТРОЛКАТА ПАДНА', 'ФАКТИТЕ ПОБЕДИХА', 'ДЕЗИНФОРМАЦИЯТА Е ОБЕЗВРЕДЕНА', 'MUCH DEFEAT. SO MEME.', 'КОПЕЙКАТА СЕ ОБЕЗЦЕНИ'];
+  $('epitaph').textContent = pick(eps);
+  let best = 0; try { best = +localStorage.getItem('gargamelka-best') || 0; if (score > best) { localStorage.setItem('gargamelka-best', score); } } catch (e) { }
+  $('best').textContent = score > best ? '🏆 Нов рекорд!' : `Рекорд: ${best.toLocaleString('bg-BG')}`;
+  $('over').classList.remove('hidden');
+  $('hud').classList.add('hidden');
+}
+const calcScore = () => Math.floor(G.t * 10) + G.dodges * 5;
+
+/* ---------------- update ---------------- */
+const fwd = new THREE.Vector3(), right = new THREE.Vector3(), move = new THREE.Vector3();
+function updatePlayer(dt) {
+  if (state !== 'play') { P.vel.multiplyScalar(0.9); return; }
+  if (P.house) {
+    let rate = 1;
+    if (G.houseKnown) rate += elves.filter(e => Math.hypot(e.pos.x - P.house.x, e.pos.z - P.house.z) < 9).length * 0.25;
+    P.houseT += dt * rate;
+    P.house.shake = Math.min(1, rate - 1) * 0.5;
+    P.st = Math.min(100, P.st + 30 * dt);
+    if (P.houseT >= P.houseMax) { exitHouse(true); }
+    return;
+  }
+  fwd.set(-Math.sin(yaw), 0, -Math.cos(yaw)); right.set(Math.cos(yaw), 0, -Math.sin(yaw));
+  move.set(0, 0, 0);
+  if (keys.KeyW || keys.ArrowUp) move.add(fwd);
+  if (keys.KeyS || keys.ArrowDown) move.sub(fwd);
+  if (keys.KeyD || keys.ArrowRight) move.add(right);
+  if (keys.KeyA || keys.ArrowLeft) move.sub(right);
+  const moving = move.lengthSq() > 0;
+  if (moving) move.normalize();
+  const wantSprint = (keys.ShiftLeft || keys.ShiftRight) && moving && !P.exhausted;
+  if (wantSprint) { P.st -= 24 * dt; if (P.st <= 0) { P.st = 0; P.exhausted = true; ticker('Бабата се задъха…'); } }
+  else P.st = Math.min(100, P.st + (moving ? 12 : 22) * dt);
+  if (P.exhausted && P.st > 35) P.exhausted = false;
+  const inBushSlow = P.bush ? 0.7 : 1;
+  const speed = (wantSprint ? 9.6 : P.exhausted ? 4.2 : 6.4) * inBushSlow;
+  const k = 1 - Math.exp(-(P.pos.y > 0.01 ? 2.5 : 10) * dt);
+  P.vel.x = lerp(P.vel.x, move.x * speed, k); P.vel.z = lerp(P.vel.z, move.z * speed, k);
+  if (keys.Space && P.pos.y <= 0.001) { P.vy = 7.5; snd(300, 0.12, 'triangle', 0.04, 300); }
+  P.vy -= 22 * dt; P.pos.y = Math.max(0, P.pos.y + P.vy * dt); if (P.pos.y === 0) P.vy = 0;
+  P.pos.x += P.vel.x * dt; P.pos.z += P.vel.z * dt;
+  collide(P.pos, 0.45);
+  if (moving) P.face += angDiff(P.face, Math.atan2(move.x, move.z)) * Math.min(1, 12 * dt);
+
+  // bushes
+  P.bush = null;
+  for (const b of BUSHES) if (Math.hypot(b.x - P.pos.x, b.z - P.pos.z) < b.r * 0.9) { P.bush = b; break; }
+  P.hidden = !!P.bush && P.bush.exposedUntil < G.t && P.pos.y < 0.5;
+  if (P.bush) P.bush.wob = Math.min(1, P.bush.wob + dt * (moving ? 4 : 1));
+}
+
+function animateHag(dt) {
+  const sp = Math.hypot(P.vel.x, P.vel.z);
+  const a = clamp(sp / 9, 0, 1);
+  P.phase += dt * (4 + sp * 1.25);
+  const s = Math.sin(P.phase);
+  hag.root.position.copy(P.pos);
+  hag.root.rotation.y = P.face;
+  if (state === 'dead' || state === 'over') {
+    const t = Math.min(1, G.deadT * 2);
+    hag.body.rotation.x = lerp(0, -Math.PI / 2, t * t);
+    hag.body.position.y = lerp(0, 0.35, t);
+    hag.arms.forEach((ar, i) => ar.rotation.x = -2.6 + Math.sin(G.deadT * 20 + i) * 0.15 * (1 - t));
+    hag.legs.forEach((l, i) => l.rotation.x = i ? 0.3 : -0.2);
+    return;
+  }
+  const air = P.pos.y > 0.05;
+  hag.legs[0].rotation.x = air ? -0.6 : s * 1.0 * a; hag.legs[1].rotation.x = air ? 0.4 : -s * 1.0 * a;
+  const flail = P.flinch > 0 ? Math.sin(G.t * 60) * 0.6 : 0;
+  hag.arms[0].rotation.x = -s * 1.2 * a - 0.2 * a + flail; hag.arms[1].rotation.x = s * 1.2 * a - 0.2 * a - flail;
+  hag.arms[0].rotation.z = -0.12 - a * 0.35 - (P.flinch > 0 ? 0.8 : 0); hag.arms[1].rotation.z = 0.12 + a * 0.35 + (P.flinch > 0 ? 0.8 : 0);
+  hag.body.rotation.x = a * 0.28 + (P.flinch > 0 ? -0.3 : 0);
+  hag.body.position.y = Math.abs(s) * 0.09 * a + (P.bush && !air ? -0.4 : 0);
+  hag.head.rotation.y = Math.sin(G.t * 3) * 0.25 * (1 - a) + Math.sin(P.phase * 0.5) * 0.15 * a;
+  hag.head.rotation.z = Math.sin(P.phase) * 0.08 * a;
+  P.flinch = Math.max(0, P.flinch - dt);
+}
+
+function updateElves(dt) {
+  const t = G.t;
+  const playerTarget = !P.house;
+  for (const e of elves) {
+    e.born = Math.min(1, e.born + dt * 2.5);
+    e.m.root.scale.setScalar(e.s * (e.born < 1 ? 1 - Math.pow(1 - e.born, 3) * 1.0 + Math.sin(e.born * Math.PI) * 0.2 : 1));
+    const dx = P.pos.x - e.pos.x, dz = P.pos.z - e.pos.z, dist = Math.hypot(dx, dz);
+    e.seeT -= dt;
+    if (e.seeT <= 0 && state === 'play') {
+      e.seeT = R(0.18, 0.3);
+      const wasSeeing = e.sees;
+      const sight = 34 + G.stars * 6;
+      e.sees = playerTarget && !P.hidden && dist < sight && los(e.pos.x, e.pos.z, P.pos.x, P.pos.z);
+      // shibas can sniff you out of a bush
+      if (playerTarget && P.bush && dist < 2.6 && P.bush.exposedUntil < t) {
+        P.bush.exposedUntil = t + 14; e.sees = true; banner('ЕЛФ ТЕ НАДУШИ!', '#ff9f1c'); sfx.woof(1);
+      }
+      if (e.sees && !wasSeeing && Math.random() < 0.3) { sfx.woof(clamp(1 - dist / 40, 0.1, 1)); if (Math.random() < 0.25) ticker(`Елф #${e.id}: „${pick(SHOUTS)}“`); }
+    }
+    if (e.sees && state === 'play') { G.lastKnown.copy(P.pos); G.lastSeenT = t; }
+
+    let tx, tz, spd = Math.min(8.9, e.speed * (1 + t / 260));
+    if (state !== 'play') {
+      // celebrate around the fallen hag
+      const a = e.cheer + t * 0.3, r = 3.5 + (e.id % 5) * 0.9;
+      tx = P.pos.x + Math.cos(a) * r; tz = P.pos.z + Math.sin(a) * r; spd = 3.5;
+    } else if (e.sees) {
+      if (dist > 10) { tx = P.pos.x; tz = P.pos.z; }
+      else if (dist < 5) { tx = e.pos.x - dx; tz = e.pos.z - dz; spd *= 0.6; }
+      else { tx = e.pos.x + (-dz / dist) * e.strafe * 4 + dx * 0.15; tz = e.pos.z + (dx / dist) * e.strafe * 4 + dz * 0.15; spd *= 0.55; if (Math.random() < dt * 0.4) e.strafe *= -1; }
+    } else if (t - G.lastSeenT < 22) {
+      tx = G.lastKnown.x + e.off.x; tz = G.lastKnown.z + e.off.z;
+      if (Math.hypot(tx - e.pos.x, tz - e.pos.z) < 1.5) { e.off.set(R(-7, 7), 0, R(-7, 7)); }
+      spd *= 0.85;
+    } else {
+      e.wanderT -= dt;
+      if (e.wanderT <= 0 || Math.hypot(e.wander.x - e.pos.x, e.wander.z - e.pos.z) < 2) {
+        e.wanderT = R(3, 7); const hunch = Math.max(8, 30 - G.stars * 4);
+        e.wander.set(P.pos.x + R(-hunch, hunch), 0, P.pos.z + R(-hunch, hunch));
+      }
+      tx = e.wander.x; tz = e.wander.z; spd *= 0.7;
+    }
+    const mx = tx - e.pos.x, mz = tz - e.pos.z, ml = Math.hypot(mx, mz);
+    let moving = false;
+    if (ml > 0.3) {
+      e.pos.x += mx / ml * spd * dt; e.pos.z += mz / ml * spd * dt; moving = true;
+      if (!e.sees) e.face += angDiff(e.face, Math.atan2(mx, mz)) * Math.min(1, 8 * dt);
+    }
+    if (e.sees || state !== 'play') e.face += angDiff(e.face, Math.atan2(dx, dz)) * Math.min(1, 10 * dt);
+    collide(e.pos, 0.38);
+    if (state !== 'play' && dist < 2.2) { e.pos.x -= dx / dist * 0.05; e.pos.z -= dz / dist * 0.05; }
+
+    // throwing
+    e.cd -= dt;
+    if (state === 'play' && e.cd <= 0) {
+      if (e.sees && dist < 27) {
+        elfThrow(e, P.pos, true);
+        e.cd = R(1.3, 2.6) * Math.max(0.32, 1 - t / 260);
+      } else if (P.house && G.houseKnown && Math.hypot(e.pos.x - P.house.x, e.pos.z - P.house.z) < 16) {
+        elfThrow(e, P.house.door, false); // wasted memes on the house door, still paid for
+        e.cd = R(1.0, 2.0);
+      }
+    }
+
+    // animation
+    const sp = moving ? spd : 0;
+    e.phase += dt * (5 + sp * 1.8);
+    const s = Math.sin(e.phase), a = clamp(sp / 7, 0, 1);
+    const m = e.m;
+    m.root.rotation.y = e.face;
+    m.legs[0].rotation.x = s * 0.9 * a; m.legs[1].rotation.x = -s * 0.9 * a;
+    m.arms[0].rotation.x = -s * 0.8 * a;
+    e.throwT = Math.max(0, e.throwT - dt);
+    m.arms[1].rotation.x = e.throwT > 0 ? -2.8 + (0.35 - e.throwT) * 8 : s * 0.8 * a;
+    m.body.position.y = Math.abs(s) * 0.06 * a;
+    if (state !== 'play') { m.body.position.y = Math.abs(Math.sin(t * 7 + e.cheer)) * 0.45; m.arms[0].rotation.x = m.arms[1].rotation.x = -2.9; }
+    m.head.rotation.z = Math.sin(e.phase * 0.5) * 0.1;
+  }
+  // separation
+  for (let i = 0; i < elves.length; i++) for (let j = i + 1; j < elves.length; j++) {
+    const a = elves[i].pos, b = elves[j].pos, dx = b.x - a.x, dz = b.z - a.z, d2 = dx * dx + dz * dz;
+    if (d2 < 0.81 && d2 > 0.0001) { const d = Math.sqrt(d2), push = (0.9 - d) / 2; a.x -= dx / d * push; a.z -= dz / d * push; b.x += dx / d * push; b.z += dz / d * push; }
+  }
+}
+
+function updateMemes(dt) {
+  const g = 14, chest = chestV.set(P.pos.x, P.pos.y + 1.3 + (P.bush ? -0.4 : 0), P.pos.z);
+  for (let i = memes.length - 1; i >= 0; i--) {
+    const m = memes[i]; m.life += dt;
+    m.vel.y -= g * dt;
+    m.mesh.position.addScaledVector(m.vel, dt);
+    m.mesh.rotation.y += m.spin * dt; m.mesh.rotation.z += m.spin * 0.4 * dt;
+    const p = m.mesh.position;
+    let remove = false;
+    if (state === 'play' && !P.house && p.distanceTo(chest) < (m.type.big ? 1.5 : 0.85)) { hitPlayer(m); remove = true; }
+    else if (p.y <= 0.04) {
+      p.y = 0.04; m.mesh.rotation.set(-Math.PI / 2, 0, R(0, 6)); splats.push({ mesh: m.mesh, t: 0 }); memes.splice(i, 1);
+      const d = Math.hypot(p.x - P.pos.x, p.z - P.pos.z);
+      if (state === 'play' && d < 3.2 && !P.house) { G.dodges++; if (Math.random() < 0.35) popup(p.clone().setY(1), '+5 избегнат', '#8ecae6'); }
+      if (m.type.big && state === 'play' && !P.house && d < 3.2) { hitPlayer({ ...m, type: { ...m.type, dmg: 12, name: 'Ударна вълна', price: 0 } }); }
+      sfx.splat(clamp(1 - d / 30, 0, 1));
+      continue;
+    } else {
+      for (const h of HOUSES) if (p.y < 7 && Math.hypot(p.x - h.x, p.z - h.z) < h.r + 0.6) { remove = true; h.shake = Math.max(h.shake, 0.35); break; }
+      if (m.life > 6) remove = true;
+    }
+    if (remove) { scene.remove(m.mesh); memes.splice(i, 1); }
+  }
+  for (let i = splats.length - 1; i >= 0; i--) {
+    const s = splats[i]; s.t += dt;
+    if (s.t > 7) { s.mesh.scale.multiplyScalar(0.9); if (s.mesh.scale.x < 0.05) { scene.remove(s.mesh); splats.splice(i, 1); } }
+  }
+  if (splats.length > 160) { scene.remove(splats[0].mesh); splats.shift(); }
+}
+
+function updateRain(dt) {
+  if (G.t >= 150 && !G.apoc) { G.apoc = true; banner('☢ МЕМ АПОКАЛИПСИС ☢<br><span style="font-size:22px">Елфите пуснаха дроновете</span>', '#ff4d4d'); sfx.star(); }
+  if (!G.apoc || state !== 'play') return;
+  G.rainCd -= dt;
+  if (G.rainCd <= 0) {
+    const k = G.t - 150;
+    G.rainCd = Math.max(0.18, 1.5 - k / 50);
+    const count = 1 + Math.floor(k / 25);
+    for (let i = 0; i < count; i++) {
+      const off = Math.max(0.4, 6 - k / 12);
+      const base = P.house ? P.house.door : P.pos;
+      const tgt = new THREE.Vector3(base.x + P.vel.x * 1.2 + R(-off, off), 0, base.z + P.vel.z * 1.2 + R(-off, off));
+      const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0xff2020, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }));
+      ring.rotation.x = -Math.PI / 2; ring.position.set(tgt.x, 0.06, tgt.z); scene.add(ring);
+      rains.push({ ring, tgt, t: 0, fired: false });
+    }
+  }
+  for (let i = rains.length - 1; i >= 0; i--) {
+    const r = rains[i]; r.t += dt;
+    r.ring.scale.setScalar(1 + Math.sin(r.t * 20) * 0.1);
+    if (!r.fired && r.t > 0.2) {
+      r.fired = true;
+      const start = new THREE.Vector3(r.tgt.x + R(-6, 6), 30, r.tgt.z + R(-6, 6));
+      launchMeme(start, r.tgt.clone().setY(1.2), pickMeme(true), 1.1, null);
+    }
+    if (r.t > 1.4) { scene.remove(r.ring); rains.splice(i, 1); }
+  }
+  // even inside a house, drones find you
+  if (P.house) P.houseT += dt * 0.6;
+}
+
+function updateSpawns(dt) {
+  if (state !== 'play') return;
+  const cap = Math.min(48, 4 + Math.floor(G.t / 4.5));
+  G.spawnCd -= dt;
+  if (G.spawnCd <= 0 && elves.length < cap) {
+    const e = spawnElf(false);
+    G.spawnCd = Math.max(0.45, 4.2 - G.t / 38);
+    if (G.stars >= 4) { e.off.set(R(-6, 6), 0, R(-6, 6)); }
+  }
+}
+
+/* ---------------- camera ---------------- */
+const camPos = new THREE.Vector3(), camLook = new THREE.Vector3();
+function updateCamera(dt) {
+  if (state === 'title') {
+    const a = performance.now() * 0.00006;
+    camera.position.set(Math.sin(a) * 30, 12, Math.cos(a) * 30 + 18);
+    camera.lookAt(0, 2, 10);
+    return;
+  }
+  const base = P.house ? new THREE.Vector3(P.house.x, 2, P.house.z) : P.pos;
+  let dist = P.house ? 13 : 7.2, look = P.house ? 3 : 1.7;
+  if (state === 'dead' || state === 'over') { yaw += dt * 0.25; dist = 9; pitch = lerp(pitch, 0.6, dt); }
+  const tgt = new THREE.Vector3(
+    base.x + Math.sin(yaw) * Math.cos(pitch) * dist,
+    base.y + look + Math.sin(pitch) * dist,
+    base.z + Math.cos(yaw) * Math.cos(pitch) * dist);
+  tgt.y = Math.max(0.6, tgt.y);
+  camPos.lerp(tgt, 1 - Math.exp(-12 * dt));
+  camLook.lerp(tmpV.set(base.x, base.y + look, base.z), 1 - Math.exp(-14 * dt));
+  camera.position.copy(camPos);
+  if (G.shake > 0) { camera.position.x += R(-1, 1) * G.shake * 0.35; camera.position.y += R(-1, 1) * G.shake * 0.35; G.shake = Math.max(0, G.shake - dt * 2.5); }
+  camera.lookAt(camLook);
+}
+
+/* ---------------- HUD ---------------- */
+const radar = $('radar'), rctx = radar.getContext('2d');
+function drawRadar() {
+  const W = radar.width, C = W / 2, sc = 1.7; // px per world unit
+  rctx.clearRect(0, 0, W, W);
+  rctx.save(); rctx.beginPath(); rctx.arc(C, C, C, 0, 7); rctx.clip();
+  rctx.fillStyle = '#2f5a24'; rctx.fillRect(0, 0, W, W);
+  const cy = Math.cos(yaw), sy = Math.sin(yaw);
+  const T = (x, z) => { const dx = x - P.pos.x, dz = z - P.pos.z; return [C + (dx * cy - dz * sy) * sc, C + (dx * sy + dz * cy) * sc]; };
+  rctx.strokeStyle = '#c9a66b'; rctx.lineWidth = 5 * sc; rctx.lineCap = 'round';
+  rctx.beginPath(); for (const s of PATHS) { const a = T(s[0], s[1]), b = T(s[2], s[3]); rctx.moveTo(a[0], a[1]); rctx.lineTo(b[0], b[1]); } rctx.stroke();
+  { const [x, y] = T(0, 0); rctx.fillStyle = '#c9a66b'; rctx.beginPath(); rctx.arc(x, y, 11 * sc, 0, 7); rctx.fill(); }
+  rctx.strokeStyle = '#00000066'; rctx.lineWidth = 3; rctx.beginPath(); { const [x, y] = T(0, 0); rctx.arc(x, y, WORLD * sc, 0, 7); } rctx.stroke();
+  for (const b of BUSHES) { const [x, y] = T(b.x, b.z); rctx.fillStyle = b.exposedUntil > G.t ? '#6b8f3a' : '#57c94a'; rctx.beginPath(); rctx.arc(x, y, b.r * sc, 0, 7); rctx.fill(); }
+  for (const h of HOUSES) {
+    const [x, y] = T(h.x, h.z), q = h.r * sc * 1.1; rctx.fillStyle = h.usedUntil > G.t ? '#6d6458' : '#f1e6cf'; rctx.fillRect(x - q, y - q, q * 2, q * 2);
+    rctx.strokeStyle = '#5c3317'; rctx.lineWidth = 2; rctx.strokeRect(x - q, y - q, q * 2, q * 2);
+  }
+  if (G.t - G.lastSeenT < 22) { const [x, y] = T(G.lastKnown.x, G.lastKnown.z); rctx.strokeStyle = '#ffd23f'; rctx.setLineDash([5, 4]); rctx.lineWidth = 2; rctx.beginPath(); rctx.arc(x, y, 12, 0, 7); rctx.stroke(); rctx.setLineDash([]); }
+  for (const r of rains) { const [x, y] = T(r.tgt.x, r.tgt.z); rctx.strokeStyle = '#ff3030'; rctx.lineWidth = 2; rctx.beginPath(); rctx.arc(x, y, 5, 0, 7); rctx.stroke(); }
+  for (const m of memes) { const [x, y] = T(m.mesh.position.x, m.mesh.position.z); rctx.fillStyle = '#ffe66d'; rctx.fillRect(x - 2, y - 2, 4, 4); }
+  for (const e of elves) {
+    let [x, y] = T(e.pos.x, e.pos.z);
+    const dx = x - C, dy = y - C, d = Math.hypot(dx, dy); if (d > C - 8) { x = C + dx / d * (C - 8); y = C + dy / d * (C - 8); }
+    rctx.fillStyle = e.sees ? '#ff2d2d' : '#ff9f9f'; rctx.beginPath(); rctx.arc(x, y, e.sees ? 6 : 4.5, 0, 7); rctx.fill();
+    rctx.strokeStyle = '#000'; rctx.lineWidth = 1.5; rctx.stroke();
+  }
+  // player arrow
+  const fx = Math.sin(P.face), fz = Math.cos(P.face);
+  const ax = fx * cy - fz * sy, ay = fx * sy + fz * cy;
+  rctx.translate(C, C); rctx.rotate(Math.atan2(ay, ax) + Math.PI / 2);
+  rctx.fillStyle = P.hidden || P.house ? '#9aa' : '#ff4fb0'; rctx.strokeStyle = '#fff'; rctx.lineWidth = 2;
+  rctx.beginPath(); rctx.moveTo(0, -12); rctx.lineTo(9, 10); rctx.lineTo(0, 5); rctx.lineTo(-9, 10); rctx.closePath(); rctx.fill(); rctx.stroke();
+  rctx.restore();
+}
+
+function updateHUD(dt) {
+  $('hpbar').firstElementChild.style.transform = `scaleX(${clamp(P.hp / 100, 0, 1)})`;
+  $('stbar').firstElementChild.style.transform = `scaleX(${P.st / 100})`;
+  $('stbar').firstElementChild.style.background = P.exhausted ? 'linear-gradient(#999,#555)' : '';
+  $('time').textContent = fmtT(G.t);
+  $('score').textContent = calcScore().toLocaleString('bg-BG') + ' т.';
+  $('money').firstChild.nodeValue = eur(G.spent);
+  $('memecount').textContent = `${G.thrown} мемета хвърлени · ${elves.length} елфи на хайка`;
+  updateStars(false);
+  const hs = $('hideState');
+  if (P.house) hs.innerHTML = `🍄 В КЪЩИЧКАТА${G.houseKnown ? ' — <span style="color:#ff6b6b">ОБСАДЕНА!</span>' : ''}<div class="tbar"><i style="transform:scaleX(${1 - P.houseT / P.houseMax})"></i></div><div style="font-size:12px;opacity:.8">E — излез</div>`;
+  else if (P.hidden) hs.innerHTML = '🌿 СКРИТА В ХРАСТА';
+  else if (P.bush) hs.innerHTML = '<span style="color:#ff9f1c">🌿 ХРАСТЪТ Е РАЗКРИТ</span>';
+  else hs.innerHTML = '';
+  const pr = $('prompt');
+  const h = !P.house && state === 'play' && nearDoor();
+  if (h) { pr.classList.remove('hidden'); pr.innerHTML = h.usedUntil > G.t ? '🚫 Къщичката е наблюдавана' : '<kbd>E</kbd> Скрий се в къщичката'; }
+  else pr.classList.add('hidden');
+  if (G.tickerT > 0) { G.tickerT -= dt; if (G.tickerT <= 0) $('ticker').style.opacity = 0; }
+  if (bannerT > 0) { bannerT -= dt; if (bannerT <= 0) $('banner').style.opacity = 0; }
+  for (let i = popups.length - 1; i >= 0; i--) {
+    const p = popups[i]; p.t += dt; p.pos.y += dt * 1.2;
+    const v = p.pos.clone().project(camera);
+    p.el.style.left = ((v.x + 1) / 2 * innerWidth) + 'px'; p.el.style.top = ((1 - v.y) / 2 * innerHeight) + 'px';
+    p.el.style.opacity = v.z > 1 ? 0 : clamp(1.6 - p.t, 0, 1);
+    if (p.t > 1.6) { p.el.remove(); popups.splice(i, 1); }
+  }
+  drawRadar();
+}
+
+function updateWorldFx(dt) {
+  for (const b of BUSHES) { if (b.wob > 0) { b.wob = Math.max(0, b.wob - dt * 1.5); const w = Math.sin(G.t * 25) * 0.06 * b.wob; b.mesh.scale.set(1 + w, 1 - w, 1 + w); } }
+  for (const h of HOUSES) { if (h.shake > 0) { h.mesh.rotation.z = Math.sin(G.t * 40) * 0.03 * h.shake; h.shake = Math.max(0, h.shake - dt); } else h.mesh.rotation.z = 0; }
+  const f = scene.userData.flag; if (f) f.rotation.y = Math.sin(performance.now() * 0.002) * 0.25;
+  const c = P.house ? P.house : P.pos;
+  sun.position.set(c.x + 35, 70, c.z + 25); sun.target.position.set(c.x, 0, c.z);
+}
+
+/* ---------------- main loop ---------------- */
+const clock = new THREE.Clock();
+resetGame(); state = 'title';
+camPos.set(0, 10, 30);
+function frame() {
+  requestAnimationFrame(frame);
+  let dt = Math.min(clock.getDelta(), 0.05);
+  if (state === 'play') {
+    G.t += dt;
+    updatePlayer(dt); updateSpawns(dt); updateElves(dt); updateMemes(dt); updateRain(dt);
+    if ((P.hidden || P.house) && G.stars < 5 && G.regenBlock <= 0 && G.t - G.lastSeenT > 3) P.hp = Math.min(100, P.hp + 2.5 * dt);
+    G.regenBlock -= dt;
+    updateHUD(dt);
+  } else if (state === 'dead' || state === 'over') {
+    G.deadT += dt;
+    const sdt = dt * (G.deadT < 1.2 ? 0.35 : 1);
+    updatePlayer(sdt); updateElves(sdt); updateMemes(sdt);
+    if (state === 'dead') updateHUD(dt);
+    if (state === 'dead' && G.deadT > 2.8) showOver();
+  } else if (state === 'title') {
+    P.phase += dt;
+  }
+  animateHag(dt);
+  updateWorldFx(dt);
+  updateCamera(dt);
+  renderer.render(scene, camera);
+}
+frame();
+if (location.hash === '#debug') window.dbg = { G, P, elves, memes, startGame };
+</script>
+</body>
+</html>
