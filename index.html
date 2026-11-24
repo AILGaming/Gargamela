@@ -52,6 +52,18 @@
   #mission .row { display:flex; justify-content:space-between; gap:10px; margin-top:4px; }
   #mission .earn { color:#ffd23f; }
   #mission .infl { color:#ff8fab; }
+  #mission .hl { display:flex; align-items:center; gap:7px; opacity:.8; }
+  #mission .hl.near { opacity:1; color:#fff; }
+  #mission .hl i { width:10px; height:10px; border-radius:50%; border:2px solid #000; flex:none; }
+  #mission .hl .nm { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #mission .hl small { opacity:.65; font-weight:500; }
+  #mission .hl b { font-family:'Russo One'; font-weight:400; }
+  #pins { position:absolute; inset:0; pointer-events:none; }
+  .pin { position:absolute; left:0; top:0; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%; border:4px solid var(--c); background:#000 center 18%/cover; box-shadow:0 0 0 2px #000, 0 0 16px var(--c); will-change:transform; }
+  .pin::after { content:attr(data-d); position:absolute; left:50%; top:100%; transform:translate(-50%, 3px); background:#000c; color:var(--c); font:400 12px 'Russo One'; padding:1px 6px; border-radius:8px; white-space:nowrap; }
+  .pin.edge { opacity:.85; width:36px; height:36px; margin:-18px 0 0 -18px; }
+  .pin.near { width:58px; height:58px; margin:-29px 0 0 -29px; }
+  body.onair #pins { display:none; }
   #dim { position:fixed; inset:0; z-index:4; background:radial-gradient(ellipse at center, #000a, #000d); pointer-events:none; }
   #tv { position:absolute; z-index:5; left:50%; top:50%; transform:translate(-50%,-50%); width:min(900px,94vw); display:flex; gap:12px; align-items:stretch; flex-wrap:wrap; }
   #tv .tvframe { flex:1 1 560px; }
@@ -105,6 +117,8 @@
   #btnJump { width:84px; height:84px; right:max(22px, env(safe-area-inset-right)); bottom:28px; font-size:26px; }
   #btnAct { width:72px; height:72px; right:max(122px, calc(env(safe-area-inset-right) + 100px)); bottom:44px; font-size:26px; }
   #btnAct.idle { opacity:.3; }
+  #btnHit { width:76px; height:76px; right:max(196px, calc(env(safe-area-inset-right) + 174px)); bottom:118px; font-size:30px; border-color:#ff8fc8; background:#ff4fb033; }
+  #btnHit.cool { opacity:.4; }
   #btnAct.hot { border-color:var(--gold); background:#ffd23f55; animation:pulse 1s infinite; }
   @keyframes pulse { 50% { box-shadow:0 0 0 8px #ffd23f33, 0 4px 14px #0008; } }
   #btnPause { width:44px; height:44px; left:50%; top:max(8px, env(safe-area-inset-top)); margin-left:-22px; font-size:18px; }
@@ -124,7 +138,7 @@
   body.touch .stat small { font-size:10px; }
   body.touch #mission { left:max(10px, env(safe-area-inset-left)); top:66px; width:250px; font-size:10.5px; padding:5px 8px; line-height:1.35; }
   body.touch #mission .t { font-size:12px; }
-  body.touch #mission .topic { display:none; }
+  body.touch #mission .topic, body.touch #mission .hl small { display:none; }
   body.touch #radar { width:112px; height:112px; left:auto; right:max(10px, env(safe-area-inset-right)); top:118px; bottom:auto; border-width:3px; }
   body.touch #hint { display:none; }
   body.touch #ticker { top:56px; font-size:12px; padding:4px 10px; max-width:52vw; white-space:normal; text-align:center; }
@@ -179,7 +193,7 @@
     .grid div span { font-size:16px; }
   }
 
-  body.onair #joyBase, body.onair #btnJump { display:none; }
+  body.onair #joyBase, body.onair #btnJump, body.onair #btnHit { display:none; }
 </style>
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
@@ -221,13 +235,15 @@
   <div id="prompt" class="hidden"></div>
   <canvas id="radar" width="380" height="380"></canvas>
   <div id="popups"></div>
-  <div id="hint">WASD бягай · SHIFT спринт · SPACE скок<br>E скрий се в къщичка · храсти = прикритие<br>мишка = камера · P пауза</div>
+  <div id="pins"></div>
+  <div id="hint">WASD бягай · SHIFT спринт · SPACE скок<br>E скрий се в къщичка · F / клик фрасни с памука<br>мишка = камера · P пауза</div>
 </div>
 <div id="flash"></div>
 <div id="touchUI">
   <div id="joyBase"><div id="joyKnob"></div></div>
   <div class="tbtn" id="btnAct">✋</div>
   <div class="tbtn" id="btnJump">⤒<small>СКОК</small></div>
+  <div class="tbtn" id="btnHit">🍭</div>
   <div class="tbtn" id="btnPause">⏸</div>
 </div>
 <div id="rotate"><div class="ph">📱</div>Завърти телефона хоризонтално</div>
@@ -247,6 +263,7 @@
         <span>🕹️</span><span>джойстик вляво — бягай (до края = спринт)</span>
         <span>👆</span><span>плъзгай вдясно — върти камерата</span>
         <span>⤒</span><span>скок · ✋ — влез в къщичка / дай интервю</span>
+        <span>🍭</span><span>фрасни елфа със захарния памук — оаква го и го зашеметява</span>
         <span>🎤</span><span><b>МИСИЯ:</b> давай интервюта в маркираните къщички — печелиш хонорари, но меметата на Елфите поскъпват</span>
         <span>🌿</span><span>влез в храст — елфите не те виждат, докато не те надушат</span>
       </div>
@@ -255,6 +272,7 @@
         <span><kbd>SHIFT</kbd></span><span>спринт (харчи дъх)</span>
         <span><kbd>SPACE</kbd></span><span>скок</span>
         <span><kbd>E</kbd></span><span>скрий се в гъбена къщичка (за кратко)</span>
+        <span><kbd>F</kbd> / 🖱️</span><span>фрасни елфа със захарния памук — оаква го целия и го зашеметява</span>
         <span>🎤</span><span><b>МИСИЯ:</b> давай интервюта в маркираните къщички — печелиш хонорари, но всяко интервю вдига цената на меметата на Елфите</span>
         <span>🌿</span><span>влез в храст — елфите не те виждат, докато не те надушат</span>
         <span>🖱️</span><span>камера (кликни в играта за заключване на мишката)</span>
@@ -297,6 +315,7 @@
         <div>Цена на 1 точка живот<span id="oPerHp">0 €</span></div>
         <div>Мем инфлация накрая<span id="oInfl">×1.00</span></div>
         <div>Провалени интервюта<span id="oIvFail">0</span></div>
+        <div>Оакани елфи 🍭<span id="oWhacks">0</span></div>
       </div>
       <button class="go" id="againBtn">ПАК! (R)</button><span id="best"></span>
     </div>
@@ -956,12 +975,17 @@ addEventListener('keydown', e => {
   keys[e.code] = true;
   if (e.code === 'Space') { e.preventDefault(); if (!e.repeat && P.interview) skipLine(); }
   if (e.code === 'KeyE' && state === 'play') interact();
+  if (e.code === 'KeyF' && !e.repeat) whack();
   if (e.code === 'KeyP' && (state === 'play' || state === 'paused')) togglePause();
   if (e.code === 'KeyR' && state === 'over') startGame();
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
-canvas.addEventListener('mousedown', () => { mouseDown = true; if (state === 'play' && document.pointerLockElement !== canvas) canvas.requestPointerLock?.(); });
+canvas.addEventListener('mousedown', e => {
+  mouseDown = true;
+  if (state === 'play' && document.pointerLockElement !== canvas) canvas.requestPointerLock?.();
+  else if (e.button === 0) whack();
+});
 addEventListener('mouseup', () => mouseDown = false);
 addEventListener('mousemove', e => {
   if (state !== 'play') return;
@@ -1028,6 +1052,7 @@ const joy = { id: null, ox: 0, oy: 0, x: 0, y: 0, mag: 0 }, look = { id: null, l
   };
   btn('btnJump', () => { keys.Space = true; }, () => { keys.Space = false; });
   btn('btnAct', () => { if (state === 'play') interact(); });
+  btn('btnHit', () => whack());
   btn('btnPause', () => { if (state === 'play' || state === 'paused') togglePause(); });
 }
 
@@ -1051,12 +1076,12 @@ function clearWorld() {
 function resetGame() {
   clearWorld();
   Object.assign(G, {
-    t: 0, spent: 0, thrown: 0, hits: 0, hitCost: 0, dodges: 0, elvesTotal: 0, byType: {},
+    t: 0, whacks: 0, spent: 0, thrown: 0, hits: 0, hitCost: 0, dodges: 0, elvesTotal: 0, byType: {},
     lastKnown: new THREE.Vector3(), lastSeenT: -999, spawnCd: 2, stars: 1, shake: 0, apoc: false,
     rainCd: 0, deadT: 0, houseKnown: false, tickerT: 0, slow: 1, regenBlock: 0,
-    interviews: 0, ivFailed: 0, earned: 0, inflation: 1, mission: null, missionCd: 0, throwBudget: 0,
+    interviews: 0, ivFailed: 0, earned: 0, inflation: 1, mission: null, missions: [], throwBudget: 0,
   });
-  Object.assign(P, { invuln: 0, hp: 100, st: 100, vy: 0, hidden: false, bush: null, house: null, houseT: 0, flinch: 0, exhausted: false, face: Math.PI, interview: false, ivT: 0, ivDur: 8 });
+  Object.assign(P, { invuln: 0, hp: 100, st: 100, vy: 0, hidden: false, bush: null, house: null, houseT: 0, flinch: 0, exhausted: false, face: Math.PI, interview: false, ivT: 0, ivDur: 8, swingT: 0, swingCd: 0 });
   P.pos.set(0, 0, 18); P.vel.set(0, 0, 0);
   hag.root.visible = true; hag.root.rotation.set(0, 0, 0); hag.body.position.set(0, 0, 0); hag.body.rotation.set(0, 0, 0);
   for (const h of HOUSES) h.usedUntil = 0;
@@ -1065,8 +1090,7 @@ function resetGame() {
   for (let i = 0; i < 26; i++) spawnElf(true);
   updateStars(true);
   $('tv').classList.add('hidden'); TV.hideT = 0;
-  markerGroup.userData.tv.visible = false; markerGroup.userData.icon.visible = true;
-  newMission(true);
+  initMissions();
 }
 
 function startGame() {
@@ -1233,31 +1257,64 @@ for (const h of HOSTS) {
     h.tex.needsUpdate = true;
   });
 }
-const markerGroup = new THREE.Group(); scene.add(markerGroup); markerGroup.visible = false;
-{
-  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 60, 16, 1, true),
-    new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.28, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
-  beam.position.y = 30; markerGroup.add(beam);
-  const tex = canvasTex(256, 256, (g, w) => {
-    g.fillStyle = '#ffd23f'; g.beginPath(); g.arc(w / 2, w / 2, w / 2 - 8, 0, 7); g.fill();
-    g.lineWidth = 10; g.strokeStyle = '#000'; g.stroke();
-    g.font = '140px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText('🎤', w / 2, w / 2 + 8);
-  });
-  const icon = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false }));
-  icon.scale.set(3, 3, 1); icon.position.y = 11; icon.renderOrder = 10; markerGroup.add(icon);
-  markerGroup.userData.icon = icon;
-  const tvS = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false }));
-  tvS.scale.set(4.2, 3.3, 1); tvS.position.y = 9.5; tvS.renderOrder = 11; tvS.visible = false; markerGroup.add(tvS);
-  markerGroup.userData.tv = tvS;
+// every host waits in their own mushroom at the same time — each with a coloured beam and a floating TV with their face
+const HOST_COLORS = [0xffd23f, 0x4cc9f0, 0xff70a6, 0xb388ff, 0x7bf05a];
+HOSTS.forEach((h, i) => {
+  h.color = HOST_COLORS[i % HOST_COLORS.length]; h.css = '#' + h.color.toString(16).padStart(6, '0');
+  const g = new THREE.Group(); g.visible = false; scene.add(g);
+  const beam = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 60, 16, 1, true),
+    new THREE.MeshBasicMaterial({ color: h.color, fog: false, transparent: true, opacity: 0.45, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+  beam.position.y = 30; g.add(beam);
+  const tv = new THREE.Sprite(new THREE.SpriteMaterial({ map: h.tex, depthTest: false, fog: false }));
+  tv.scale.set(5.4, 4.2, 1); tv.position.y = 10.5; tv.renderOrder = 11; g.add(tv);
+  g.userData.tv = tv; g.userData.phase = i * 1.3;
+  h.marker = g;
+});
+// GTA-style screen pins: a round face for every host, clamped to the screen edge when off-view
+for (const h of HOSTS) { const d = document.createElement('div'); d.className = 'pin'; d.style.setProperty('--c', h.css); d.style.backgroundImage = `url(${h.img})`; $('pins').appendChild(d); h.pin = d; }
+const pinV = new THREE.Vector3();
+function updatePins() {
+  let nearest = null, nd = 1e9;
+  for (const m of G.missions) if (m.house) { const d = Math.hypot(m.house.x - P.pos.x, m.house.z - P.pos.z); if (d < nd) { nd = d; nearest = m; } }
+  const W = innerWidth, H = innerHeight, pad = 34;
+  const ml = $('mission').getBoundingClientRect(), rr = $('right').getBoundingClientRect();
+  const avoidL = { r: ml.right, b: ml.bottom }, avoidR = { l: rr.left, b: rr.bottom };
+  for (const m of G.missions) {
+    const el = m.host.pin;
+    if (!m.house || state !== 'play') { el.style.display = 'none'; continue; }
+    el.style.display = '';
+    pinV.set(m.house.x, 8.5, m.house.z).project(camera);
+    let x = pinV.x, y = pinV.y; const behind = pinV.z > 1;
+    if (behind) { x = -x; y = -y; }
+    let edge = behind || Math.abs(x) > 1 || Math.abs(y) > 1;
+    if (edge) { const k = 1 / Math.max(Math.abs(x), Math.abs(y), 1e-3); x *= k; y *= k; }
+    const px = clamp((x + 1) / 2 * W, pad, W - pad); let py = clamp((1 - y) / 2 * H, pad + 40, H - pad - 20);
+    if (px < avoidL.r + 30 && py < avoidL.b + 34) py = avoidL.b + 34; // don't sit on top of the HUD panels
+    if (px > avoidR.l - 30 && py < avoidR.b + 34) py = avoidR.b + 34;
+    el.style.transform = `translate(${px}px, ${py}px)`;
+    el.classList.toggle('edge', edge); el.classList.toggle('near', m === nearest && !edge);
+    el.dataset.d = Math.round(Math.hypot(m.house.x - P.pos.x, m.house.z - P.pos.z)) + ' м';
+  }
 }
-function newMission(immediate) {
-  const cands = HOUSES.filter(h => h.usedUntil <= G.t && Math.hypot(h.x - P.pos.x, h.z - P.pos.z) > 25 && h !== G.mission?.house);
-  const house = pick(cands.length ? cands : HOUSES);
-  const host = pick(HOSTS);
-  G.mission = { house, host, outlet: host.outlet, topic: pick(TOPICS) };
-  markerGroup.position.set(house.x, 0, house.z); markerGroup.visible = true;
-  if (!immediate) ticker(`🎤 Нова покана: ${G.mission.outlet} те чака за интервю!`);
+const missionAt = h => h && G.missions.find(m => m.house === h);
+function placeMission(m, announce) {
+  const taken = new Set(G.missions.map(o => o.house).filter(Boolean));
+  let cands = HOUSES.filter(h => !taken.has(h) && h.usedUntil <= G.t && Math.hypot(h.x - P.pos.x, h.z - P.pos.z) > 25);
+  if (!cands.length) cands = HOUSES.filter(h => !taken.has(h));
+  m.house = pick(cands); m.topic = pick(TOPICS); m.cd = 0;
+  m.host.marker.position.set(m.house.x, 0, m.house.z); m.host.marker.visible = true;
+  if (announce) ticker(`🎤 ${m.host.name} (${m.host.outlet}) те чака в нова гъба!`);
+}
+function initMissions() {
+  G.missions = HOSTS.map(host => ({ host, outlet: host.outlet, house: null, topic: '', cd: 0 }));
+  for (const m of G.missions) placeMission(m, false);
+}
+function updateMissions(dt) {
+  for (const m of G.missions) if (!m.house && (m.cd -= dt) <= 0) placeMission(m, true);
+}
+function releaseMission(m, cd) { // the host packs up and moves to another mushroom after a while
+  m.house = null; m.cd = cd; m.host.marker.visible = false;
+  if (G.mission === m) G.mission = null;
 }
 function startInterview(h) {
   P.house = h; P.interview = true; P.ivT = 0; P.houseT = 0;
@@ -1269,7 +1326,7 @@ function startInterview(h) {
   ticker('Елфите гледат стрийма… и тичат към къщичката!');
 }
 /* ---- TV broadcast ---- */
-const TV = { lines: [], i: 0, t: 0, chatT: 0, hideT: 0, STEP: 5 };
+const TV = { lines: [], i: 0, t: 0, chatT: 0, hideT: 0, STEP: 5, HEAL: 20, healed: 0 };
 // jump straight to the next line (or end the interview after the last one); tiny guard against accidental double presses
 function skipLine() { if (P.interview && TV.t < TV.STEP - 0.25) TV.t = 0; }
 function showTV() {
@@ -1277,17 +1334,14 @@ function showTV() {
   const pairs = [...QA].sort(() => Math.random() - 0.5).slice(0, 2 + Math.min(G.interviews, 2));
   TV.lines = [{ who: 'host', text: `Добър вечер! Днес в ${host.show} гостува Гаргамела. Темата: „${m.topic}“.` }];
   for (const [q, a] of pairs) TV.lines.push({ who: 'host', text: q }, { who: 'garg', text: a });
-  TV.i = 0; TV.t = 0; TV.chatT = 0.8; TV.hideT = 0;
+  TV.i = 0; TV.t = 0; TV.chatT = 0.8; TV.hideT = 0; TV.healed = 0;
   $('tvOutlet').textContent = host.outlet; $('tvBug').textContent = host.show;
   $('tvChat').innerHTML = '<div class="h">💬 ЧАТ НА ЖИВО</div>';
   $('tv').classList.remove('hidden', 'nosignal'); $('dim').classList.remove('hidden'); document.body.classList.add('onair');
   $('tvProg').firstChild.style.transform = 'scaleX(0)';
-  const tvS = markerGroup.userData.tv; tvS.material.map = host.tex; tvS.material.needsUpdate = true; tvS.visible = true;
-  markerGroup.userData.icon.visible = false;
 }
 function hideTV(noSignal) {
   $('dim').classList.add('hidden'); document.body.classList.remove('onair');
-  markerGroup.userData.tv.visible = false; markerGroup.userData.icon.visible = true;
   if (noSignal) { $('tv').classList.add('nosignal'); TV.hideT = 1.8; }
   else $('tv').classList.add('hidden');
 }
@@ -1296,6 +1350,8 @@ function updateTV(dt) {
   if (!P.interview) return;
   if (TV.t <= 0 && TV.i >= TV.lines.length) { finishInterview(); return; }
   const host = G.mission.host;
+  // on air she catches her breath: up to 20% health over the full (unskipped) interview
+  if (TV.healed < TV.HEAL) { const h = Math.min(TV.HEAL - TV.healed, TV.HEAL / (TV.lines.length * TV.STEP) * dt, 100 - P.hp); if (h > 0) { P.hp += h; TV.healed += h; } }
   TV.t -= dt;
   if (TV.t <= 0 && TV.i < TV.lines.length) {
     const l = TV.lines[TV.i++]; TV.t = TV.STEP;
@@ -1325,9 +1381,10 @@ function finishInterview() {
   const h = P.house;
   P.interview = false; P.house = null; hag.root.visible = true; P.pos.set(h.door.x, 0, h.door.z); h.usedUntil = G.t + 25;
   P.invuln = 4; // security escorts her out
-  markerGroup.visible = false; G.mission = null; G.missionCd = 3;
+  releaseMission(G.mission, 8);
   banner(`ИНТЕРВЮ ✓ +${kop(fee)}<br><span style="font-size:22px;color:#ff8fab">Елфите вдигат бюджета: мемета ×${G.inflation.toFixed(2)}</span>`, '#ffd23f');
   popup(P.pos.clone().setY(3), `+${kop(fee)} хонорар`, '#ffd23f');
+  if (TV.healed >= 1) popup(P.pos.clone().setY(2.2), `+${Math.round(TV.healed)} ❤ отдъхна в ефир`, '#7bf05a');
   [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => snd(f, 0.14, 'square', 0.05), i * 80));
   // angry elves rush in after the broadcast
   const n = 3 + G.interviews;
@@ -1339,7 +1396,7 @@ function failInterview() {
   hideTV(true);
   P.interview = false;
   banner('ИНТЕРВЮТО Е ПРЕКЪСНАТО!<br><span style="font-size:22px">Елфите заляха студиото с мемета</span>', '#ff6b6b');
-  markerGroup.visible = false; G.mission = null; G.missionCd = 4;
+  releaseMission(G.mission, 8);
 }
 
 /* ---------------- interactions ---------------- */
@@ -1352,7 +1409,8 @@ function interact() {
   if (P.house) { exitHouse(false); return; }
   const h = nearDoor();
   if (!h) return;
-  if (G.mission && h === G.mission.house) { startInterview(h); return; }
+  const mi = missionAt(h);
+  if (mi) { G.mission = mi; startInterview(h); return; }
   if (h.usedUntil > G.t) { ticker('Тази къщичка вече е под наблюдение от Елфите!'); return; }
   P.house = h; P.houseT = 0;
   G.houseKnown = G.t - G.lastSeenT < 1.2;
@@ -1365,11 +1423,11 @@ function exitHouse(forced) {
   const h = P.house; if (!h) return;
   if (P.interview) {
     if (forced) failInterview();
-    else { P.interview = false; hideTV(true); ticker('Излезе по средата на интервюто. Поканата още важи.'); }
+    else { P.interview = false; G.mission = null; hideTV(true); ticker('Излезе по средата на интервюто. Поканата още важи.'); }
   }
   P.house = null; hag.root.visible = true;
   P.pos.set(h.door.x, 0, h.door.z);
-  if (G.mission?.house !== h) h.usedUntil = G.t + 25;
+  if (!missionAt(h)) h.usedUntil = G.t + 25;
   if (forced) { banner('ИЗКАРАХА ТЕ С МЕМЕТА!', '#ff6b6b'); G.lastKnown.copy(P.pos); G.lastSeenT = G.t; }
 }
 
@@ -1396,7 +1454,7 @@ function hitPlayer(m) {
 function die() {
   if (P.interview) { P.interview = false; G.ivFailed++; }
   hideTV(false);
-  markerGroup.visible = false;
+  for (const h of HOSTS) { h.marker.visible = false; h.pin.style.display = 'none'; }
   P.hp = 0; state = 'dead'; G.deadT = 0; P.house = null; hag.root.visible = true;
   sfx.die(); banner('СМЕМЕНА!', '#ff4fb0');
   document.exitPointerLock?.();
@@ -1422,6 +1480,7 @@ function showOver() {
   $('oEarned').textContent = kop(G.earned);
   $('oInfl').textContent = '×' + G.inflation.toFixed(2);
   $('oIvFail').textContent = G.ivFailed;
+  $('oWhacks').textContent = G.whacks;
   const bal = G.earned * KOP_EUR - G.spent;
   $('oBalance').textContent = G.interviews ? `≈ ${eur(G.earned * KOP_EUR)} по курса. ` + (bal >= 0 ? `Тя излезе на печалба с ${eur(bal)} пред бюджета на Елфите.` : `Елфите похарчиха ${eur(-bal)} повече, отколкото струваше цялата ѝ кариера.`) : 'Не даде нито едно интервю.';
   const eps = ['ТРОЛКАТА ПАДНА', 'ФАКТИТЕ ПОБЕДИХА', 'ДЕЗИНФОРМАЦИЯТА Е ОБЕЗВРЕДЕНА', 'MUCH DEFEAT. SO MEME.', 'КОПЕЙКАТА СЕ ОБЕЗЦЕНИ'];
@@ -1431,12 +1490,52 @@ function showOver() {
   $('over').classList.remove('hidden');
   $('hud').classList.add('hidden');
 }
-const calcScore = () => Math.floor(G.t * 10) + G.dodges * 5 + G.interviews * 500;
+const calcScore = () => Math.floor(G.t * 10) + G.dodges * 5 + G.interviews * 500 + G.whacks * 25;
 
 /* ---------------- update ---------------- */
 const fwd = new THREE.Vector3(), right = new THREE.Vector3(), move = new THREE.Vector3();
+/* ---------------- cotton candy melee ---------------- */
+const gooMat = new THREE.MeshStandardMaterial({ color: 0xff9fd0, roughness: 0.9, emissive: 0x551133, emissiveIntensity: 0.25 });
+const gooGeo = new THREE.IcosahedronGeometry(0.22, 0);
+const splatGeoPink = new THREE.CircleGeometry(0.9, 10), splatMatPink = new THREE.MeshBasicMaterial({ color: 0xff8fc8, transparent: true, opacity: 0.85, depthWrite: false });
+const OAKAN = ['ОАКАН! 🍬', 'ФРАС! 🍭', 'Лепкаво! 🤢', 'Розово унижение!', 'Залепен с памук!', 'Захарен шамар!'];
+const CRIES = ['Мамо, оакаха ме!', 'Лепне ми козината!', 'Ще докладвам в групата!', 'Това е нападение над доброволец!', 'Сорос не плаща химическо!', 'Моят телефон! Целият е розов!', 'Скрийншот! Някой да снима!'];
+function gooElf(e) {
+  if (!e.goo) {
+    const g = new THREE.Group();
+    for (let i = 0; i < 7; i++) { const b = new THREE.Mesh(gooGeo, gooMat); b.position.set(R(-0.3, 0.3), R(0.1, 0.45), R(-0.3, 0.3)); b.scale.setScalar(R(0.7, 1.4)); g.add(b); }
+    for (let i = 0; i < 5; i++) { const b = new THREE.Mesh(gooGeo, gooMat); b.position.set(R(-0.35, 0.35), R(-1.1, -0.2), R(-0.1, 0.35)); b.scale.set(R(0.5, 0.9), R(0.8, 1.8), R(0.5, 0.9)); g.add(b); }
+    e.m.head.add(g); e.goo = g;
+  }
+  e.gooT = 14;
+}
+function whack() {
+  if (state !== 'play' || P.house || P.swingCd > 0) return;
+  if (P.st < 8) { ticker('Нямаш дъх да размахаш памука…'); return; }
+  P.st -= 8; P.swingCd = 0.55; P.swingT = 0.35;
+  // auto-aim at the closest standing elf in reach
+  let aim = null, ad = 3.6;
+  for (const e of elves) { if (e.stun > 0) continue; const d = Math.hypot(e.pos.x - P.pos.x, e.pos.z - P.pos.z); if (d < ad) { ad = d; aim = e; } }
+  if (aim) P.face = Math.atan2(aim.pos.x - P.pos.x, aim.pos.z - P.pos.z);
+  let n = 0;
+  for (const e of elves) {
+    if (n >= 3 || e.stun > 0) continue;
+    const dx = e.pos.x - P.pos.x, dz = e.pos.z - P.pos.z, d = Math.hypot(dx, dz);
+    if (d > 3.1 || Math.abs(angDiff(P.face, Math.atan2(dx, dz))) > 1.2) continue;
+    n++; G.whacks++;
+    e.stun = R(3, 4); e.sees = false; e.kb = { x: dx / (d || 1) * 7, z: dz / (d || 1) * 7 }; e.throwT = 0;
+    gooElf(e);
+    popup(e.pos.clone().setY(2.4), pick(OAKAN), '#ff8fc8');
+    const sp = new THREE.Mesh(splatGeoPink, splatMatPink); sp.rotation.x = -Math.PI / 2; sp.position.set(e.pos.x + dx / (d || 1) * 0.8, 0.05, e.pos.z + dz / (d || 1) * 0.8); sp.scale.setScalar(R(0.8, 1.4)); scene.add(sp); splats.push({ mesh: sp, t: 0 });
+    if (Math.random() < 0.5) ticker(`${e.type.name} #${e.id}: „${pick(CRIES)}“`);
+  }
+  if (n) { G.shake = Math.min(1, G.shake + 0.25); snd(180, 0.12, 'square', 0.07, -120); setTimeout(() => snd(520, 0.1, 'triangle', 0.05, 400), 60); }
+  else snd(240, 0.08, 'sawtooth', 0.025, 200); // whoosh
+}
+
 function updatePlayer(dt) {
   if (state !== 'play') { P.vel.multiplyScalar(0.9); return; }
+  P.swingCd -= dt; P.swingT = Math.max(0, P.swingT - dt);
   if (P.house) {
     let rate = 1;
     if (G.houseKnown) rate += elves.filter(e => Math.hypot(e.pos.x - P.house.x, e.pos.z - P.house.z) < 9).length * (P.interview ? 0.12 : 0.25);
@@ -1505,6 +1604,7 @@ function animateHag(dt) {
   hag.legs[0].rotation.x = air ? -0.6 : s * 1.0 * a; hag.legs[1].rotation.x = air ? 0.4 : -s * 1.0 * a;
   const flail = P.flinch > 0 ? Math.sin(G.t * 60) * 0.6 : 0;
   hag.arms[0].rotation.x = -s * 1.2 * a - 0.2 * a + flail; hag.arms[1].rotation.x = -0.95 + s * 0.35 * a - flail * 0.5;
+  if (P.swingT > 0) { const k = 1 - P.swingT / 0.35; hag.arms[1].rotation.x = k < 0.3 ? lerp(-0.95, -2.8, k / 0.3) : lerp(-2.8, -0.4, (k - 0.3) / 0.7); }
   hag.candy.rotation.x = -hag.arms[1].rotation.x - hag.body.rotation.x;
   hag.arms[0].rotation.z = -0.12 - a * 0.35 - (P.flinch > 0 ? 0.8 : 0); hag.arms[1].rotation.z = 0.15 + (P.flinch > 0 ? 0.5 : 0);
   hag.body.rotation.x = a * 0.28 + (P.flinch > 0 ? -0.3 : 0);
@@ -1522,6 +1622,20 @@ function updateElves(dt) {
     e.born = Math.min(1, e.born + dt * 2.5);
     e.m.root.scale.setScalar(e.s * (e.born < 1 ? 1 - Math.pow(1 - e.born, 3) * 1.0 + Math.sin(e.born * Math.PI) * 0.2 : 1));
     const dx = P.pos.x - e.pos.x, dz = P.pos.z - e.pos.z, dist = Math.hypot(dx, dz);
+    if (e.goo && (e.gooT -= dt) <= 0) { e.m.head.remove(e.goo); e.goo = null; }
+    if (e.stun > 0) {
+      // knocked over and glued with cotton candy
+      e.stun -= dt;
+      e.pos.x += e.kb.x * dt; e.pos.z += e.kb.z * dt; e.kb.x *= Math.exp(-6 * dt); e.kb.z *= Math.exp(-6 * dt);
+      collide(e.pos, 0.38);
+      const m = e.m, up = clamp(e.stun / 0.4, 0, 1); // last 0.4 s: gets back up
+      m.body.rotation.x = -1.35 * up; m.body.position.y = 0;
+      m.legs[0].rotation.x = -0.9 * up; m.legs[1].rotation.x = -0.7 * up;
+      m.arms[0].rotation.x = m.arms[1].rotation.x = -2.6 * up + Math.sin(t * 25 + e.id) * 0.4 * up;
+      m.head.rotation.z = Math.sin(t * 8 + e.id) * 0.3 * up;
+      if (e.stun <= 0) { m.body.rotation.x = 0; e.cd = R(1.2, 2.2); }
+      continue;
+    }
     e.seeT -= dt;
     if (e.seeT <= 0 && state === 'play') {
       e.seeT = R(0.18, 0.3);
@@ -1721,11 +1835,13 @@ function drawRadar() {
     const [x, y] = T(h.x, h.z), q = h.r * sc * 1.1; rctx.fillStyle = h.usedUntil > G.t ? '#6d6458' : '#f1e6cf'; rctx.fillRect(x - q, y - q, q * 2, q * 2);
     rctx.strokeStyle = '#5c3317'; rctx.lineWidth = 2; rctx.strokeRect(x - q, y - q, q * 2, q * 2);
   }
-  if (G.mission) {
-    let [x, y] = T(G.mission.house.x, G.mission.house.z);
-    const dx = x - C, dy = y - C, d = Math.hypot(dx, dy); if (d > C - 16) { x = C + dx / d * (C - 16); y = C + dy / d * (C - 16); }
-    rctx.fillStyle = '#ffd23f'; rctx.strokeStyle = '#000'; rctx.lineWidth = 3; rctx.beginPath(); rctx.arc(x, y, 14, 0, 7); rctx.fill(); rctx.stroke();
-    rctx.font = '18px sans-serif'; rctx.textAlign = 'center'; rctx.textBaseline = 'middle'; rctx.fillText('🎤', x, y + 1);
+  for (const m of G.missions) {
+    if (!m.house) continue;
+    let [x, y] = T(m.house.x, m.house.z);
+    const dx = x - C, dy = y - C, d = Math.hypot(dx, dy); if (d > C - 14) { x = C + dx / d * (C - 14); y = C + dy / d * (C - 14); }
+    rctx.fillStyle = m.host.css; rctx.strokeStyle = '#000'; rctx.lineWidth = 3; rctx.beginPath(); rctx.arc(x, y, 11, 0, 7); rctx.fill(); rctx.stroke();
+    rctx.fillStyle = '#000'; rctx.font = '900 13px "Russo One", sans-serif'; rctx.textAlign = 'center'; rctx.textBaseline = 'middle';
+    rctx.fillText(m.host.name.replace('проф. ', '')[0], x, y + 1);
   }
   if (G.t - G.lastSeenT < 22) { const [x, y] = T(G.lastKnown.x, G.lastKnown.z); rctx.strokeStyle = '#ffd23f'; rctx.setLineDash([5, 4]); rctx.lineWidth = 2; rctx.beginPath(); rctx.arc(x, y, 12, 0, 7); rctx.stroke(); rctx.setLineDash([]); }
   for (const r of rains) { const [x, y] = T(r.tgt.x, r.tgt.z); rctx.strokeStyle = '#ff3030'; rctx.lineWidth = 2; rctx.beginPath(); rctx.arc(x, y, 5, 0, 7); rctx.stroke(); }
@@ -1754,11 +1870,14 @@ function updateHUD(dt) {
   $('money').firstChild.nodeValue = eur(G.spent);
   $('memecount').textContent = `${G.thrown} мемета хвърлени · ${elves.length} елфи на хайка`;
   updateStars(false);
-  const mi = G.mission;
-  const dist = mi ? Math.round(Math.hypot(mi.house.door.x - P.pos.x, mi.house.door.z - P.pos.z)) : 0;
-  $('mission').innerHTML = (mi
-    ? `<div class="t">🎤 МИСИЯ: интервю за ${mi.outlet}</div><div class="topic">Тема: „${mi.topic}“</div><div>${P.interview ? '📡 В ЕФИР' : `📍 ${dist} м — следвай жълтия лъч`}</div>`
-    : `<div class="t">🎤 Чакаш следващата покана…</div>`)
+  let list;
+  if (P.interview && G.mission) list = `<div class="t">📡 В ЕФИР при ${G.mission.host.name}</div><div class="topic">Тема: „${G.mission.topic}“</div>`;
+  else {
+    const ms = G.missions.map(m => ({ m, d: m.house ? Math.hypot(m.house.door.x - P.pos.x, m.house.door.z - P.pos.z) : 1e9 })).sort((a, b) => a.d - b.d).slice(0, IS_TOUCH ? 3 : 5);
+    list = `<div class="t">🎤 ИНТЕРВЮТА — избери гъба</div>` + ms.map(({ m, d }, i) =>
+      `<div class="hl${i === 0 && m.house ? ' near' : ''}"><i style="background:${m.host.css}"></i><span class="nm">${m.host.name}<small> · ${m.host.outlet}</small></span><b>${m.house ? Math.round(d) + ' м' : '⏳'}</b></div>`).join('');
+  }
+  $('mission').innerHTML = list
     + `<div class="row"><span class="earn">💰 Хонорари: ${kop(G.earned)} (${G.interviews})</span><span class="infl">Мемета ×${G.inflation.toFixed(2)}</span></div>`;
   const hs = $('hideState');
   if (P.interview) hs.innerHTML = '';
@@ -1768,11 +1887,13 @@ function updateHUD(dt) {
   else hs.innerHTML = '';
   const pr = $('prompt');
   const h = !P.house && state === 'play' && nearDoor();
-  if (h) { pr.classList.remove('hidden'); pr.innerHTML = (G.mission && h === G.mission.house) ? `<kbd>E</kbd> Дай интервю за ${G.mission.outlet}` : h.usedUntil > G.t ? '🚫 Къщичката е наблюдавана' : '<kbd>E</kbd> Скрий се в къщичката'; }
+  const hm = missionAt(h);
+  if (h) { pr.classList.remove('hidden'); pr.innerHTML = hm ? `<kbd>E</kbd> Интервю с ${hm.host.name} · ${hm.host.outlet}` : h.usedUntil > G.t ? '🚫 Къщичката е наблюдавана' : '<kbd>E</kbd> Скрий се в къщичката'; }
   else pr.classList.add('hidden');
   if (IS_TOUCH) {
-    const ba = $('btnAct'), hot = P.house || (h && (h.usedUntil <= G.t || (G.mission && h === G.mission.house)));
-    ba.textContent = P.house ? '🚪' : h ? (G.mission && h === G.mission.house ? '🎤' : h.usedUntil > G.t ? '🚫' : '🍄') : '✋';
+    const ba = $('btnAct'), hot = P.house || (h && (h.usedUntil <= G.t || hm));
+    ba.textContent = P.house ? '🚪' : h ? (hm ? '🎤' : h.usedUntil > G.t ? '🚫' : '🍄') : '✋';
+    $('btnHit').classList.toggle('cool', P.swingCd > 0 || !!P.house);
     ba.classList.toggle('idle', !P.house && !h); ba.classList.toggle('hot', !!hot && !P.interview);
   }
   if (G.tickerT > 0) { G.tickerT -= dt; if (G.tickerT <= 0) $('ticker').style.opacity = 0; }
@@ -1785,12 +1906,18 @@ function updateHUD(dt) {
     if (p.t > 1.6) { p.el.remove(); popups.splice(i, 1); }
   }
   drawRadar();
+  updatePins();
 }
 
 function updateWorldFx(dt) {
   for (const b of BUSHES) { if (b.wob > 0) { b.wob = Math.max(0, b.wob - dt * 1.5); const w = Math.sin(G.t * 25) * 0.06 * b.wob; b.mesh.scale.set(1 + w, 1 - w, 1 + w); } }
   for (const h of HOUSES) { if (h.shake > 0) { h.mesh.rotation.z = Math.sin(G.t * 40) * 0.03 * h.shake; h.shake = Math.max(0, h.shake - dt); } else h.mesh.rotation.z = 0; }
-  if (markerGroup.visible) { const ic = markerGroup.userData.icon; ic.position.y = 11 + Math.sin(performance.now() * 0.004) * 0.6; }
+  for (const h of HOSTS) if (h.marker.visible) {
+    // far TVs grow so every host's face stays readable from across the village
+    const u = h.marker.userData, live = G.mission?.host === h && P.interview;
+    const d = Math.hypot(camera.position.x - h.marker.position.x, camera.position.z - h.marker.position.z), k = clamp(d / 26, 1, 3.4) * (live ? 1.3 : 1);
+    u.tv.position.y = 7.6 + 1.7 * k + Math.sin(performance.now() * 0.003 + u.phase) * 0.4; u.tv.scale.set(4.2 * k, 3.3 * k, 1);
+  }
   const f = scene.userData.flag; if (f) f.rotation.y = Math.sin(performance.now() * 0.002) * 0.25;
   const c = P.house ? P.house : P.pos;
   sun.position.set(c.x + 35, 70, c.z + 25); sun.target.position.set(c.x, 0, c.z);
@@ -1809,12 +1936,12 @@ function frame() {
   if (state === 'play') {
     G.t += dt;
     updatePlayer(dt); updateSpawns(dt); updateElves(dt); updateMemes(dt); updateRain(dt);
-    if (G.stars < 5 && G.regenBlock <= 0) {
+    if (G.stars < 5 && G.regenBlock <= 0 && !P.interview) { // the interview has its own healing (max 20%)
       if ((P.hidden || P.house) && G.t - G.lastSeenT > 2) P.hp = Math.min(100, P.hp + 4 * dt);
       else if (G.t - G.lastSeenT > 5) P.hp = Math.min(100, P.hp + 1.5 * dt); // catch your breath when nobody sees you
     }
     G.regenBlock -= dt;
-    if (!G.mission && (G.missionCd -= dt) <= 0) newMission(false);
+    updateMissions(dt);
     if (TV.hideT > 0) updateTV(dt);
     updateHUD(dt);
   } else if (state === 'dead' || state === 'over') {
@@ -1832,7 +1959,7 @@ function frame() {
   renderer.render(scene, camera);
 }
 frame();
-if (location.hash === '#debug') window.dbg = { G, P, elves, memes, startGame, setYaw: v => { yaw = v; }, interact: () => interact() };
+if (location.hash === '#debug') window.dbg = { G, P, elves, memes, camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact() };
 </script>
 </body>
 </html>
