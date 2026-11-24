@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Гаргамелка: Мем Хайка</title>
+<title>Гаргамела: Мем Хайка</title>
 <link rel="icon" href="assets/elf-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@500;800;900&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
   /* HUD */
   #hud { position:fixed; inset:0; pointer-events:none; }
   #status { position:absolute; left:18px; top:16px; display:flex; gap:12px; align-items:center; }
-  #portrait { width:74px; height:74px; border-radius:50%; border:4px solid var(--pink); background:#222 url(assets/hag.jpg) 47% 24% / 330% no-repeat; box-shadow:0 4px 14px #0008; }
+  #portrait { width:74px; height:74px; border-radius:50%; border:4px solid var(--pink); background:#222 url(assets/gargamela.jpg) 56% 9% / 300% no-repeat; box-shadow:0 4px 14px #0008; }
   .bars { display:flex; flex-direction:column; gap:6px; }
   .bar { width:230px; height:16px; background:#0009; border:2px solid #000; border-radius:4px; overflow:hidden; position:relative; }
   .bar > i { position:absolute; inset:0; transform-origin:left; display:block; }
@@ -43,6 +43,42 @@
   #hideState .tbar i { display:block; height:100%; background:var(--gold); transform-origin:left; }
   #prompt { position:absolute; bottom:80px; left:50%; transform:translateX(-50%); font-weight:800; font-size:16px; background:#000b; padding:6px 12px; border-radius:6px; }
   #prompt kbd, .keys kbd { background:#fff; color:#000; border-radius:4px; padding:1px 6px; font-family:'Russo One'; font-size:13px; box-shadow:0 2px 0 #888; }
+  #mission { position:absolute; left:18px; top:104px; width:330px; background:#000a; border-left:4px solid var(--gold); border-radius:6px; padding:8px 12px; font-size:13px; font-weight:800; line-height:1.45; text-shadow:0 1px 2px #000; }
+  #mission .t { font-family:'Russo One'; color:var(--gold); font-size:15px; }
+  #mission .topic { opacity:.85; font-weight:500; font-style:italic; }
+  #mission .row { display:flex; justify-content:space-between; gap:10px; margin-top:4px; }
+  #mission .earn { color:#ffd23f; }
+  #mission .infl { color:#ff8fab; }
+  #dim { position:fixed; inset:0; z-index:4; background:radial-gradient(ellipse at center, #000a, #000d); pointer-events:none; }
+  #tv { position:absolute; z-index:5; left:50%; top:50%; transform:translate(-50%,-50%); width:min(900px,94vw); display:flex; gap:12px; align-items:stretch; flex-wrap:wrap; }
+  #tv .tvframe { flex:1 1 560px; }
+  .tvframe { background:linear-gradient(#3a3a3a,#161616); border-radius:16px; padding:11px 11px 22px; box-shadow:0 10px 30px #000c, inset 0 2px 0 #fff2; position:relative; }
+  .tvframe:after { content:''; position:absolute; bottom:7px; right:16px; width:8px; height:8px; border-radius:50%; background:#ff3b3b; box-shadow:0 0 6px #f00; }
+  .tvscreen { position:relative; aspect-ratio:4/3; overflow:hidden; border-radius:10px; background:#000; }
+  #tvPic { position:absolute; inset:0; background-size:cover; background-position:50% 20%; transition:opacity .25s; }
+  #tvPic.garg { background-position:55% 12%; }
+  .tvscreen .live { position:absolute; top:8px; left:8px; background:#d00000; font-family:'Russo One'; font-size:12px; padding:2px 8px; border-radius:3px; animation:blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity:.55; } }
+  .tvscreen .bug { position:absolute; top:8px; right:8px; font-family:'Russo One'; font-size:11px; background:#000a; padding:2px 6px; border-radius:3px; color:var(--gold); }
+  .tvscreen .lower { position:absolute; left:0; right:0; bottom:96px; display:flex; font-size:15px; }
+  .tvscreen .lower b { background:var(--gold); color:#000; padding:3px 8px; font-family:'Russo One'; }
+  .tvscreen .lower span { background:#000c; padding:3px 8px; flex:1; font-weight:800; }
+  #tvSub { position:absolute; left:0; right:0; bottom:0; height:96px; background:#000e; padding:10px 16px; font-size:20px; font-weight:800; line-height:1.35; display:flex; align-items:center; }
+  #tvSub > div { animation:subIn .35s ease-out; }
+  @keyframes subIn { from { opacity:0; transform:translateY(6px); } }
+  #tvProg { height:6px; background:#0008; border-radius:3px; margin-top:8px; overflow:hidden; }
+  #tvProg i { display:block; height:100%; background:#9ef01a; transform-origin:left; transition:transform .4s; }
+  #tvHint { font-size:12px; font-weight:800; opacity:.75; margin-top:5px; display:flex; justify-content:space-between; }
+  #tvSub em { font-style:normal; color:var(--gold); }
+  #tvSub em.g { color:var(--pink); }
+  #tvStatic { position:absolute; inset:0; display:none; align-items:center; justify-content:center; font-family:'Russo One'; font-size:22px; color:#fff;
+    background:repeating-linear-gradient(0deg,#ddd 0 2px,#555 2px 4px,#999 4px 5px,#222 5px 7px); text-shadow:0 2px 4px #000; animation:noise .15s steps(3) infinite; }
+  @keyframes noise { 50% { background-position:0 3px; } }
+  #tv.nosignal #tvStatic { display:flex; }
+  #tvChat { flex:0 1 250px; background:#000c; border-radius:12px; padding:10px 12px; font-size:13px; font-weight:700; line-height:1.5; align-self:stretch; overflow:hidden; }
+  #tvChat div { animation:subIn .3s ease-out; margin-bottom:3px; }
+  #tvChat .h { font-family:'Russo One'; font-size:11px; opacity:.7; margin-bottom:2px; }
+  #tvChat div b { color:#ff9f9f; }
   #radar { position:absolute; left:18px; bottom:18px; width:190px; height:190px; border-radius:50%; border:4px solid #000; box-shadow:0 0 0 2px #fff4, 0 6px 16px #0009; }
   #flash { position:fixed; inset:0; background:radial-gradient(transparent 40%, #ff000088); opacity:0; pointer-events:none; transition:opacity .15s; }
   #popups div { position:absolute; transform:translate(-50%,-50%); font-weight:900; font-size:16px; white-space:nowrap; text-shadow:0 2px 0 #000, 0 0 4px #000; pointer-events:none; }
@@ -68,7 +104,8 @@
   .elfnote img { width:34px; }
 
   #over .poster { transform:rotate(3deg); }
-  #over .poster img { aspect-ratio:0.69; object-fit:cover; object-position:top; }
+  .poster img { aspect-ratio:0.75; object-fit:cover; object-position:50% 12%; }
+  .poster img.defeated { filter:saturate(.35) contrast(1.1) sepia(.25); }
   .bigstat { font-family:'Russo One'; font-size:15px; margin:14px 0; background:#ffffff10; border-radius:10px; padding:14px 16px; line-height:1.55; }
   .bigstat .money { font-size:34px; color:#9ef01a; display:block; line-height:1.15; }
   .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 18px; font-size:14px; margin-bottom:18px; }
@@ -87,7 +124,7 @@
   <div id="status">
     <div id="portrait"></div>
     <div class="bars">
-      <div id="name">ГАРГАМЕЛКА</div>
+      <div id="name">ГАРГАМЕЛА</div>
       <div class="bar" id="hpbar"><i></i><span>ЖИВОТ</span></div>
       <div class="bar" id="stbar"><i></i><span>ДЪХ</span></div>
     </div>
@@ -97,6 +134,18 @@
     <div class="stat" id="time">0:00</div>
     <div class="stat" id="score">0</div>
     <div class="stat" id="money">0.00 €<small id="memecount">0 мемета хвърлени · 0 елфи</small></div>
+  </div>
+  <div id="mission"></div>
+  <div id="dim" class="hidden"></div>
+  <div id="tv" class="hidden">
+    <div class="tvframe"><div class="tvscreen">
+      <div id="tvPic"></div>
+      <div class="live">● НА ЖИВО</div><div class="bug" id="tvBug"></div>
+      <div class="lower"><b id="tvOutlet"></b><span id="tvName"></span></div>
+      <div id="tvSub"></div>
+      <div id="tvStatic">НЯМА СИГНАЛ</div>
+    </div><div id="tvProg"><i></i></div><div id="tvHint"></div></div>
+    <div id="tvChat"></div>
   </div>
   <div id="ticker" style="opacity:0"></div>
   <div id="banner"></div>
@@ -112,11 +161,11 @@
   <div class="card">
     <div class="poster">
       <div class="wanted">ИЗДИРВА СЕ</div>
-      <img src="assets/hag.jpg" alt="Гаргамелка">
+      <img src="assets/gargamela.jpg" alt="Гаргамела">
       <div class="reward">ЖИВА ИЛИ СМЕМЕНА</div>
     </div>
     <div class="copy">
-      <h1>ГАРГАМЕЛКА<em>МЕМ ХАЙКА</em></h1>
+      <h1>ГАРГАМЕЛА<em>МЕМ ХАЙКА</em></h1>
       <p class="lead">Цялото село на Елфите е по петите ти. Те нямат оръжия — имат <b>мемета</b>. И всяко мемe струва пари.
         Не можеш да спечелиш. Можеш само да бягаш, да се криеш и да оцелееш колкото се може по-дълго.</p>
       <div class="keys">
@@ -124,6 +173,7 @@
         <span><kbd>SHIFT</kbd></span><span>спринт (харчи дъх)</span>
         <span><kbd>SPACE</kbd></span><span>скок</span>
         <span><kbd>E</kbd></span><span>скрий се в гъбена къщичка (за кратко)</span>
+        <span>🎤</span><span><b>МИСИЯ:</b> давай интервюта в маркираните къщички — печелиш хонорари, но всяко интервю вдига цената на меметата на Елфите</span>
         <span>🌿</span><span>влез в храст — елфите не те виждат, докато не те надушат</span>
         <span>🖱️</span><span>камера (кликни в играта за заключване на мишката)</span>
       </div>
@@ -139,11 +189,16 @@
   <div class="card">
     <div class="poster">
       <div class="wanted">СМЕМЕНА</div>
-      <img src="assets/hag-scream.jpg" alt="">
+      <img src="assets/gargamela.jpg" alt="" class="defeated">
       <div class="reward" id="epitaph">ТРОЛКАТА ПАДНА</div>
     </div>
     <div class="copy">
       <h1>КРАЙ<em id="overTime">0:00 на свобода</em></h1>
+      <div class="bigstat" style="border-left:4px solid #ffd23f">
+        Гаргамела даде <b id="oIv">0</b> интервюта и прибра хонорари за
+        <span class="money" id="oEarned" style="color:#ffd23f">0.00 €</span>
+        <span id="oBalance" style="opacity:.8;font-size:13px"></span>
+      </div>
       <div class="bigstat">
         За да те свалят, Елфите изстреляха <b id="oThrown">0</b> мемета на обща стойност
         <span class="money" id="oSpent">0.00 €</span>
@@ -158,6 +213,8 @@
         <div>Избегнати мемета<span id="oDodge">0</span></div>
         <div>Любим мем на Елфите<span id="oFav">—</span></div>
         <div>Цена на 1 точка живот<span id="oPerHp">0 €</span></div>
+        <div>Мем инфлация накрая<span id="oInfl">×1.00</span></div>
+        <div>Провалени интервюта<span id="oIvFail">0</span></div>
       </div>
       <button class="go" id="againBtn">ПАК! (R)</button><span id="best"></span>
     </div>
@@ -177,6 +234,8 @@ const rr = (a, b) => a + (b - a) * rng();
 const R = (a, b) => a + (b - a) * Math.random();
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 const fmtT = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const KOP_EUR = 0.0001; // 1 копейка ≈ 0,0001 €
+const kop = v => Math.round(v).toLocaleString('bg-BG') + ' копейки';
 const eur = v => v.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 const angDiff = (a, b) => { let d = b - a; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; return d; };
 
@@ -441,125 +500,310 @@ while (BUSHES.length < 34 && tries++ < 6000) {
 }
 
 /* ---------------- characters ---------------- */
+const dressTex = canvasTex(512, 256, (g, w, h) => {
+  g.fillStyle = '#4b2a6e'; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 9000; i++) { g.fillStyle = pick(['#3f2260', '#563479', '#44275f', '#5c3a80']); g.fillRect(Math.random() * w, Math.random() * h, 2, 2); }
+  const cols = ['#55786a', '#8a3d66', '#8a7d48', '#6e4a88', '#3f625a', '#9a4a72'];
+  for (let i = 0; i < 16; i++) {
+    const x = (i % 8) * 64 + R(4, 22), y = (i < 8 ? R(10, 60) : R(130, 180)), s = R(30, 50);
+    g.save(); g.translate(x + s / 2, y + s / 2); g.rotate(R(-0.3, 0.3));
+    g.fillStyle = pick(cols); g.fillRect(-s / 2, -s / 2, s, s);
+    for (let k = 0; k < 400; k++) { g.fillStyle = 'rgba(0,0,0,0.12)'; g.fillRect(R(-s / 2, s / 2), R(-s / 2, s / 2), 2, 2); }
+    g.strokeStyle = '#c9b9a0'; g.lineWidth = 1.5; g.setLineDash([3, 3]); g.strokeRect(-s / 2 + 3, -s / 2 + 3, s - 6, s - 6);
+    g.restore();
+  }
+});
+dressTex.wrapS = THREE.RepeatWrapping;
 function makeHag() {
   const root = new THREE.Group();
   const body = new THREE.Group(); root.add(body);
-  const black = M(0x1c1b22, { roughness: 0.95 }), pants = M(0x15151a), purple = M(0x8e3b9e), shoe = M(0xa63a8f, { roughness: 0.5 });
-  const skin = M(0xd99d76, { roughness: 0.7 }), sole = M(0xeeeeee), pinkA = M(0xff4fb0, { roughness: 0.9 }), pinkB = M(0xff86cf, { roughness: 0.9 }), pinkC = M(0xe0399a, { roughness: 0.9 });
+  const dress = new THREE.MeshStandardMaterial({ map: dressTex, roughness: 1, side: THREE.DoubleSide });
+  const purple = M(0x4b2a6e, { roughness: 1 }), purpleD = M(0x3a2056, { roughness: 1 });
+  const boot = M(0x26231f, { roughness: 0.55 }), sole = M(0x141414), glove = M(0x2a2724, { roughness: 0.5 });
+  const skin = M(0xd9a27e, { roughness: 0.7 }), pinkA = M(0xff5cb8, { roughness: 0.9 }), pinkB = M(0xff8fd0, { roughness: 0.9 }), pinkC = M(0xe8409f, { roughness: 0.9 });
   const legs = [], arms = [];
+  const raggedRing = (parent, y, r, n, len, mat, down = true) => {
+    for (let i = 0; i < n; i++) {
+      const a = i / n * Math.PI * 2 + R(-0.1, 0.1), l = len * R(0.5, 1.3);
+      const c = part(GEO.cone, mat, parent, Math.sin(a) * r, y - (down ? l / 2 : -l / 2), Math.cos(a) * r, R(0.05, 0.09), l, 0.03);
+      c.rotation.set(down ? Math.PI : 0, a, 0); c.rotation.z = R(-0.15, 0.15);
+    }
+  };
   for (const sx of [-1, 1]) {
     const leg = new THREE.Group(); leg.position.set(sx * 0.17, 0.95, 0); body.add(leg);
-    part(new THREE.CylinderGeometry(0.14, 0.12, 0.82, 10), pants, leg, 0, -0.41, 0);
-    part(GEO.cyl, purple, leg, 0, -0.8, 0, 0.155, 0.17, 0.155);
-    part(GEO.box, shoe, leg, 0, -0.89, 0.07, 0.23, 0.15, 0.42);
-    part(GEO.box, sole, leg, 0, -0.96, 0.07, 0.24, 0.05, 0.44);
+    part(new THREE.CylinderGeometry(0.12, 0.1, 0.62, 10), skin, leg, 0, -0.31, 0);
+    part(new THREE.CylinderGeometry(0.14, 0.15, 0.36, 12), boot, leg, 0, -0.7, 0);
+    part(GEO.cyl, boot, leg, 0, -0.53, 0, 0.155, 0.05, 0.155);
+    part(GEO.box, boot, leg, 0, -0.86, 0.08, 0.25, 0.18, 0.44);
+    part(GEO.sph, boot, leg, 0, -0.84, 0.28, 0.125, 0.09, 0.1);
+    part(GEO.box, sole, leg, 0, -0.96, 0.08, 0.27, 0.07, 0.48);
     legs.push(leg);
   }
-  part(new THREE.CylinderGeometry(0.37, 0.35, 0.3, 14), pants, body, 0, 1.0, 0);
-  part(new THREE.CylinderGeometry(0.31, 0.38, 0.82, 14), black, body, 0, 1.43, 0);
-  for (const sx of [-1, 1]) part(GEO.sph, black, body, sx * 0.32, 1.76, 0, 0.16);
-  part(GEO.sph, black, body, 0, 1.8, -0.2, 0.28, 0.2, 0.2); // hood
-  part(GEO.cyl, skin, body, 0, 1.86, 0.02, 0.1, 0.15, 0.1);
-  // purple bow
-  for (const sx of [-1, 1]) part(GEO.sph, purple, body, sx * 0.11, 1.08, 0.35, 0.12, 0.08, 0.05);
-  part(GEO.sph, purple, body, 0, 1.08, 0.37, 0.05);
-  for (const sx of [-1, 1]) { const rb = part(GEO.box, purple, body, sx * 0.05, 0.93, 0.36, 0.05, 0.22, 0.02); rb.rotation.z = sx * 0.25; }
+  // ragged patchwork dress
+  part(new THREE.CylinderGeometry(0.3, 0.6, 1.2, 22, 1, true), dress, body, 0, 1.22, 0);
+  part(new THREE.CylinderGeometry(0.22, 0.31, 0.12, 16), purple, body, 0, 1.86, 0);
+  part(GEO.sph, purple, body, 0, 1.55, 0.12, 0.27, 0.22, 0.2);
+  raggedRing(body, 0.63, 0.58, 22, 0.32, purple);
+  raggedRing(body, 0.63, 0.52, 14, 0.22, purpleD);
+  part(new THREE.TorusGeometry(0.42, 0.035, 6, 20), purpleD, body, 0, 1.28, 0, 1, 1, 1).rotation.x = Math.PI / 2;
+  raggedRing(body, 1.26, 0.44, 14, 0.14, purpleD);
+  raggedRing(body, 1.93, 0.2, 10, 0.09, purple, false); // ragged collar
+  for (const sx of [-1, 1]) part(GEO.sph, purple, body, sx * 0.3, 1.8, 0, 0.14);
+  part(GEO.cyl, skin, body, 0, 1.95, 0.02, 0.09, 0.14, 0.09);
+  // necklace + pendant
+  const nk = part(new THREE.TorusGeometry(0.13, 0.008, 6, 20), M(0xc0c0c0, { metalness: 0.9, roughness: 0.3 }), body, 0, 1.86, 0.1, 1, 1, 1, false);
+  nk.rotation.x = 1.1;
+  part(GEO.sph, M(0xd0d0d0, { metalness: 0.9, roughness: 0.2 }), body, 0, 1.76, 0.21, 0.025, 0.03, 0.015, false);
   for (const sx of [-1, 1]) {
-    const arm = new THREE.Group(); arm.position.set(sx * 0.42, 1.72, 0); arm.rotation.z = sx * 0.12; body.add(arm);
-    part(new THREE.CylinderGeometry(0.11, 0.09, 0.64, 10), black, arm, 0, -0.32, 0);
-    part(GEO.sph, skin, arm, 0, -0.68, 0.02, 0.1, 0.11, 0.08);
+    const arm = new THREE.Group(); arm.position.set(sx * 0.38, 1.78, 0); arm.rotation.z = sx * 0.12; body.add(arm);
+    part(new THREE.CylinderGeometry(0.13, 0.15, 0.26, 10), purple, arm, 0, -0.1, 0);
+    raggedRing(arm, -0.22, 0.13, 7, 0.1, purple);
+    part(new THREE.CylinderGeometry(0.075, 0.068, 0.6, 10), skin, arm, 0, -0.42, 0);
+    part(new THREE.CylinderGeometry(0.085, 0.08, 0.14, 10), glove, arm, 0, -0.66, 0);
+    part(GEO.sph, glove, arm, 0, -0.76, 0.01, 0.085, 0.09, 0.075);
+    for (let f = 0; f < 4; f++) part(GEO.sph, skin, arm, (f - 1.5) * 0.035, -0.84, 0.05, 0.02, 0.03, 0.02, false);
     arms.push(arm);
   }
-  const head = new THREE.Group(); head.position.set(0, 2.06, 0.02); body.add(head);
-  part(GEO.sph, skin, head, 0, 0, 0, 0.25, 0.29, 0.25);
-  part(GEO.sph, skin, head, 0, -0.2, 0.1, 0.12, 0.12, 0.11); // chin
-  const nose = part(new THREE.ConeGeometry(0.075, 0.36, 10), skin, head, 0, -0.03, 0.33);
-  nose.rotation.x = Math.PI / 2 + 0.4;
-  part(GEO.sph, skin, head, 0, -0.11, 0.46, 0.04); // nose tip wart
-  for (const sx of [-1, 1]) {
-    part(GEO.sph, new THREE.MeshBasicMaterial({ color: 0xffffff }), head, sx * 0.095, 0.06, 0.2, 0.065, 0.06, 0.05, false);
-    part(GEO.sph, M(0x111111), head, sx * 0.075, 0.045, 0.245, 0.018, 0.018, 0.018, false);
-    const gl = part(new THREE.TorusGeometry(0.085, 0.016, 8, 18), M(0x333333, { metalness: 0.6, roughness: 0.3 }), head, sx * 0.1, 0.06, 0.255, 1, 1, 1, false);
-    const brow = part(GEO.box, M(0x2a1a10), head, sx * 0.1, 0.17, 0.235, 0.15, 0.035, 0.03, false); brow.rotation.z = -sx * 0.45;
-    part(GEO.sph, skin, head, sx * 0.25, 0, 0, 0.05, 0.08, 0.04);
+  // cotton candy in her right hand (character's right = +x)
+  const candy = new THREE.Group(); candy.position.set(0, -0.78, 0.06); arms[1].add(candy);
+  const paper = part(new THREE.ConeGeometry(0.045, 0.42, 10), M(0xf5f2ea), candy, 0, 0.12, 0);
+  paper.rotation.x = Math.PI;
+  const fluff = [M(0xf7a8cc, { roughness: 1 }), M(0xf2b6d2, { roughness: 1 }), M(0xee9cc3, { roughness: 1 })];
+  for (let i = 0; i < 18; i++) {
+    const t = i / 17, y = 0.38 + t * 0.62, r = 0.2 * Math.sin(Math.PI * (0.15 + t * 0.8)) + 0.05;
+    const a = R(0, Math.PI * 2), d = R(0, r * 0.7);
+    part(GEO.sphLo, pick(fluff), candy, Math.cos(a) * d, y, Math.sin(a) * d, r * R(0.8, 1.1));
   }
-  part(GEO.box, M(0x6b6b6b), head, 0, 0.06, 0.27, 0.04, 0.015, 0.015, false);
-  part(GEO.sph, M(0x7a1010), head, 0, -0.14, 0.22, 0.09, 0.05, 0.04, false); // shouting mouth
-  part(GEO.sph, M(0xb32020), head, 0, -0.1, 0.225, 0.09, 0.015, 0.035, false);
-  // wild pink hair
-  part(GEO.sph, pinkA, head, 0, 0.07, -0.05, 0.29, 0.28, 0.29);
+  candy.userData.base = 0.95;
+  // head
+  const head = new THREE.Group(); head.position.set(0, 2.16, 0.02); body.add(head);
+  part(GEO.sph, skin, head, 0, 0, 0, 0.24, 0.28, 0.24);
+  part(GEO.sph, skin, head, 0, -0.18, 0.06, 0.15, 0.11, 0.14); // jaw
+  const nose = part(new THREE.ConeGeometry(0.05, 0.16, 10), skin, head, 0, -0.02, 0.27);
+  nose.rotation.x = Math.PI / 2 + 0.5;
+  part(GEO.sph, skin, head, 0, -0.06, 0.29, 0.045, 0.04, 0.04);
+  const wire = M(0xb8b8b8, { metalness: 0.8, roughness: 0.25 });
+  for (const sx of [-1, 1]) {
+    part(GEO.sph, M(0xf4efe6), head, sx * 0.09, 0.05, 0.19, 0.055, 0.035, 0.04, false);
+    part(GEO.sph, M(0x3a2a1a), head, sx * 0.085, 0.05, 0.225, 0.022, 0.022, 0.015, false);
+    const gl = part(new THREE.TorusGeometry(0.075, 0.008, 6, 18), wire, head, sx * 0.095, 0.04, 0.245, 1.1, 0.75, 1, false);
+    part(GEO.box, wire, head, sx * 0.2, 0.05, 0.13, 0.008, 0.008, 0.22, false); // temple arms
+    const brow = part(GEO.box, M(0x8a5a3a), head, sx * 0.09, 0.12, 0.225, 0.13, 0.035, 0.04, false); brow.rotation.z = -sx * 0.4;
+    part(GEO.sph, skin, head, sx * 0.24, 0, 0, 0.045, 0.075, 0.04);
+    part(GEO.sph, wire, head, sx * 0.25, -0.07, 0.01, 0.015, 0.015, 0.015, false); // earring
+  }
+  part(GEO.box, wire, head, 0, 0.045, 0.255, 0.04, 0.008, 0.008, false);
+  // snarling teeth
+  part(GEO.box, M(0x5a1515), head, 0, -0.13, 0.205, 0.15, 0.06, 0.03, false);
+  part(GEO.box, M(0xf2ead8), head, 0, -0.115, 0.215, 0.13, 0.022, 0.02, false);
+  part(GEO.box, M(0xf2ead8), head, 0, -0.145, 0.215, 0.12, 0.018, 0.02, false);
+  part(GEO.box, M(0xa8554a), head, 0, -0.095, 0.215, 0.16, 0.014, 0.02, false);
+  // short spiky pink hair
+  part(GEO.sph, pinkA, head, 0, 0.09, -0.03, 0.265, 0.23, 0.27);
   const up = new THREE.Vector3(0, 1, 0);
-  for (let i = 0; i < 46; i++) {
+  for (let i = 0; i < 70; i++) {
     let d;
-    do { d = new THREE.Vector3(R(-1, 1), R(-0.35, 1), R(-1, 0.55)).normalize(); } while (d.z > 0.45 && d.y < 0.55);
-    const h = R(0.3, 0.62), r = R(0.06, 0.11);
+    do { d = new THREE.Vector3(R(-1, 1), R(0.05, 1), R(-1, 0.9)).normalize(); } while (d.z > 0.55 && d.y < 0.5);
+    const h = R(0.1, 0.22), r = R(0.035, 0.06);
     const c = part(GEO.cone, pick([pinkA, pinkB, pinkC]), head, 0, 0, 0, r, h, r);
     c.quaternion.setFromUnitVectors(up, d);
-    c.position.copy(d).multiplyScalar(0.24 + h * 0.4).add(new THREE.Vector3(0, 0.06, -0.04));
+    c.position.copy(d).multiplyScalar(0.22 + h * 0.35).add(new THREE.Vector3(0, 0.09, -0.03));
+  }
+  for (let i = 0; i < 9; i++) { // fringe over forehead
+    const d = new THREE.Vector3(R(-0.6, 0.6), R(-0.4, -0.1), 1).normalize();
+    const c = part(GEO.cone, pick([pinkA, pinkB, pinkC]), head, R(-0.13, 0.13), 0.2, 0.17, 0.04, R(0.1, 0.16), 0.03);
+    c.quaternion.setFromUnitVectors(up, d);
   }
   root.traverse(o => { if (o.isMesh) o.castShadow = true; });
   const stuck = new THREE.Group(); body.add(stuck);
-  return { root, body, legs, arms, head, stuck };
+  return { root, body, legs, arms, head, stuck, candy };
 }
 
-const camoTex = canvasTex(128, 128, (g, w) => {
-  g.fillStyle = '#5b6b3a'; g.fillRect(0, 0, w, w);
-  for (let i = 0; i < 40; i++) { g.fillStyle = pick(['#3d4a27', '#7a6a45', '#2e3320', '#6d7d45']); g.beginPath(); g.ellipse(Math.random() * w, Math.random() * w, R(6, 18), R(4, 10), R(0, 3), 0, 7); g.fill(); }
-});
-camoTex.wrapS = camoTex.wrapT = THREE.RepeatWrapping;
-const ELF_M = {
-  camo: new THREE.MeshStandardMaterial({ map: camoTex, roughness: 0.95 }),
-  cream: M(0xf6e7cf), black: M(0x151515), boot: M(0x2b2118),
-  beret: M(0x7a1f2b), beanie: M(0x2f8f5b), cap: M(0x1d1d1d), belt: M(0x3b2f1e),
-  furs: [M(0xd88a3a), M(0xe09a4a), M(0xc9772f), M(0xe2a55a)],
-};
-function makeElf() {
-  const root = new THREE.Group(); const body = new THREE.Group(); root.add(body);
-  const fur = pick(ELF_M.furs);
+/* ---------- Elves (shiba "digital elves" from elves.bg) ----------
+   Each elf is built from primitives, then baked into one vertex-coloured mesh
+   per animated part so that 100+ elves stay cheap to render. */
+const ELF_MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 });
+const ELF_GLOW = new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false });
+const C = (hex, glow = false) => { const m = M(hex); if (glow) { m.userData.glow = true; } return m; };
+const GLOWM = hex => { const m = new THREE.MeshBasicMaterial({ color: hex }); m.userData.glow = true; return m; };
+
+function mergeParts(items) {
+  let nv = 0, ni = 0;
+  for (const it of items) { nv += it.geo.attributes.position.count; ni += it.geo.index ? it.geo.index.count : it.geo.attributes.position.count; }
+  const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), col = new Float32Array(nv * 3), idx = new Uint32Array(ni);
+  const v = new THREE.Vector3(), nm = new THREE.Matrix3();
+  let vo = 0, io = 0;
+  for (const it of items) {
+    const p = it.geo.attributes.position, n = it.geo.attributes.normal; nm.getNormalMatrix(it.m4);
+    for (let i = 0; i < p.count; i++) {
+      v.fromBufferAttribute(p, i).applyMatrix4(it.m4); pos.set([v.x, v.y, v.z], (vo + i) * 3);
+      v.fromBufferAttribute(n, i).applyMatrix3(nm).normalize(); nor.set([v.x, v.y, v.z], (vo + i) * 3);
+      col.set([it.color.r, it.color.g, it.color.b], (vo + i) * 3);
+    }
+    if (it.geo.index) for (let j = 0; j < it.geo.index.count; j++) idx[io++] = it.geo.index.getX(j) + vo;
+    else for (let j = 0; j < p.count; j++) idx[io++] = j + vo;
+    vo += p.count;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  g.setIndex(new THREE.BufferAttribute(idx, 1));
+  g.computeBoundingSphere();
+  return g;
+}
+// merge every mesh under `group` (but not inside nested animated groups) into 1-2 meshes
+function bake(group, shadow) {
+  const solid = [], glow = [];
+  const walk = (obj, mat) => {
+    for (const c of [...obj.children]) {
+      if (c.userData.anim) continue;
+      c.updateMatrix();
+      const m4 = mat.clone().multiply(c.matrix);
+      if (c.isMesh) (c.material.userData.glow ? glow : solid).push({ geo: c.geometry, m4, color: c.material.color });
+      else walk(c, m4);
+      if (obj === group) group.remove(c);
+    }
+  };
+  walk(group, new THREE.Matrix4());
+  if (solid.length) { const m = new THREE.Mesh(mergeParts(solid), ELF_MAT); m.castShadow = shadow; group.add(m); }
+  if (glow.length) group.add(new THREE.Mesh(mergeParts(glow), ELF_GLOW));
+}
+
+const FUR = [0xd88a3a, 0xe3a257, 0xc9772f];
+// stats: spd = speed multiplier, sight = extra view distance, cd = throw cooldown multiplier,
+// acc = aim spread multiplier (lower = better), big = chance for a МЕГА МЕМ
+const ELF_TYPES = [
+  { key: 'soldier', name: 'Елф-войник', w: 3, spd: 1.0, sight: 0, cd: 1.0, acc: 0.8, big: 0.03 },
+  { key: 'miner', name: 'Елф-миньор', w: 3, spd: 0.95, sight: 14, cd: 1.0, acc: 1.0, big: 0.03 },
+  { key: 'chef', name: 'Елф-готвач', w: 2, spd: 0.95, sight: 0, cd: 0.65, acc: 1.2, big: 0.02 },
+  { key: 'kuker', name: 'Елф-кукер', w: 1.2, spd: 0.85, sight: 0, cd: 1.25, acc: 1.0, big: 0.3 },
+  { key: 'baba', name: 'Елф-баба', w: 2, spd: 1.12, sight: 0, cd: 1.0, acc: 0.9, big: 0.02 },
+  { key: 'gamer', name: 'Елф-геймър', w: 2, spd: 1.0, sight: 4, cd: 0.9, acc: 0.6, big: 0.02 },
+  { key: 'fisher', name: 'Елф-рибар', w: 2, spd: 1.05, sight: 0, cd: 1.0, acc: 1.0, big: 0.03 },
+  { key: 'builder', name: 'Елф-строител', w: 2, spd: 1.0, sight: 0, cd: 1.0, acc: 1.0, big: 0.05 },
+];
+
+function buildElf(type, furHex) {
+  const fur = C(furHex), cream = C(0xf6e7cf), black = C(0x141414), white = C(0xf2f2f2);
+  const soldier = type.key === 'soldier';
+  const suit = soldier ? C(0x55663a) : C(0x1c1c22), suit2 = soldier ? C(0x3d4a27) : white;
+  const flag = (parent, x, y, z, s = 1) => [[0xffffff, 1], [0x00966e, 0], [0xd62612, -1]].forEach(([c, k]) => part(GEO.box, C(c), parent, x, y + k * 0.025 * s, z, 0.1 * s, 0.025 * s, 0.015));
+  const root = new THREE.Group(); const body = new THREE.Group(); body.name = 'body'; body.userData.anim = true; root.add(body);
   const legs = [], arms = [];
   for (const sx of [-1, 1]) {
-    const leg = new THREE.Group(); leg.position.set(sx * 0.12, 0.4, 0); body.add(leg);
-    part(GEO.cyl, ELF_M.camo, leg, 0, -0.17, 0, 0.095, 0.34, 0.095, false);
-    part(GEO.box, ELF_M.boot, leg, 0, -0.35, 0.04, 0.15, 0.11, 0.24, false);
+    const leg = new THREE.Group(); leg.position.set(sx * 0.12, 0.4, 0); leg.userData.anim = true; leg.name = sx < 0 ? 'legL' : 'legR'; body.add(leg);
+    part(GEO.cyl, suit, leg, 0, -0.17, 0, 0.1, 0.34, 0.1);
+    for (const k of [0, 1]) part(GEO.box, suit2, leg, sx * 0.095, -0.17, k * 0.035 - 0.017, 0.015, 0.32, 0.015); // side stripes
+    part(GEO.box, soldier ? C(0x2b2118) : C(0xe8e8e8), leg, 0, -0.35, 0.04, 0.15, 0.11, 0.24);
+    part(GEO.box, C(0x333333), leg, 0, -0.4, 0.04, 0.155, 0.025, 0.245);
     legs.push(leg);
   }
-  part(new THREE.CylinderGeometry(0.24, 0.3, 0.56, 12), ELF_M.camo, body, 0, 0.68, 0);
-  part(GEO.cyl, ELF_M.belt, body, 0, 0.46, 0, 0.3, 0.07, 0.3, false);
-  part(GEO.sph, ELF_M.cream, body, 0, 0.8, 0.2, 0.13, 0.12, 0.08, false);
+  part(new THREE.CylinderGeometry(0.24, 0.3, 0.56, 12), suit, body, 0, 0.68, 0);
+  part(GEO.box, soldier ? C(0x6b7a45) : white, body, 0, 0.7, 0.2, 0.2, 0.4, 0.1); // t-shirt / chest
+  if (!soldier) { part(GEO.box, C(0xbbbbbb), body, 0, 0.7, 0.255, 0.012, 0.42, 0.012); } // zipper line
+  if (soldier) for (let i = 0; i < 6; i++) part(GEO.sphLo, C(pick([0x3d4a27, 0x7a6a45, 0x2e3320])), body, R(-0.22, 0.22), R(0.5, 0.9), R(-0.15, 0.2), 0.08, 0.06, 0.06);
+  flag(body, 0.15, 0.85, 0.235);
+  if (type.key === 'kuker') { // fur vest + bells
+    for (let i = 0; i < 14; i++) { const a = R(0, Math.PI * 2); part(GEO.sphLo, C(pick([0x111111, 0xeeeeee, 0x222222])), body, Math.sin(a) * 0.27, R(0.5, 0.92), Math.cos(a) * 0.27, 0.09); }
+    for (const x of [-0.18, -0.06, 0.06, 0.18]) { part(GEO.sph, C(0xb8860b), body, x, 0.38, 0.25, 0.06, 0.08, 0.06); }
+    part(GEO.cyl, C(0x5a3a1a), body, 0, 0.45, 0, 0.31, 0.06, 0.31);
+  }
+  part(new THREE.TorusGeometry(0.13, 0.055, 8, 14, Math.PI * 1.6), fur, body, 0, 0.62, -0.32).rotation.y = Math.PI / 2;
   for (const sx of [-1, 1]) {
-    const arm = new THREE.Group(); arm.position.set(sx * 0.29, 0.9, 0); arm.rotation.z = sx * 0.2; body.add(arm);
-    part(GEO.cyl, ELF_M.camo, arm, 0, -0.19, 0, 0.075, 0.38, 0.075, false);
-    part(GEO.sph, fur, arm, 0, -0.41, 0, 0.075, 0.075, 0.075, false);
+    const arm = new THREE.Group(); arm.position.set(sx * 0.29, 0.9, 0); arm.rotation.z = sx * 0.2; arm.userData.anim = true; arm.name = sx < 0 ? 'armL' : 'armR'; body.add(arm);
+    part(GEO.cyl, suit, arm, 0, -0.19, 0, 0.08, 0.38, 0.08);
+    for (const k of [0, 1]) part(GEO.box, suit2, arm, sx * 0.075, -0.19, k * 0.03 - 0.015, 0.012, 0.36, 0.012);
+    part(GEO.sph, fur, arm, 0, -0.41, 0, 0.075, 0.075, 0.075);
+    if (sx < 0) { // phone in left paw with glowing screen
+      part(GEO.box, black, arm, 0, -0.46, 0.06, 0.1, 0.18, 0.025);
+      part(GEO.box, GLOWM(0x9fd8ff), arm, 0, -0.46, 0.074, 0.085, 0.155, 0.005);
+    }
     arms.push(arm);
   }
-  const tail = part(new THREE.TorusGeometry(0.13, 0.055, 8, 14, Math.PI * 1.6), fur, body, 0, 0.62, -0.32, 1, 1, 1, false);
-  tail.rotation.y = Math.PI / 2;
-  const head = new THREE.Group(); head.position.set(0, 1.22, 0.02); body.add(head);
+  const head = new THREE.Group(); head.position.set(0, 1.22, 0.02); head.userData.anim = true; head.name = 'head'; body.add(head);
   part(GEO.sph, fur, head, 0, 0, 0, 0.31, 0.28, 0.29);
-  part(GEO.sph, ELF_M.cream, head, 0, -0.08, 0.1, 0.27, 0.19, 0.22, false);
-  part(GEO.sph, ELF_M.cream, head, 0, -0.07, 0.27, 0.13, 0.1, 0.13, false);
-  part(GEO.sph, ELF_M.black, head, 0, -0.02, 0.4, 0.05, 0.04, 0.04, false);
-  part(GEO.box, ELF_M.black, head, 0, -0.12, 0.36, 0.08, 0.012, 0.012, false);
+  part(GEO.sph, cream, head, 0, -0.08, 0.1, 0.27, 0.19, 0.22);
+  part(GEO.sph, cream, head, 0, -0.07, 0.27, 0.13, 0.1, 0.13);
+  part(GEO.sph, black, head, 0, -0.02, 0.4, 0.05, 0.04, 0.04);
+  part(GEO.box, black, head, 0, -0.12, 0.36, 0.08, 0.012, 0.012);
   for (const sx of [-1, 1]) {
-    part(GEO.sph, ELF_M.black, head, sx * 0.11, 0.06, 0.25, 0.04, 0.045, 0.03, false);
-    part(GEO.sph, ELF_M.cream, head, sx * 0.1, 0.14, 0.24, 0.035, 0.022, 0.02, false);
-    const ear = part(GEO.cone, fur, head, sx * 0.19, 0.29, -0.02, 0.1, 0.24, 0.07, false); ear.rotation.z = -sx * 0.35;
-    const inner = part(GEO.cone, ELF_M.cream, head, sx * 0.185, 0.27, 0.02, 0.055, 0.15, 0.03, false); inner.rotation.z = -sx * 0.35;
+    part(GEO.sph, black, head, sx * 0.11, 0.06, 0.25, 0.04, 0.03, 0.03);
+    part(GEO.sph, cream, head, sx * 0.1, 0.13, 0.24, 0.035, 0.022, 0.02);
+    if (!['chef', 'baba', 'kuker', 'builder', 'miner'].includes(type.key)) {
+      part(GEO.cone, fur, head, sx * 0.19, 0.29, -0.02, 0.1, 0.24, 0.07).rotation.z = -sx * 0.35;
+      part(GEO.cone, cream, head, sx * 0.185, 0.27, 0.02, 0.055, 0.15, 0.03).rotation.z = -sx * 0.35;
+    }
   }
-  const hatRoll = Math.random();
-  if (hatRoll < 0.65) {
-    const b = new THREE.Group(); b.position.set(-0.04, 0.26, -0.02); b.rotation.set(-0.1, 0, 0.28); head.add(b);
-    part(GEO.cyl, ELF_M.beret, b, 0, 0, 0, 0.3, 0.1, 0.31, false);
-    part(GEO.sph, ELF_M.beret, b, 0.03, 0.05, 0, 0.29, 0.07, 0.3, false);
-    [[0xffffff, 0.035], [0x00966e, 0], [0xd62612, -0.035]].forEach(([c, y]) => part(GEO.box, M(c), b, 0.17, y + 0.01, 0.24, 0.09, 0.035, 0.02, false));
-  } else if (hatRoll < 0.85) {
-    part(GEO.half, ELF_M.beanie, head, 0, 0.1, -0.01, 0.31, 0.27, 0.3, false);
-    part(GEO.cyl, M(0x23704a), head, 0, 0.12, -0.01, 0.32, 0.07, 0.31, false);
-  } else {
-    part(GEO.half, ELF_M.cap, head, 0, 0.12, -0.01, 0.3, 0.2, 0.3, false);
-    part(GEO.box, ELF_M.cap, head, 0, 0.13, 0.28, 0.3, 0.025, 0.24, false);
+  const hat = new THREE.Group(); head.add(hat);
+  switch (type.key) {
+    case 'soldier': {
+      hat.position.set(-0.04, 0.26, -0.02); hat.rotation.set(-0.1, 0, 0.28);
+      part(GEO.cyl, C(0x7a1f2b), hat, 0, 0, 0, 0.3, 0.1, 0.31); part(GEO.sph, C(0x7a1f2b), hat, 0.03, 0.05, 0, 0.29, 0.07, 0.3);
+      flag(hat, 0.17, 0.01, 0.24, 0.9); break;
+    }
+    case 'miner': {
+      const c = C(pick([0xc0392b, 0xe0a800, 0x8a5a2b]));
+      part(GEO.half, c, hat, 0, 0.12, 0, 0.33, 0.3, 0.33); part(GEO.cyl, c, hat, 0, 0.12, 0.02, 0.42, 0.03, 0.42);
+      part(GEO.cyl, C(0xb8860b), hat, 0, 0.26, 0.3, 0.09, 0.08, 0.09).rotation.x = Math.PI / 2;
+      part(GEO.cyl, GLOWM(0xfff3b0), hat, 0, 0.26, 0.345, 0.07, 0.01, 0.07).rotation.x = Math.PI / 2; break;
+    }
+    case 'chef': {
+      part(GEO.cyl, white, hat, 0, 0.32, -0.02, 0.24, 0.28, 0.24);
+      for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; part(GEO.sphLo, white, hat, Math.cos(a) * 0.15, 0.52, Math.sin(a) * 0.15 - 0.02, 0.15); }
+      part(GEO.sphLo, white, hat, 0, 0.56, -0.02, 0.16); break;
+    }
+    case 'kuker': {
+      const red = C(0xc0182a), green = C(0x1e7a3a);
+      part(GEO.box, C(0x6b3a1a), hat, 0, 0.38, -0.02, 0.5, 0.42, 0.2);
+      for (let r = 0; r < 4; r++) part(GEO.box, C([0xc0182a, 0x1e7a3a, 0xe8d8b0, 0xd4a017][r]), hat, 0, 0.22 + r * 0.1, 0.085, 0.48, 0.05, 0.04);
+      for (const sx of [-1, 1]) {
+        const horn = part(new THREE.ConeGeometry(0.06, 0.45, 8), C(0x5a4630), hat, sx * 0.32, 0.55, -0.02); horn.rotation.z = -sx * 0.9;
+        for (let i = 0; i < 6; i++) part(GEO.cyl, i % 2 ? red : green, hat, sx * R(0.25, 0.33), R(-0.05, 0.15), R(-0.1, 0.1), 0.025, R(0.4, 0.6), 0.025);
+      }
+      part(GEO.sphLo, red, hat, 0, 0.66, -0.02, 0.15, 0.12, 0.1); break;
+    }
+    case 'baba': {
+      const scarf = C(0xf0e2b6);
+      part(GEO.sph, scarf, hat, 0, 0.05, -0.04, 0.34, 0.33, 0.31);
+      part(GEO.sph, scarf, hat, 0, -0.27, 0.12, 0.08, 0.07, 0.06);
+      for (let i = 0; i < 26; i++) {
+        const d = new THREE.Vector3(R(-1, 1), R(-0.3, 1), R(-1, 0.4)).normalize();
+        part(GEO.sphLo, C(pick([0xc81d25, 0xc81d25, 0x2e7d32, 0xe85d04])), hat, d.x * 0.34, 0.05 + d.y * 0.33, -0.04 + d.z * 0.31, 0.04, 0.04, 0.02);
+      }
+      break;
+    }
+    case 'gamer': {
+      part(GEO.half, C(0x9aa0a6), hat, 0, 0.1, -0.01, 0.31, 0.29, 0.3); part(GEO.cyl, C(0x7d838a), hat, 0, 0.12, -0.01, 0.32, 0.07, 0.31);
+      const band = part(new THREE.TorusGeometry(0.33, 0.025, 6, 20, Math.PI), C(0x111111), hat, 0, 0.02, 0); band.rotation.y = Math.PI / 2; band.rotation.z = 0;
+      for (const sx of [-1, 1]) part(GEO.cyl, C(0x111111), hat, sx * 0.31, 0, 0, 0.1, 0.07, 0.1).rotation.z = Math.PI / 2;
+      break;
+    }
+    case 'fisher': {
+      const c = C(pick([0x8a8f6a, 0x6f7b8a, 0xb59a6a]));
+      part(new THREE.CylinderGeometry(0.25, 0.3, 0.22, 14), c, hat, 0, 0.24, -0.02); part(GEO.cyl, c, hat, 0, 0.14, -0.02, 0.44, 0.025, 0.44); break;
+    }
+    case 'builder': {
+      const c = C(pick([0xf5f5f5, 0xf1c40f]));
+      part(GEO.half, c, hat, 0, 0.12, 0, 0.32, 0.3, 0.32); part(GEO.cyl, c, hat, 0, 0.13, 0.02, 0.4, 0.025, 0.4);
+      part(GEO.box, c, hat, 0, 0.38, 0, 0.06, 0.06, 0.5); break;
+    }
   }
-  return { root, body, legs, arms, head };
+  // bake each animated part into one or two meshes
+  for (const g of [body, ...legs, ...arms, head]) bake(g, g === body || g === head);
+  return root;
+}
+
+const ELF_TEMPLATES = ELF_TYPES.map(t => FUR.map(f => buildElf(t, f)));
+function pickElfType() {
+  const tot = ELF_TYPES.reduce((a, t) => a + t.w, 0); let r = Math.random() * tot;
+  for (let i = 0; i < ELF_TYPES.length; i++) { r -= ELF_TYPES[i].w; if (r <= 0) return i; }
+  return 0;
+}
+function makeElf(ti = pickElfType()) {
+  const root = pick(ELF_TEMPLATES[ti]).clone();
+  const g = n => root.getObjectByName(n);
+  return { root, body: g('body'), legs: [g('legL'), g('legR')], arms: [g('armL'), g('armR')], head: g('head'), type: ELF_TYPES[ti] };
 }
 
 /* ---------------- memes ---------------- */
@@ -626,7 +870,7 @@ const keys = {};
 let yaw = Math.PI, pitch = 0.42, mouseDown = false;
 addEventListener('keydown', e => {
   keys[e.code] = true;
-  if (e.code === 'Space') e.preventDefault();
+  if (e.code === 'Space') { e.preventDefault(); if (P.interview && TV.t < TV.STEP - 0.6) TV.t = 0; }
   if (e.code === 'KeyE' && state === 'play') interact();
   if (e.code === 'KeyP' && (state === 'play' || state === 'paused')) togglePause();
   if (e.code === 'KeyR' && state === 'over') startGame();
@@ -666,15 +910,19 @@ function resetGame() {
     t: 0, spent: 0, thrown: 0, hits: 0, hitCost: 0, dodges: 0, elvesTotal: 0, byType: {},
     lastKnown: new THREE.Vector3(), lastSeenT: -999, spawnCd: 2, stars: 1, shake: 0, apoc: false,
     rainCd: 0, deadT: 0, houseKnown: false, tickerT: 0, slow: 1, regenBlock: 0,
+    interviews: 0, ivFailed: 0, earned: 0, inflation: 1, mission: null, missionCd: 0, throwBudget: 0,
   });
-  Object.assign(P, { hp: 100, st: 100, vy: 0, hidden: false, bush: null, house: null, houseT: 0, flinch: 0, exhausted: false, face: Math.PI });
+  Object.assign(P, { invuln: 0, hp: 100, st: 100, vy: 0, hidden: false, bush: null, house: null, houseT: 0, flinch: 0, exhausted: false, face: Math.PI, interview: false, ivT: 0, ivDur: 8 });
   P.pos.set(0, 0, 18); P.vel.set(0, 0, 0);
   hag.root.visible = true; hag.root.rotation.set(0, 0, 0); hag.body.position.set(0, 0, 0); hag.body.rotation.set(0, 0, 0);
   for (const h of HOUSES) h.usedUntil = 0;
   for (const b of BUSHES) b.exposedUntil = 0;
   yaw = 0; pitch = 0.42;
-  for (let i = 0; i < 3; i++) spawnElf(true);
+  for (let i = 0; i < 26; i++) spawnElf(true);
   updateStars(true);
+  $('tv').classList.add('hidden'); TV.hideT = 0;
+  markerGroup.userData.tv.visible = false; markerGroup.userData.icon.visible = true;
+  newMission(true);
 }
 
 function startGame() {
@@ -701,11 +949,12 @@ let bannerT = 0;
 function banner(text, color = '#ffd23f') { const b = $('banner'); b.innerHTML = text; b.style.color = color; b.style.opacity = 1; bannerT = 2.6; }
 function popup(pos, html, color = '#fff') {
   const el = document.createElement('div'); el.innerHTML = html; el.style.color = color; $('popups').appendChild(el);
-  popups.push({ el, pos: pos.clone(), t: 0 });
+  popups.push({ el, pos: pos.clone().add(new THREE.Vector3(R(-0.6, 0.6), R(0, 0.5), 0)), t: 0 });
+  while (popups.length > 5) popups.shift().el.remove();
 }
 function updateStars(silent) {
   const t = G.t;
-  const s = t < 20 ? 1 : t < 50 ? 2 : t < 90 ? 3 : t < 135 ? 4 : 5;
+  const s = t < 35 ? 1 : t < 85 ? 2 : t < 145 ? 3 : t < 210 ? 4 : 5;
   if (s !== G.stars || silent) {
     const prev = G.stars; G.stars = s;
     [...$('stars').children].forEach((b, i) => b.classList.toggle('on', i < s));
@@ -718,27 +967,28 @@ function updateStars(silent) {
   }
 }
 
-const SHOUTS = ['Хвани тролката!', 'Мем в лицето!', 'Фактите са на наша страна!', 'Much wow, такава бабичка!', 'Бързо в Телеграм групата!',
+const SHOUTS = ['Хвани тролката!', 'Мем в лицето!', 'Фактите са на наша страна!', 'Much wow, такава бабичка!', 'Пази се от захарния памук!', 'Бързо в Телеграм групата!',
   'Ще те смемим!', 'Копейката бяга!', 'Вижте я, вижте я!', 'Някой да донесе още мемета!', 'Източник? Няма източник!', 'Бау! Бау! Факт-чек!', 'Розовата коса е там!'];
 
 /* ---------------- spawning ---------------- */
-function spawnElf(initial) {
+function spawnElf(initial, at) {
   const m = makeElf();
   let x = 0, z = 0;
   for (let i = 0; i < 40; i++) {
-    const a = R(0, Math.PI * 2), r = initial ? R(28, 40) : R(40, 65);
-    x = P.pos.x + Math.cos(a) * r; z = P.pos.z + Math.sin(a) * r;
+    if (at) { x = at.x + R(-3, 3); z = at.z + R(-3, 3); }
+    else if (initial) { const a = R(0, Math.PI * 2), r = R(30, 95); x = Math.cos(a) * r; z = Math.sin(a) * r; if (Math.hypot(x - P.pos.x, z - P.pos.z) < 30) continue; }
+    else { const a = R(0, Math.PI * 2), r = R(40, 65); x = P.pos.x + Math.cos(a) * r; z = P.pos.z + Math.sin(a) * r; }
     if (Math.hypot(x, z) < WORLD - 3 && freeSpot(x, z, 1)) break;
   }
   const s = R(0.9, 1.12);
   m.root.position.set(x, 0, z); m.root.scale.setScalar(0.01); scene.add(m.root);
   const e = {
     m, pos: m.root.position, s, face: 0, cd: R(1, 2.5), seeT: 0, sees: false, phase: R(0, 6), throwT: 0,
-    speed: R(4.8, 5.6), strafe: Math.random() < 0.5 ? -1 : 1, off: new THREE.Vector3(R(-5, 5), 0, R(-5, 5)),
+    type: m.type, speed: R(4.8, 5.6) * m.type.spd, strafe: Math.random() < 0.5 ? -1 : 1, off: new THREE.Vector3(R(-5, 5), 0, R(-5, 5)),
     wander: new THREE.Vector3(x, 0, z), wanderT: 0, born: 0, id: ++G.elvesTotal, cheer: R(0, 6),
   };
   elves.push(e);
-  if (!initial && Math.random() < 0.35) ticker(`Елф #${e.id}: „${pick(SHOUTS)}“`);
+  if (!initial && Math.random() < 0.15) ticker(`${e.type.name} #${e.id}: „${pick(SHOUTS)}“`);
   return e;
 }
 
@@ -769,15 +1019,16 @@ function launchMeme(start, aim, type, T, thrower) {
   const mesh = new THREE.Mesh(memeGeo, type.mat);
   const size = type.big ? 1.9 : 0.95; mesh.scale.setScalar(size);
   mesh.position.copy(start); scene.add(mesh);
-  memes.push({ mesh, vel, type, life: 0, spin: R(-9, 9), size, thrower });
-  G.spent += type.price; G.thrown++; G.byType[type.name] = (G.byType[type.name] || 0) + 1;
+  const price = type.price * G.inflation;
+  memes.push({ mesh, vel, type, price, life: 0, spin: R(-9, 9), size, thrower });
+  G.spent += price; G.thrown++; G.byType[type.name] = (G.byType[type.name] || 0) + 1;
 }
 function elfThrow(e, target, lead) {
   const start = tmpV.set(e.pos.x, 1.1 * e.s, e.pos.z).clone();
-  const type = pickMeme(G.stars >= 3);
+  const type = (G.stars >= 2 && Math.random() < e.type.big) ? MEMES.find(m => m.big) : pickMeme(G.stars >= 3);
   const dist = Math.hypot(target.x - start.x, target.z - start.z);
   const T = clamp(dist / R(15, 19), 0.35, 1.6);
-  const spread = Math.max(0.35, 2.4 - G.t / 90) * (P.bush ? 1.4 : 1);
+  const spread = Math.max(0.8, 3.2 - G.t / 120) * (P.bush ? 1.4 : 1) * e.type.acc;
   const aim = new THREE.Vector3(
     target.x + (lead ? P.vel.x * T * R(0.5, 1.0) : 0) + R(-spread, spread),
     (target.y || 0) + 1.2,
@@ -786,6 +1037,160 @@ function elfThrow(e, target, lead) {
   e.throwT = 0.35;
   const near = clamp(1 - Math.hypot(e.pos.x - P.pos.x, e.pos.z - P.pos.z) / 40, 0, 1);
   if (near > 0.05) sfx.throw(near);
+}
+
+/* ---------------- missions: interviews ---------------- */
+const OUTLETS = ['ТВ „Копейка“', 'Радио „Трол FM“', 'подкаст „Истината отвъд“', 'канал „Ботоферма Live“', 'вестник „Дезинфо Днес“',
+  'ютюб канал „Независим“', 'сайт „Сензация.бгг“', 'стрийм „Захарен памук“', 'ТВ „Алтернатива 24/7“', 'тикток „Бабата знае“'];
+const TOPICS = ['защо Елфите са платени', 'тайната на захарния памук', 'истината, която никой не казва', 'как фактите всъщност лъжат',
+  'кой стои зад шибите', 'защо мемета са опасни за децата', 'геополитика за начинаещи', 'моята розова революция', 'кой финансира Елфите'];
+const HOSTS = [
+  { img: 'assets/hosts/host1.jpg', name: 'Иво Сладкодумов', show: '„Добро утро, конспирация“', outlet: 'ТВ „Копейка“' },
+  { img: 'assets/hosts/host2.jpg', name: 'Мира Загрижена', show: '„Само питам“', outlet: 'подкаст „Истината отвъд“' },
+  { img: 'assets/hosts/host3.jpg', name: 'Борис Микрофонов', show: '„Гореща линия“', outlet: 'Радио „Трол FM“' },
+  { img: 'assets/hosts/host4.jpg', name: 'проф. Пламен Кръглов', show: '„Анализ без факти“', outlet: 'ТВ „Алтернатива 24/7“' },
+  { img: 'assets/hosts/host5.jpg', name: 'Стефан Усмихнатов', show: '„Неудобните въпроси“', outlet: 'канал „Ботоферма Live“' },
+];
+// [host question, Gargamela's answer]
+const QA = [
+  ['Госпожо Гаргамела, кои са всъщност тези Елфи?', 'Тролове! Платени тролове с кучешки муцуни, ето какво са!'],
+  ['Колко пари според вас взимат Елфите?', 'По пет хиляди евро на мем! Имам източник… в една Телеграм група.'],
+  ['Кой им плаща, според вас?', 'Сорос, разбира се! Видях го — праща им кокалчета по куриер всеки петък!'],
+  ['А как точно им превежда парите?', 'В биткойни и в кучешки лакомства! Всичко е документирано… в главата ми.'],
+  ['Защо Елфите ви замерят с мемета?', 'Защото казвам истината! А истината боли… особено като те удари мем в лицето.'],
+  ['Имате ли доказателства?', 'Доказателствата са засекретени в Брюксел! Ако ги покажа, ще ме смемят.'],
+  ['Защо мислите, че са шиби?', 'Японска порода! Значи външна намеса! Логично, нали?'],
+  ['Опасни ли са меметата за децата?', 'По-опасни от ракетите! Едно дете видя мем и започна да проверява факти!'],
+  ['Какво мислите за фактчекърите?', 'Проверяват факти! Кой им е разрешил?! Аз фактите си ги измислям сама!'],
+  ['Вярно ли е, че Елфите са доброволци?', 'Доброволци ли? Ха! НАТО им дава ваучери за кучешка храна!'],
+  ['Какво ще кажете на зрителите?', 'Не вярвайте на никого! Освен на мен. И на захарния памук.'],
+  ['Колко Елфи има всъщност?', 'Милиони! Всичките са един и същ бот с различни шапки!'],
+  ['А откъде е тази розова коса?', 'Това е естествен цвят! Като всичко, което казвам.'],
+  ['Защо Елфите носят телефони?', 'За да докладват на Сорос в реално време! Всяка шиба — по един шпионин!'],
+];
+const CHAT = ['ФАКТ ЧЕК: НЕВЯРНО ✅', 'Източник: трус ми бро 🤡', 'Much wow, такава конспирация 🐕', 'Чакам си превода от Сорос… още не е дошъл 🦴',
+  'Аз съм доброволец, бабо 😂', 'Копейката пак говори 🪙', 'Записвам за мемета 📸', 'Ваучерите от НАТО къде са? 🐶', 'Бау! Бау! Лъжа!',
+  'Тоя памук е платен от Кремъл 🍬', 'Скрийншот → мем след 3 сек.', 'Пет хиляди на мем? Аз взимам 0 лв. 😅', 'Пращайте мемета към къщичката! 📍',
+  'Тя е вътре, обграждайте! 🏠', 'Нов мем: „Доказателствата са в Брюксел“ 🤣', 'Аз съм шиба, не бот 🐕', 'Ще я дебънкнем на живо'];
+const imgLoad = src => new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
+// 3D "TV" that hovers over the studio during the broadcast
+for (const h of HOSTS) {
+  h.tex = canvasTex(512, 400, () => {});
+  imgLoad(h.img).then(img => {
+    const c = h.tex.image, g = c.getContext('2d'), w = c.width, H = c.height;
+    g.fillStyle = '#1b1b1b'; g.fillRect(0, 0, w, H);
+    g.fillStyle = '#000'; g.fillRect(18, 18, w - 36, H - 70);
+    if (img) { const sw = img.width, sh = sw * (H - 70) / (w - 36); g.drawImage(img, 0, img.height * 0.12, sw, sh, 18, 18, w - 36, H - 70); }
+    g.fillStyle = '#d00000'; g.fillRect(30, 30, 150, 36); g.fillStyle = '#fff'; g.font = '900 24px "Russo One", sans-serif'; g.fillText('● НА ЖИВО', 40, 57);
+    g.fillStyle = '#ffd23f'; g.fillRect(18, H - 52, w - 36, 34); g.fillStyle = '#000'; g.font = '900 22px "Russo One", sans-serif'; g.fillText(h.outlet, 30, H - 27);
+    h.tex.needsUpdate = true;
+  });
+}
+const markerGroup = new THREE.Group(); scene.add(markerGroup); markerGroup.visible = false;
+{
+  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 60, 16, 1, true),
+    new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.28, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+  beam.position.y = 30; markerGroup.add(beam);
+  const tex = canvasTex(256, 256, (g, w) => {
+    g.fillStyle = '#ffd23f'; g.beginPath(); g.arc(w / 2, w / 2, w / 2 - 8, 0, 7); g.fill();
+    g.lineWidth = 10; g.strokeStyle = '#000'; g.stroke();
+    g.font = '140px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('🎤', w / 2, w / 2 + 8);
+  });
+  const icon = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false }));
+  icon.scale.set(3, 3, 1); icon.position.y = 11; icon.renderOrder = 10; markerGroup.add(icon);
+  markerGroup.userData.icon = icon;
+  const tvS = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false }));
+  tvS.scale.set(4.2, 3.3, 1); tvS.position.y = 9.5; tvS.renderOrder = 11; tvS.visible = false; markerGroup.add(tvS);
+  markerGroup.userData.tv = tvS;
+}
+function newMission(immediate) {
+  const cands = HOUSES.filter(h => h.usedUntil <= G.t && Math.hypot(h.x - P.pos.x, h.z - P.pos.z) > 25 && h !== G.mission?.house);
+  const house = pick(cands.length ? cands : HOUSES);
+  const host = pick(HOSTS);
+  G.mission = { house, host, outlet: host.outlet, topic: pick(TOPICS) };
+  markerGroup.position.set(house.x, 0, house.z); markerGroup.visible = true;
+  if (!immediate) ticker(`🎤 Нова покана: ${G.mission.outlet} те чака за интервю!`);
+}
+function startInterview(h) {
+  P.house = h; P.interview = true; P.ivT = 0; P.houseT = 0;
+  showTV();
+  hag.root.visible = false;
+  // the interview is live — every elf in the Telegram group knows where she is
+  G.houseKnown = true; G.lastKnown.copy(h.door); G.lastSeenT = G.t;
+  banner(`🎤 НА ЖИВО<br><span style="font-size:22px">${G.mission.outlet}</span>`, '#ffd23f');
+  ticker('Елфите гледат стрийма… и тичат към къщичката!');
+}
+/* ---- TV broadcast ---- */
+const TV = { lines: [], i: 0, t: 0, chatT: 0, hideT: 0, STEP: 5 };
+function showTV() {
+  const m = G.mission, host = m.host;
+  const pairs = [...QA].sort(() => Math.random() - 0.5).slice(0, 2 + Math.min(G.interviews, 2));
+  TV.lines = [{ who: 'host', text: `Добър вечер! Днес в ${host.show} гостува Гаргамела. Темата: „${m.topic}“.` }];
+  for (const [q, a] of pairs) TV.lines.push({ who: 'host', text: q }, { who: 'garg', text: a });
+  TV.i = 0; TV.t = 0; TV.chatT = 0.8; TV.hideT = 0;
+  $('tvOutlet').textContent = host.outlet; $('tvBug').textContent = host.show;
+  $('tvChat').innerHTML = '<div class="h">💬 ЧАТ НА ЖИВО</div>';
+  $('tv').classList.remove('hidden', 'nosignal'); $('dim').classList.remove('hidden');
+  $('tvProg').firstChild.style.transform = 'scaleX(0)';
+  const tvS = markerGroup.userData.tv; tvS.material.map = host.tex; tvS.material.needsUpdate = true; tvS.visible = true;
+  markerGroup.userData.icon.visible = false;
+}
+function hideTV(noSignal) {
+  $('dim').classList.add('hidden');
+  markerGroup.userData.tv.visible = false; markerGroup.userData.icon.visible = true;
+  if (noSignal) { $('tv').classList.add('nosignal'); TV.hideT = 1.8; }
+  else $('tv').classList.add('hidden');
+}
+function updateTV(dt) {
+  if (TV.hideT > 0) { TV.hideT -= dt; if (TV.hideT <= 0) { $('tv').classList.add('hidden'); $('tv').classList.remove('nosignal'); } return; }
+  if (!P.interview) return;
+  if (TV.t <= 0 && TV.i >= TV.lines.length) { finishInterview(); return; }
+  const host = G.mission.host;
+  TV.t -= dt;
+  if (TV.t <= 0 && TV.i < TV.lines.length) {
+    const l = TV.lines[TV.i++]; TV.t = TV.STEP;
+    $('tvProg').firstChild.style.transform = `scaleX(${TV.i / TV.lines.length})`;
+    $('tvHint').innerHTML = `<span>реплика ${TV.i} / ${TV.lines.length}</span><span>SPACE — следваща реплика · E — излез</span>`;
+    const pic = $('tvPic');
+    pic.style.backgroundImage = `url(${l.who === 'host' ? host.img : 'assets/gargamela.jpg'})`;
+    pic.classList.toggle('garg', l.who === 'garg');
+    $('tvName').textContent = l.who === 'host' ? host.name + ' — водещ' : 'Гаргамела — „независим анализатор“';
+    $('tvSub').innerHTML = `<div><em class="${l.who === 'garg' ? 'g' : ''}">${l.who === 'host' ? host.name.split(' ').slice(-1)[0] : 'Гаргамела'}:</em> ${l.text}</div>`;
+    snd(l.who === 'host' ? 330 : 520, 0.06, 'square', 0.025);
+  }
+  TV.chatT -= dt;
+  if (TV.chatT <= 0) {
+    TV.chatT = R(0.9, 1.8);
+    const c = $('tvChat'), d = document.createElement('div');
+    d.innerHTML = `<b>${pick(ELF_TYPES).name}:</b> ${pick(CHAT)}`;
+    c.appendChild(d); while (c.children.length > 10) c.children[1].remove();
+  }
+}
+
+function finishInterview() {
+  const fee = Math.round((20000 + G.interviews * 15000) * R(0.9, 1.15)); // in kopecks
+  G.interviews++; G.earned += fee;
+  hideTV(false);
+  G.inflation = 1 + G.interviews * 0.4;
+  const h = P.house;
+  P.interview = false; P.house = null; hag.root.visible = true; P.pos.set(h.door.x, 0, h.door.z); h.usedUntil = G.t + 25;
+  P.invuln = 4; // security escorts her out
+  markerGroup.visible = false; G.mission = null; G.missionCd = 3;
+  banner(`ИНТЕРВЮ ✓ +${kop(fee)}<br><span style="font-size:22px;color:#ff8fab">Елфите вдигат бюджета: мемета ×${G.inflation.toFixed(2)}</span>`, '#ffd23f');
+  popup(P.pos.clone().setY(3), `+${kop(fee)} хонорар`, '#ffd23f');
+  [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => snd(f, 0.14, 'square', 0.05), i * 80));
+  // angry elves rush in after the broadcast
+  const n = 3 + G.interviews;
+  for (let i = 0; i < n && elves.length < 150; i++) spawnElf(false, { x: h.door.x + R(-25, 25), z: h.door.z + R(-25, 25) });
+  G.lastKnown.copy(P.pos); G.lastSeenT = G.t;
+}
+function failInterview() {
+  G.ivFailed++;
+  hideTV(true);
+  P.interview = false;
+  banner('ИНТЕРВЮТО Е ПРЕКЪСНАТО!<br><span style="font-size:22px">Елфите заляха студиото с мемета</span>', '#ff6b6b');
+  markerGroup.visible = false; G.mission = null; G.missionCd = 4;
 }
 
 /* ---------------- interactions ---------------- */
@@ -798,6 +1203,7 @@ function interact() {
   if (P.house) { exitHouse(false); return; }
   const h = nearDoor();
   if (!h) return;
+  if (G.mission && h === G.mission.house) { startInterview(h); return; }
   if (h.usedUntil > G.t) { ticker('Тази къщичка вече е под наблюдение от Елфите!'); return; }
   P.house = h; P.houseT = 0;
   G.houseKnown = G.t - G.lastSeenT < 1.2;
@@ -808,24 +1214,30 @@ function interact() {
 }
 function exitHouse(forced) {
   const h = P.house; if (!h) return;
+  if (P.interview) {
+    if (forced) failInterview();
+    else { P.interview = false; hideTV(true); ticker('Излезе по средата на интервюто. Поканата още важи.'); }
+  }
   P.house = null; hag.root.visible = true;
   P.pos.set(h.door.x, 0, h.door.z);
-  h.usedUntil = G.t + 25;
+  if (G.mission?.house !== h) h.usedUntil = G.t + 25;
   if (forced) { banner('ИЗКАРАХА ТЕ С МЕМЕТА!', '#ff6b6b'); G.lastKnown.copy(P.pos); G.lastSeenT = G.t; }
 }
 
 function hitPlayer(m) {
-  const dmg = m.type.dmg;
-  P.hp -= dmg; G.hits++; G.hitCost += m.type.price; P.flinch = 0.35; G.shake = Math.min(1, G.shake + (m.type.big ? 0.9 : 0.45));
+  if (P.invuln > 0) { popup(P.pos.clone().setY(2.6), '🛡️ охрана', '#8ecae6'); return; }
+  const dmg = Math.max(1, Math.round(m.type.dmg * 0.55)); // global damage softener
+  const price = m.price ?? m.type.price;
+  P.hp -= dmg; G.hits++; G.hitCost += price; P.flinch = 0.35; G.shake = Math.min(1, G.shake + (m.type.big ? 0.9 : 0.45));
   G.regenBlock = 4;
   tmpV.copy(m.vel).setY(0).normalize().multiplyScalar(m.type.big ? 7 : 3); P.vel.add(tmpV);
-  popup(P.pos.clone().add(new THREE.Vector3(0, 2.7, 0)), `-${dmg} ❤ ${m.type.name}<span class="price">+${eur(m.type.price)}</span>`, m.type.big ? '#ff4d4d' : '#fff');
+  popup(P.pos.clone().add(new THREE.Vector3(0, 2.7, 0)), `-${dmg} ❤ ${m.type.name}<span class="price">+${eur(price)}</span>`, m.type.big ? '#ff4d4d' : '#fff');
   $('flash').style.opacity = 1; setTimeout(() => $('flash').style.opacity = 0, 120);
   sfx.hit();
   // stick a small copy of the meme on her
   const s = new THREE.Mesh(memeGeo, m.type.mat);
   const side = Math.random() < 0.5 ? 1 : -1;
-  s.scale.setScalar(0.42); s.position.set(R(-0.22, 0.22), R(1.15, 1.7), side * 0.39); s.rotation.set(0, side < 0 ? Math.PI : 0, R(-0.6, 0.6));
+  const yy = R(0.85, 1.7); s.scale.setScalar(0.4); s.position.set(R(-0.2, 0.2), yy, side * (0.62 - (yy - 0.62) * 0.27 + 0.03)); s.rotation.set(0, side < 0 ? Math.PI : 0, R(-0.6, 0.6));
   hag.stuck.add(s); if (hag.stuck.children.length > 16) hag.stuck.remove(hag.stuck.children[0]);
   G.lastKnown.copy(P.pos); G.lastSeenT = G.t;
   if (P.bush) P.bush.exposedUntil = G.t + 12;
@@ -833,6 +1245,9 @@ function hitPlayer(m) {
 }
 
 function die() {
+  if (P.interview) { P.interview = false; G.ivFailed++; }
+  hideTV(false);
+  markerGroup.visible = false;
   P.hp = 0; state = 'dead'; G.deadT = 0; P.house = null; hag.root.visible = true;
   sfx.die(); banner('СМЕМЕНА!', '#ff4fb0');
   document.exitPointerLock?.();
@@ -853,14 +1268,20 @@ function showOver() {
   const fav = Object.entries(G.byType).sort((a, b) => b[1] - a[1])[0];
   $('oFav').textContent = fav ? `${fav[0]} ×${fav[1]}` : '—';
   $('oPerHp').textContent = eur(G.spent / 100);
+  $('oIv').textContent = G.interviews;
+  $('oEarned').textContent = kop(G.earned);
+  $('oInfl').textContent = '×' + G.inflation.toFixed(2);
+  $('oIvFail').textContent = G.ivFailed;
+  const bal = G.earned * KOP_EUR - G.spent;
+  $('oBalance').textContent = G.interviews ? `≈ ${eur(G.earned * KOP_EUR)} по курса. ` + (bal >= 0 ? `Тя излезе на печалба с ${eur(bal)} пред бюджета на Елфите.` : `Елфите похарчиха ${eur(-bal)} повече, отколкото струваше цялата ѝ кариера.`) : 'Не даде нито едно интервю.';
   const eps = ['ТРОЛКАТА ПАДНА', 'ФАКТИТЕ ПОБЕДИХА', 'ДЕЗИНФОРМАЦИЯТА Е ОБЕЗВРЕДЕНА', 'MUCH DEFEAT. SO MEME.', 'КОПЕЙКАТА СЕ ОБЕЗЦЕНИ'];
   $('epitaph').textContent = pick(eps);
-  let best = 0; try { best = +localStorage.getItem('gargamelka-best') || 0; if (score > best) { localStorage.setItem('gargamelka-best', score); } } catch (e) { }
+  let best = 0; try { best = +localStorage.getItem('gargamela-best') || 0; if (score > best) { localStorage.setItem('gargamela-best', score); } } catch (e) { }
   $('best').textContent = score > best ? '🏆 Нов рекорд!' : `Рекорд: ${best.toLocaleString('bg-BG')}`;
   $('over').classList.remove('hidden');
   $('hud').classList.add('hidden');
 }
-const calcScore = () => Math.floor(G.t * 10) + G.dodges * 5;
+const calcScore = () => Math.floor(G.t * 10) + G.dodges * 5 + G.interviews * 500;
 
 /* ---------------- update ---------------- */
 const fwd = new THREE.Vector3(), right = new THREE.Vector3(), move = new THREE.Vector3();
@@ -868,7 +1289,15 @@ function updatePlayer(dt) {
   if (state !== 'play') { P.vel.multiplyScalar(0.9); return; }
   if (P.house) {
     let rate = 1;
-    if (G.houseKnown) rate += elves.filter(e => Math.hypot(e.pos.x - P.house.x, e.pos.z - P.house.z) < 9).length * 0.25;
+    if (G.houseKnown) rate += elves.filter(e => Math.hypot(e.pos.x - P.house.x, e.pos.z - P.house.z) < 9).length * (P.interview ? 0.12 : 0.25);
+    if (P.interview) {
+      // once she is on air the interview always finishes — elves can only waste memes on the door
+      updateTV(dt);
+      if (P.interview && Math.random() < dt * 0.5) G.lastSeenT = G.t; // the stream keeps them informed
+      P.house && (P.house.shake = Math.min(0.5, (rate - 1) * 0.3));
+      P.st = Math.min(100, P.st + 30 * dt);
+      return;
+    }
     P.houseT += dt * rate;
     P.house.shake = Math.min(1, rate - 1) * 0.5;
     P.st = Math.min(100, P.st + 30 * dt);
@@ -902,6 +1331,7 @@ function updatePlayer(dt) {
   for (const b of BUSHES) if (Math.hypot(b.x - P.pos.x, b.z - P.pos.z) < b.r * 0.9) { P.bush = b; break; }
   P.hidden = !!P.bush && P.bush.exposedUntil < G.t && P.pos.y < 0.5;
   if (P.bush) P.bush.wob = Math.min(1, P.bush.wob + dt * (moving ? 4 : 1));
+  if (P.invuln > 0) { P.invuln -= dt; hag.root.visible = P.invuln <= 0 || Math.floor(P.invuln * 10) % 2 === 0; }
 }
 
 function animateHag(dt) {
@@ -922,8 +1352,9 @@ function animateHag(dt) {
   const air = P.pos.y > 0.05;
   hag.legs[0].rotation.x = air ? -0.6 : s * 1.0 * a; hag.legs[1].rotation.x = air ? 0.4 : -s * 1.0 * a;
   const flail = P.flinch > 0 ? Math.sin(G.t * 60) * 0.6 : 0;
-  hag.arms[0].rotation.x = -s * 1.2 * a - 0.2 * a + flail; hag.arms[1].rotation.x = s * 1.2 * a - 0.2 * a - flail;
-  hag.arms[0].rotation.z = -0.12 - a * 0.35 - (P.flinch > 0 ? 0.8 : 0); hag.arms[1].rotation.z = 0.12 + a * 0.35 + (P.flinch > 0 ? 0.8 : 0);
+  hag.arms[0].rotation.x = -s * 1.2 * a - 0.2 * a + flail; hag.arms[1].rotation.x = -0.95 + s * 0.35 * a - flail * 0.5;
+  hag.candy.rotation.x = -hag.arms[1].rotation.x - hag.body.rotation.x;
+  hag.arms[0].rotation.z = -0.12 - a * 0.35 - (P.flinch > 0 ? 0.8 : 0); hag.arms[1].rotation.z = 0.15 + (P.flinch > 0 ? 0.5 : 0);
   hag.body.rotation.x = a * 0.28 + (P.flinch > 0 ? -0.3 : 0);
   hag.body.position.y = Math.abs(s) * 0.09 * a + (P.bush && !air ? -0.4 : 0);
   hag.head.rotation.y = Math.sin(G.t * 3) * 0.25 * (1 - a) + Math.sin(P.phase * 0.5) * 0.15 * a;
@@ -934,6 +1365,7 @@ function animateHag(dt) {
 function updateElves(dt) {
   const t = G.t;
   const playerTarget = !P.house;
+  G.throwBudget = Math.min(3, (G.throwBudget || 0) + dt * (0.6 + G.t / 100));
   for (const e of elves) {
     e.born = Math.min(1, e.born + dt * 2.5);
     e.m.root.scale.setScalar(e.s * (e.born < 1 ? 1 - Math.pow(1 - e.born, 3) * 1.0 + Math.sin(e.born * Math.PI) * 0.2 : 1));
@@ -942,17 +1374,17 @@ function updateElves(dt) {
     if (e.seeT <= 0 && state === 'play') {
       e.seeT = R(0.18, 0.3);
       const wasSeeing = e.sees;
-      const sight = 34 + G.stars * 6;
+      const sight = 26 + G.stars * 6 + e.type.sight;
       e.sees = playerTarget && !P.hidden && dist < sight && los(e.pos.x, e.pos.z, P.pos.x, P.pos.z);
       // shibas can sniff you out of a bush
       if (playerTarget && P.bush && dist < 2.6 && P.bush.exposedUntil < t) {
         P.bush.exposedUntil = t + 14; e.sees = true; banner('ЕЛФ ТЕ НАДУШИ!', '#ff9f1c'); sfx.woof(1);
       }
-      if (e.sees && !wasSeeing && Math.random() < 0.3) { sfx.woof(clamp(1 - dist / 40, 0.1, 1)); if (Math.random() < 0.25) ticker(`Елф #${e.id}: „${pick(SHOUTS)}“`); }
+      if (e.sees && !wasSeeing && Math.random() < 0.3) { sfx.woof(clamp(1 - dist / 40, 0.1, 1)); if (Math.random() < 0.25) ticker(`${e.type.name} #${e.id}: „${pick(SHOUTS)}“`); }
     }
     if (e.sees && state === 'play') { G.lastKnown.copy(P.pos); G.lastSeenT = t; }
 
-    let tx, tz, spd = Math.min(8.9, e.speed * (1 + t / 260));
+    let tx, tz, spd = Math.min(8.3, e.speed * (1 + t / 420));
     if (state !== 'play') {
       // celebrate around the fallen hag
       const a = e.cheer + t * 0.3, r = 3.5 + (e.id % 5) * 0.9;
@@ -986,10 +1418,12 @@ function updateElves(dt) {
     // throwing
     e.cd -= dt;
     if (state === 'play' && e.cd <= 0) {
-      if (e.sees && dist < 27) {
+      if (e.sees && dist < 22 && G.throwBudget >= 1 && t > 5) {
+        G.throwBudget--;
         elfThrow(e, P.pos, true);
-        e.cd = R(1.3, 2.6) * Math.max(0.32, 1 - t / 260);
-      } else if (P.house && G.houseKnown && Math.hypot(e.pos.x - P.house.x, e.pos.z - P.house.z) < 16) {
+        e.cd = R(2.8, 5.0) * e.type.cd * Math.max(0.5, 1 - t / 420);
+      } else if (P.house && G.houseKnown && G.throwBudget >= 1 && Math.hypot(e.pos.x - P.house.x, e.pos.z - P.house.z) < 16) {
+        G.throwBudget--;
         elfThrow(e, P.house.door, false); // wasted memes on the house door, still paid for
         e.cd = R(1.0, 2.0);
       }
@@ -1002,7 +1436,7 @@ function updateElves(dt) {
     const m = e.m;
     m.root.rotation.y = e.face;
     m.legs[0].rotation.x = s * 0.9 * a; m.legs[1].rotation.x = -s * 0.9 * a;
-    m.arms[0].rotation.x = -s * 0.8 * a;
+    m.arms[0].rotation.x = -1.0 - s * 0.25 * a;
     e.throwT = Math.max(0, e.throwT - dt);
     m.arms[1].rotation.x = e.throwT > 0 ? -2.8 + (0.35 - e.throwT) * 8 : s * 0.8 * a;
     m.body.position.y = Math.abs(s) * 0.06 * a;
@@ -1030,7 +1464,7 @@ function updateMemes(dt) {
       p.y = 0.04; m.mesh.rotation.set(-Math.PI / 2, 0, R(0, 6)); splats.push({ mesh: m.mesh, t: 0 }); memes.splice(i, 1);
       const d = Math.hypot(p.x - P.pos.x, p.z - P.pos.z);
       if (state === 'play' && d < 3.2 && !P.house) { G.dodges++; if (Math.random() < 0.35) popup(p.clone().setY(1), '+5 избегнат', '#8ecae6'); }
-      if (m.type.big && state === 'play' && !P.house && d < 3.2) { hitPlayer({ ...m, type: { ...m.type, dmg: 12, name: 'Ударна вълна', price: 0 } }); }
+      if (m.type.big && state === 'play' && !P.house && d < 3.2) { hitPlayer({ ...m, price: 0, type: { ...m.type, dmg: 12, name: 'Ударна вълна', price: 0 } }); }
       sfx.splat(clamp(1 - d / 30, 0, 1));
       continue;
     } else {
@@ -1047,11 +1481,11 @@ function updateMemes(dt) {
 }
 
 function updateRain(dt) {
-  if (G.t >= 150 && !G.apoc) { G.apoc = true; banner('☢ МЕМ АПОКАЛИПСИС ☢<br><span style="font-size:22px">Елфите пуснаха дроновете</span>', '#ff4d4d'); sfx.star(); }
+  if (G.t >= 240 && !G.apoc) { G.apoc = true; banner('☢ МЕМ АПОКАЛИПСИС ☢<br><span style="font-size:22px">Елфите пуснаха дроновете</span>', '#ff4d4d'); sfx.star(); }
   if (!G.apoc || state !== 'play') return;
   G.rainCd -= dt;
   if (G.rainCd <= 0) {
-    const k = G.t - 150;
+    const k = G.t - 240;
     G.rainCd = Math.max(0.18, 1.5 - k / 50);
     const count = 1 + Math.floor(k / 25);
     for (let i = 0; i < count; i++) {
@@ -1079,12 +1513,17 @@ function updateRain(dt) {
 
 function updateSpawns(dt) {
   if (state !== 'play') return;
-  const cap = Math.min(48, 4 + Math.floor(G.t / 4.5));
+  const cap = Math.min(140, 30 + Math.floor(G.t * 0.75));
   G.spawnCd -= dt;
   if (G.spawnCd <= 0 && elves.length < cap) {
-    const e = spawnElf(false);
-    G.spawnCd = Math.max(0.45, 4.2 - G.t / 38);
-    if (G.stars >= 4) { e.off.set(R(-6, 6), 0, R(-6, 6)); }
+    // a whole Telegram group shows up at once
+    const a = R(0, Math.PI * 2), r = R(40, 60);
+    let at = { x: P.pos.x + Math.cos(a) * r, z: P.pos.z + Math.sin(a) * r };
+    const d = Math.hypot(at.x, at.z); if (d > WORLD - 6) { at.x *= (WORLD - 6) / d; at.z *= (WORLD - 6) / d; }
+    const n = Math.min(cap - elves.length, 3 + Math.floor(Math.random() * (3 + G.stars)));
+    for (let i = 0; i < n; i++) spawnElf(false, at);
+    if (Math.random() < 0.5) ticker(`Нова Телеграм група: +${n} елфи на хайка!`);
+    G.spawnCd = Math.max(1.6, 6 - G.t / 30);
   }
 }
 
@@ -1130,6 +1569,12 @@ function drawRadar() {
     const [x, y] = T(h.x, h.z), q = h.r * sc * 1.1; rctx.fillStyle = h.usedUntil > G.t ? '#6d6458' : '#f1e6cf'; rctx.fillRect(x - q, y - q, q * 2, q * 2);
     rctx.strokeStyle = '#5c3317'; rctx.lineWidth = 2; rctx.strokeRect(x - q, y - q, q * 2, q * 2);
   }
+  if (G.mission) {
+    let [x, y] = T(G.mission.house.x, G.mission.house.z);
+    const dx = x - C, dy = y - C, d = Math.hypot(dx, dy); if (d > C - 16) { x = C + dx / d * (C - 16); y = C + dy / d * (C - 16); }
+    rctx.fillStyle = '#ffd23f'; rctx.strokeStyle = '#000'; rctx.lineWidth = 3; rctx.beginPath(); rctx.arc(x, y, 14, 0, 7); rctx.fill(); rctx.stroke();
+    rctx.font = '18px sans-serif'; rctx.textAlign = 'center'; rctx.textBaseline = 'middle'; rctx.fillText('🎤', x, y + 1);
+  }
   if (G.t - G.lastSeenT < 22) { const [x, y] = T(G.lastKnown.x, G.lastKnown.z); rctx.strokeStyle = '#ffd23f'; rctx.setLineDash([5, 4]); rctx.lineWidth = 2; rctx.beginPath(); rctx.arc(x, y, 12, 0, 7); rctx.stroke(); rctx.setLineDash([]); }
   for (const r of rains) { const [x, y] = T(r.tgt.x, r.tgt.z); rctx.strokeStyle = '#ff3030'; rctx.lineWidth = 2; rctx.beginPath(); rctx.arc(x, y, 5, 0, 7); rctx.stroke(); }
   for (const m of memes) { const [x, y] = T(m.mesh.position.x, m.mesh.position.z); rctx.fillStyle = '#ffe66d'; rctx.fillRect(x - 2, y - 2, 4, 4); }
@@ -1157,14 +1602,21 @@ function updateHUD(dt) {
   $('money').firstChild.nodeValue = eur(G.spent);
   $('memecount').textContent = `${G.thrown} мемета хвърлени · ${elves.length} елфи на хайка`;
   updateStars(false);
+  const mi = G.mission;
+  const dist = mi ? Math.round(Math.hypot(mi.house.door.x - P.pos.x, mi.house.door.z - P.pos.z)) : 0;
+  $('mission').innerHTML = (mi
+    ? `<div class="t">🎤 МИСИЯ: интервю за ${mi.outlet}</div><div class="topic">Тема: „${mi.topic}“</div><div>${P.interview ? '📡 В ЕФИР' : `📍 ${dist} м — следвай жълтия лъч`}</div>`
+    : `<div class="t">🎤 Чакаш следващата покана…</div>`)
+    + `<div class="row"><span class="earn">💰 Хонорари: ${kop(G.earned)} (${G.interviews})</span><span class="infl">Мемета ×${G.inflation.toFixed(2)}</span></div>`;
   const hs = $('hideState');
-  if (P.house) hs.innerHTML = `🍄 В КЪЩИЧКАТА${G.houseKnown ? ' — <span style="color:#ff6b6b">ОБСАДЕНА!</span>' : ''}<div class="tbar"><i style="transform:scaleX(${1 - P.houseT / P.houseMax})"></i></div><div style="font-size:12px;opacity:.8">E — излез</div>`;
+  if (P.interview) hs.innerHTML = '';
+  else if (P.house) hs.innerHTML = `🍄 В КЪЩИЧКАТА${G.houseKnown ? ' — <span style="color:#ff6b6b">ОБСАДЕНА!</span>' : ''}<div class="tbar"><i style="transform:scaleX(${1 - P.houseT / P.houseMax})"></i></div><div style="font-size:12px;opacity:.8">E — излез</div>`;
   else if (P.hidden) hs.innerHTML = '🌿 СКРИТА В ХРАСТА';
   else if (P.bush) hs.innerHTML = '<span style="color:#ff9f1c">🌿 ХРАСТЪТ Е РАЗКРИТ</span>';
   else hs.innerHTML = '';
   const pr = $('prompt');
   const h = !P.house && state === 'play' && nearDoor();
-  if (h) { pr.classList.remove('hidden'); pr.innerHTML = h.usedUntil > G.t ? '🚫 Къщичката е наблюдавана' : '<kbd>E</kbd> Скрий се в къщичката'; }
+  if (h) { pr.classList.remove('hidden'); pr.innerHTML = (G.mission && h === G.mission.house) ? `<kbd>E</kbd> Дай интервю за ${G.mission.outlet}` : h.usedUntil > G.t ? '🚫 Къщичката е наблюдавана' : '<kbd>E</kbd> Скрий се в къщичката'; }
   else pr.classList.add('hidden');
   if (G.tickerT > 0) { G.tickerT -= dt; if (G.tickerT <= 0) $('ticker').style.opacity = 0; }
   if (bannerT > 0) { bannerT -= dt; if (bannerT <= 0) $('banner').style.opacity = 0; }
@@ -1181,6 +1633,7 @@ function updateHUD(dt) {
 function updateWorldFx(dt) {
   for (const b of BUSHES) { if (b.wob > 0) { b.wob = Math.max(0, b.wob - dt * 1.5); const w = Math.sin(G.t * 25) * 0.06 * b.wob; b.mesh.scale.set(1 + w, 1 - w, 1 + w); } }
   for (const h of HOUSES) { if (h.shake > 0) { h.mesh.rotation.z = Math.sin(G.t * 40) * 0.03 * h.shake; h.shake = Math.max(0, h.shake - dt); } else h.mesh.rotation.z = 0; }
+  if (markerGroup.visible) { const ic = markerGroup.userData.icon; ic.position.y = 11 + Math.sin(performance.now() * 0.004) * 0.6; }
   const f = scene.userData.flag; if (f) f.rotation.y = Math.sin(performance.now() * 0.002) * 0.25;
   const c = P.house ? P.house : P.pos;
   sun.position.set(c.x + 35, 70, c.z + 25); sun.target.position.set(c.x, 0, c.z);
@@ -1196,8 +1649,13 @@ function frame() {
   if (state === 'play') {
     G.t += dt;
     updatePlayer(dt); updateSpawns(dt); updateElves(dt); updateMemes(dt); updateRain(dt);
-    if ((P.hidden || P.house) && G.stars < 5 && G.regenBlock <= 0 && G.t - G.lastSeenT > 3) P.hp = Math.min(100, P.hp + 2.5 * dt);
+    if (G.stars < 5 && G.regenBlock <= 0) {
+      if ((P.hidden || P.house) && G.t - G.lastSeenT > 2) P.hp = Math.min(100, P.hp + 4 * dt);
+      else if (G.t - G.lastSeenT > 5) P.hp = Math.min(100, P.hp + 1.5 * dt); // catch your breath when nobody sees you
+    }
     G.regenBlock -= dt;
+    if (!G.mission && (G.missionCd -= dt) <= 0) newMission(false);
+    if (TV.hideT > 0) updateTV(dt);
     updateHUD(dt);
   } else if (state === 'dead' || state === 'over') {
     G.deadT += dt;
@@ -1214,7 +1672,7 @@ function frame() {
   renderer.render(scene, camera);
 }
 frame();
-if (location.hash === '#debug') window.dbg = { G, P, elves, memes, startGame };
+if (location.hash === '#debug') window.dbg = { G, P, elves, memes, startGame, setYaw: v => { yaw = v; }, interact: () => interact() };
 </script>
 </body>
 </html>
