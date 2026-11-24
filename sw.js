@@ -1,5 +1,5 @@
-// Гаргамела: Меме Хайка — service worker (offline play + installability)
-const VERSION = 'gargamela-v1';
+// Гаргамелка — service worker (offline play + installability)
+const VERSION = 'gargamelka-v2';
 const CORE = [
   './', './index.html', './manifest.webmanifest',
   './assets/gargamela.jpg', './assets/elf-logo.png',
