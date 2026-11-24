@@ -14,6 +14,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Гаргамела">
+<meta name="theme-color" content="#ff4fb0">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <title>Гаргамела: Меме Хайка</title>
 <link rel="icon" href="assets/elf-logo.png">
 <meta name="description" content="Елфите те гонят с мемета, а всяко меме струва пари. Бягай, крий се, давай интервюта за копейки и фрасвай елфите със захарен памук. Колко ще им струва да те смемат?">
@@ -66,6 +71,11 @@
   #stars.flash b.on { animation:flash .25s steps(2) 8; }
   @keyframes flash { 50% { color:#fff; } }
   .stat { font-family:'Russo One'; font-size:22px; text-shadow:0 2px 0 #000, 0 0 6px #000; line-height:1.25; }
+  #bossTimer { display:inline-block; margin-top:6px; font:800 13px 'Rubik'; background:#000a; border:2px solid #ff4d4d88; border-radius:8px; padding:3px 9px; text-shadow:0 1px 2px #000; }
+  #bossTimer b { font-family:'Russo One'; font-weight:400; color:#ffd23f; }
+  #bossTimer.live { border-color:#ff2020; background:#a00000cc; animation:bosspulse .7s infinite alternate; }
+  #bossTimer.soon b { color:#ff4d4d; }
+  #bossTimer:empty { display:none; }
   .stat small { font-family:'Rubik'; font-size:12px; font-weight:800; opacity:.85; letter-spacing:.5px; display:block; margin-top:4px; }
   #money { color:#9ef01a; }
 
@@ -93,6 +103,9 @@
   .pin::after { content:attr(data-d); position:absolute; left:50%; top:100%; transform:translate(-50%, 3px); background:#000c; color:var(--c); font:400 12px 'Russo One'; padding:1px 6px; border-radius:8px; white-space:nowrap; }
   .pin.edge { opacity:.85; width:36px; height:36px; margin:-18px 0 0 -18px; }
   .pin.near { width:58px; height:58px; margin:-29px 0 0 -29px; }
+  .pin.boss { border-radius:12px; width:56px; height:56px; margin:-28px 0 0 -28px; background-color:#2a0a0a; background-size:170% auto; background-position:50% 2%; animation:bosspulse .7s infinite alternate; }
+  .pin.boss::after { color:#fff; background:#d00000; }
+  @keyframes bosspulse { from { box-shadow:0 0 0 2px #000, 0 0 8px #ff2020; } to { box-shadow:0 0 0 2px #000, 0 0 26px #ff2020; } }
   body.onair #pins { display:none; }
   #dim { position:fixed; inset:0; z-index:4; background:radial-gradient(ellipse at center, #000a, #000d); pointer-events:none; }
   #tv { position:absolute; z-index:5; left:50%; top:50%; transform:translate(-50%,-50%); width:min(900px,94vw); display:flex; gap:12px; align-items:stretch; flex-wrap:wrap; }
@@ -166,6 +179,7 @@
   body.touch #stars { font-size:22px; }
   body.touch .stat { font-size:15px; }
   body.touch .stat small { font-size:10px; }
+  body.touch #bossTimer { font-size:10.5px; padding:2px 6px; margin-top:3px; }
   body.touch #mission { left:max(10px, env(safe-area-inset-left)); top:66px; width:250px; font-size:10.5px; padding:5px 8px; line-height:1.35; }
   body.touch #mission .t { font-size:12px; }
   body.touch #mission .topic, body.touch #mission .hl small { display:none; }
@@ -201,6 +215,21 @@
   .grid div span { display:block; font-family:'Russo One'; font-size:22px; color:var(--gold); }
   #best { font-size:13px; opacity:.8; margin-left:14px; }
   #pause { z-index:11; }
+  /* Quake II style drop-down console */
+  #console { position:fixed; left:0; right:0; top:0; height:50vh; z-index:60; display:flex; flex-direction:column; justify-content:flex-end;
+    background:linear-gradient(#1b120bf2, #2a1c10f5), repeating-linear-gradient(0deg, #0000 0 3px, #0003 3px 4px);
+    background-blend-mode:multiply; border-bottom:3px solid #b5651d; box-shadow:0 6px 24px #000c;
+    font:15px/1.35 'Courier New', ui-monospace, monospace; color:#e8a33d; text-shadow:1px 1px 0 #000;
+    transform:translateY(-102%); transition:transform .22s ease-out; pointer-events:none; }
+  #console.open { transform:none; pointer-events:auto; }
+  #conLog { overflow-y:auto; padding:10px 14px 4px; white-space:pre-wrap; word-break:break-word; }
+  #conLog .ok { color:#7cfc7c; } #conLog .err { color:#ff6b6b; } #conLog .dim { color:#a07a4a; } #conLog .cmd { color:#fff2c2; }
+  .conIn { display:flex; align-items:center; gap:6px; padding:4px 14px 10px; }
+  .conIn span { color:#fff2c2; }
+  #conInput { flex:1; background:transparent; border:0; outline:0; color:#fff2c2; font:inherit; caret-color:#ffb000; }
+  #conVer { position:absolute; right:12px; bottom:8px; color:#a07a4a; font-size:12px; }
+  #cheats { margin-top:6px; font:400 12px 'Russo One'; color:#7cfcff; text-shadow:0 1px 2px #000, 0 0 8px #00e5ff; }
+  #cheats:empty { display:none; }
   @media (max-width: 860px), (max-height: 540px) {
     #tv { width:min(96vw, 150vh); }
     #tv .tvframe { flex:1 1 100%; padding:7px 7px 16px; }
@@ -249,6 +278,8 @@
     <div class="stat" id="time">0:00</div>
     <div class="stat" id="score">0</div>
     <div class="stat" id="money">0.00 €<small id="memecount">0 мемета хвърлени · 0 елфи</small></div>
+    <div id="bossTimer"></div>
+    <div id="cheats"></div>
   </div>
   <div id="mission"></div>
   <div id="dim" class="hidden"></div>
@@ -290,7 +321,7 @@
     </div>
     <div class="copy">
       <h1>ГАРГАМЕЛА<em>МЕМЕ ХАЙКА</em></h1>
-      <p class="lead">Цялото село на Елфите е по петите ти. Те нямат оръжия — имат <b>мемета</b>. И всяко мемe струва пари.
+      <p class="lead">Цялото село на Елфите е по петите ти. Те нямат оръжия — имат <b>мемета</b>. И всяко меме струва пари.
         Не можеш да спечелиш. Можеш само да бягаш, да се криеш и да оцелееш колкото се може по-дълго.</p>
       <div class="keys touch-only" style="display:none">
         <span>🕹️</span><span>джойстик вляво — бягай (до края = спринт)</span>
@@ -299,6 +330,8 @@
         <span>🍭</span><span>фрасни елфа със захарния памук — оаква го и го зашеметява</span>
         <span>🎤</span><span><b>МИСИЯ:</b> давай интервюта в маркираните къщички — печелиш хонорари, но меметата на Елфите поскъпват</span>
         <span>🌿</span><span>влез в храст — елфите не те виждат, докато не те надушат</span>
+        <span>⭐</span><span>рядко някъде се крие звезда (зад гъби, в храсти, до дървета) — вземи я и хайката пада с една звезда</span>
+        <span>👔</span><span>понякога за малко идва шеф (Капутин, Адолф Путлер, Бункерина, Бункер нюз) — огромен, замеря със серии мемета и вдига хайката с една звезда. Бягай!</span>
       </div>
       <div class="keys desk-only">
         <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>бягай</span>
@@ -308,14 +341,23 @@
         <span><kbd>F</kbd> / 🖱️</span><span>фрасни елфа със захарния памук — оаква го целия и го зашеметява</span>
         <span>🎤</span><span><b>МИСИЯ:</b> давай интервюта в маркираните къщички — печелиш хонорари, но всяко интервю вдига цената на меметата на Елфите</span>
         <span>🌿</span><span>влез в храст — елфите не те виждат, докато не те надушат</span>
+        <span>⭐</span><span>рядко някъде се крие звезда (зад гъби, в храсти, до дървета) — вземи я и хайката пада с една звезда</span>
+        <span>👔</span><span>понякога за малко идва шеф (Капутин, Адолф Путлер, Бункерина, Бункер нюз) — огромен, замеря със серии мемета и вдига хайката с една звезда. Бягай!</span>
         <span>🖱️</span><span>камера (кликни в играта за заключване на мишката)</span>
       </div>
+      <div id="fileWarn" style="display:none;margin:12px 0;padding:10px 14px;border-radius:10px;background:#a00000;color:#fff;font-weight:800;line-height:1.45">
+        ⚠ Играта е отворена директно като файл (file://) и браузърът блокира картинките — босовете и телевизорите няма да се виждат.<br>
+        Пусни я през сървър: <code style="background:#0006;padding:2px 6px;border-radius:5px">python3 -m http.server 8765</code> в папката на играта и отвори <b>http://localhost:8765</b>
+      </div>
       <button class="go" id="startBtn">БЯГАЙ!</button>
+      <button class="go" id="installBtn" style="display:none;margin-left:10px;background:#2b2b40;color:#fff;font-size:18px;padding:12px 20px">📲 ИНСТАЛИРАЙ</button>
+      <div id="iosInstall" style="display:none;margin-top:12px;font-size:14px;font-weight:800;opacity:.9">📲 Инсталирай като приложение: натисни <b>Сподели</b> <span style="font-size:17px">⎙</span> → <b>„Добави към началния екран“</b></div>
       <div class="elfnote"><img src="assets/elf-logo.png" alt=""><span>Елфите са вдъхновени от <b>BG Elves</b> — elves.bg</span></div>
     </div>
   </div>
 </div>
 
+<div id="console"><div id="conLog"></div><div class="conIn"><span>]</span><input id="conInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div><div id="conVer">Гаргамела: Меме Хайка v3.20</div></div>
 <div id="pause" class="screen hidden"><div style="text-align:center"><h1>ПАУЗА</h1><button class="go" id="resumeBtn">ПРОДЪЛЖИ</button><br><button class="go" id="muteBtn" style="margin-top:14px;font-size:18px;padding:10px 22px;background:#333;color:#fff">🔊 МУЗИКА: ВКЛ</button><div style="opacity:.6;font-size:13px;margin-top:8px" class="desk-only">M — музика вкл/изкл</div></div></div>
 
 <div id="over" class="screen hidden">
@@ -344,11 +386,13 @@
         <div>Точност на Елфите<span id="oAcc">0%</span></div>
         <div>Мобилизирани Елфи<span id="oElves">0</span></div>
         <div>Избегнати мемета<span id="oDodge">0</span></div>
-        <div>Любим мем на Елфите<span id="oFav">—</span></div>
+        <div>Любимо меме на Елфите<span id="oFav">—</span></div>
         <div>Цена на 1 точка живот<span id="oPerHp">0 €</span></div>
-        <div>Мем инфлация накрая<span id="oInfl">×1.00</span></div>
+        <div>Меме инфлация накрая<span id="oInfl">×1.00</span></div>
         <div>Провалени интервюта<span id="oIvFail">0</span></div>
         <div>Оакани елфи 🍭<span id="oWhacks">0</span></div>
+        <div>Намерени звезди ⭐<span id="oStars">0</span></div>
+        <div>Визити от шефовете 👔<span id="oBoss">0</span></div>
       </div>
       <button class="go" id="againBtn">ПАК! (R)</button><span id="best"></span>
     </div>
@@ -360,6 +404,23 @@ import * as THREE from 'three';
 
 /* ---------------- helpers ---------------- */
 const $ = id => document.getElementById(id);
+if (location.protocol === 'file:') $('fileWarn').style.display = 'block'; // file:// blocks textures (CORS)
+/* ---------------- PWA: offline cache + install prompt ---------------- */
+if ('serviceWorker' in navigator && location.protocol !== 'file:') addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+{
+  const standalone = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone;
+  let deferred = null;
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; if (!standalone) $('installBtn').style.display = 'inline-block'; });
+  $('installBtn').onclick = async () => {
+    if (!deferred) return;
+    deferred.prompt(); const { outcome } = await deferred.userChoice; deferred = null;
+    if (outcome === 'accepted') $('installBtn').style.display = 'none';
+  };
+  addEventListener('appinstalled', () => { $('installBtn').style.display = 'none'; });
+  // iOS Safari has no install prompt — show the manual hint instead
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (ios && !standalone) $('iosInstall').style.display = 'block';
+}
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -808,7 +869,7 @@ function bake(group, shadow) {
 
 const FUR = [0xd88a3a, 0xe3a257, 0xc9772f];
 // stats: spd = speed multiplier, sight = extra view distance, cd = throw cooldown multiplier,
-// acc = aim spread multiplier (lower = better), big = chance for a МЕГА МЕМ
+// acc = aim spread multiplier (lower = better), big = chance for a МЕГА МЕМЕ
 const ELF_TYPES = [
   { key: 'soldier', name: 'Елф-войник', w: 3, spd: 1.0, sight: 0, cd: 1.0, acc: 0.8, big: 0.03 },
   { key: 'miner', name: 'Елф-миньор', w: 3, spd: 0.95, sight: 14, cd: 1.0, acc: 1.0, big: 0.03 },
@@ -953,7 +1014,7 @@ const MEMES = [
   { name: 'Всичко гори', emoji: '🔥', top: 'ВСИЧКО Е', bot: 'НАРЕД', price: 3, dmg: 10, bg: '#e85d04', w: 2 },
   { name: 'Ботоферма', emoji: '🤖', top: 'ВИЖДАМ', bot: 'БОТ', price: 2.5, dmg: 9, bg: '#577590', w: 2 },
   { name: 'Пинокио', emoji: '🤥', top: 'ИЗТОЧНИК:', bot: 'НЯМА', price: 4, dmg: 11, bg: '#ffb703', w: 1.5 },
-  { name: 'МЕГА МЕМ', emoji: '💥', top: 'МЕГА', bot: 'МЕМ', price: 25, dmg: 24, bg: '#9d0208', w: 0, big: true },
+  { name: 'МЕГА МЕМЕ', emoji: '💥', top: 'МЕГА', bot: 'МЕМЕ', price: 25, dmg: 24, bg: '#9d0208', w: 0, big: true },
 ];
 for (const m of MEMES) {
   m.tex = canvasTex(256, 256, (g, w) => {
@@ -1109,16 +1170,18 @@ function clearWorld() {
 function resetGame() {
   clearWorld();
   Object.assign(G, {
-    t: 0, whacks: 0, spent: 0, thrown: 0, hits: 0, hitCost: 0, dodges: 0, elvesTotal: 0, byType: {},
+    t: 0, heat: 0, bonus: 0, bossCd: 20, bossesSeen: 0, starsTaken: 0, starCd: R(35, 50), whacks: 0, spent: 0, thrown: 0, hits: 0, hitCost: 0, dodges: 0, elvesTotal: 0, byType: {},
     lastKnown: new THREE.Vector3(), lastSeenT: -999, spawnCd: 2, stars: 1, shake: 0, apoc: false,
     rainCd: 0, deadT: 0, houseKnown: false, tickerT: 0, slow: 1, regenBlock: 0,
     interviews: 0, ivFailed: 0, earned: 0, inflation: 1, mission: null, missions: [], throwBudget: 0,
   });
-  Object.assign(P, { invuln: 0, hp: 100, st: 100, vy: 0, hidden: false, bush: null, house: null, houseT: 0, flinch: 0, exhausted: false, face: Math.PI, interview: false, ivT: 0, ivDur: 8, swingT: 0, swingCd: 0 });
+  Object.assign(P, { invuln: 0, hp: 100, st: 100, vy: 0, hidden: false, bush: null, house: null, houseT: 0, flinch: 0, exhausted: false, face: Math.PI, interview: false, ivT: 0, ivDur: 8, swingT: 0, swingCd: 0, railCd: 0, railKick: 0 });
   P.pos.set(0, 0, 18); P.vel.set(0, 0, 0);
   hag.root.visible = true; hag.root.rotation.set(0, 0, 0); hag.body.position.set(0, 0, 0); hag.body.rotation.set(0, 0, 0);
   for (const h of HOUSES) h.usedUntil = 0;
   for (const b of BUSHES) b.exposedUntil = 0;
+  for (const sp of starPickups) scene.remove(sp.g); starPickups.length = 0;
+  removeBoss();
   yaw = 0; pitch = 0.42;
   for (let i = 0; i < 26; i++) spawnElf(true);
   updateStars(true);
@@ -1185,7 +1248,7 @@ function popup(pos, html, color = '#fff') {
 }
 function updateStars(silent) {
   const t = G.t;
-  const s = t < 35 ? 1 : t < 85 ? 2 : t < 145 ? 3 : t < 210 ? 4 : 5;
+  const h = G.heat, s = h < 35 ? 1 : h < 85 ? 2 : h < 145 ? 3 : h < 210 ? 4 : 5; // heat, not raw time: star pickups cool it down
   if (s !== G.stars || silent) {
     const prev = G.stars; G.stars = s;
     [...$('stars').children].forEach((b, i) => b.classList.toggle('on', i < s));
@@ -1198,7 +1261,7 @@ function updateStars(silent) {
   }
 }
 
-const SHOUTS = ['Хвани тролката!', 'Мем в лицето!', 'Фактите са на наша страна!', 'Much wow, такава бабичка!', 'Пази се от захарния памук!', 'Бързо в Телеграм групата!',
+const SHOUTS = ['Хвани тролката!', 'Меме в лицето!', 'Фактите са на наша страна!', 'Much wow, такава бабичка!', 'Пази се от захарния памук!', 'Бързо в Телеграм групата!',
   'Ще те смемим!', 'Копейката бяга!', 'Вижте я, вижте я!', 'Някой да донесе още мемета!', 'Източник? Няма източник!', 'Бау! Бау! Факт-чек!', 'Розовата коса е там!'];
 
 /* ---------------- spawning ---------------- */
@@ -1259,7 +1322,7 @@ function elfThrow(e, target, lead) {
   const type = (G.stars >= 2 && Math.random() < e.type.big) ? MEMES.find(m => m.big) : pickMeme(G.stars >= 3);
   const dist = Math.hypot(target.x - start.x, target.z - start.z);
   const T = clamp(dist / R(15, 19), 0.35, 1.6);
-  const spread = Math.max(0.8, 3.2 - G.t / 120) * (P.bush ? 1.4 : 1) * e.type.acc;
+  const spread = Math.max(0.8, 3.2 - G.heat / 120) * (P.bush ? 1.4 : 1) * e.type.acc;
   const aim = new THREE.Vector3(
     target.x + (lead ? P.vel.x * T * R(0.5, 1.0) : 0) + R(-spread, spread),
     (target.y || 0) + 1.2,
@@ -1285,13 +1348,13 @@ const HOSTS = [
 // [host question, Gargamela's answer]
 const QA = [
   ['Госпожо Гаргамела, кои са всъщност тези Елфи?', 'Тролове! Платени тролове с кучешки муцуни, ето какво са!'],
-  ['Колко пари според вас взимат Елфите?', 'По пет хиляди евро на мем! Имам източник… в една Телеграм група.'],
+  ['Колко пари според вас взимат Елфите?', 'По пет хиляди евро на меме! Имам източник… в една Телеграм група.'],
   ['Кой им плаща, според вас?', 'Сорос, разбира се! Видях го — праща им кокалчета по куриер всеки петък!'],
   ['А как точно им превежда парите?', 'В биткойни и в кучешки лакомства! Всичко е документирано… в главата ми.'],
-  ['Защо Елфите ви замерят с мемета?', 'Защото казвам истината! А истината боли… особено като те удари мем в лицето.'],
+  ['Защо Елфите ви замерят с мемета?', 'Защото казвам истината! А истината боли… особено като те удари меме в лицето.'],
   ['Имате ли доказателства?', 'Доказателствата са засекретени в Брюксел! Ако ги покажа, ще ме смемят.'],
   ['Защо мислите, че са шиби?', 'Японска порода! Значи външна намеса! Логично, нали?'],
-  ['Опасни ли са меметата за децата?', 'По-опасни от ракетите! Едно дете видя мем и започна да проверява факти!'],
+  ['Опасни ли са меметата за децата?', 'По-опасни от ракетите! Едно дете видя меме и започна да проверява факти!'],
   ['Какво мислите за фактчекърите?', 'Проверяват факти! Кой им е разрешил?! Аз фактите си ги измислям сама!'],
   ['Вярно ли е, че Елфите са доброволци?', 'Доброволци ли? Ха! НАТО им дава ваучери за кучешка храна!'],
   ['Какво ще кажете на зрителите?', 'Не вярвайте на никого! Освен на мен. И на захарния памук.'],
@@ -1301,8 +1364,8 @@ const QA = [
 ];
 const CHAT = ['ФАКТ ЧЕК: НЕВЯРНО ✅', 'Източник: трус ми бро 🤡', 'Much wow, такава конспирация 🐕', 'Чакам си превода от Сорос… още не е дошъл 🦴',
   'Аз съм доброволец, бабо 😂', 'Копейката пак говори 🪙', 'Записвам за мемета 📸', 'Ваучерите от НАТО къде са? 🐶', 'Бау! Бау! Лъжа!',
-  'Тоя памук е платен от Кремъл 🍬', 'Скрийншот → мем след 3 сек.', 'Пет хиляди на мем? Аз взимам 0 лв. 😅', 'Пращайте мемета към къщичката! 📍',
-  'Тя е вътре, обграждайте! 🏠', 'Нов мем: „Доказателствата са в Брюксел“ 🤣', 'Аз съм шиба, не бот 🐕', 'Ще я дебънкнем на живо'];
+  'Тоя памук е платен от Кремъл 🍬', 'Скрийншот → меме след 3 сек.', 'Пет хиляди на меме? Аз взимам 0 лв. 😅', 'Пращайте мемета към къщичката! 📍',
+  'Тя е вътре, обграждайте! 🏠', 'Ново меме: „Доказателствата са в Брюксел“ 🤣', 'Аз съм шиба, не бот 🐕', 'Ще я дебънкнем на живо'];
 const imgLoad = src => new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
 // 3D "TV" that hovers over the studio during the broadcast
 for (const h of HOSTS) {
@@ -1354,6 +1417,23 @@ function updatePins() {
     el.style.transform = `translate(${px}px, ${py}px)`;
     el.classList.toggle('edge', edge); el.classList.toggle('near', m === nearest && !edge);
     el.dataset.d = Math.round(Math.hypot(m.house.x - P.pos.x, m.house.z - P.pos.z)) + ' м';
+  }
+  for (const d of BOSSES) if (!boss || boss.def !== d) d.pin.style.display = 'none';
+  if (boss && state === 'play') {
+    const el = boss.def.pin; el.style.display = '';
+    pinV.set(boss.pos.x, 7.8, boss.pos.z).project(camera);
+    let x = pinV.x, y = pinV.y; const behind = pinV.z > 1;
+    if (behind) { x = -x; y = -y; }
+    const edge = behind || Math.abs(x) > 1 || Math.abs(y) > 1;
+    const bd = Math.hypot(boss.pos.x - P.pos.x, boss.pos.z - P.pos.z);
+    const hv = tmpV.set(boss.pos.x, 4.4, boss.pos.z).project(camera);
+    if (!behind && bd < 26 && Math.abs(hv.x) < 0.85 && hv.y < 0.8 && hv.y > -0.9) el.style.display = 'none'; // its avatar head is clearly on screen
+    if (edge) { const k = 1 / Math.max(Math.abs(x), Math.abs(y), 1e-3); x *= k; y *= k; }
+    const px = clamp((x + 1) / 2 * W, pad, W - pad); let py = clamp((1 - y) / 2 * H, pad + 40, H - pad - 20);
+    if (px < avoidL.r + 30 && py < avoidL.b + 34) py = avoidL.b + 34;
+    if (px > avoidR.l - 30 && py < avoidR.b + 34) py = avoidR.b + 34;
+    el.style.transform = `translate(${px}px, ${py}px)`;
+    el.dataset.d = '⚠ ' + Math.round(Math.hypot(boss.pos.x - P.pos.x, boss.pos.z - P.pos.z)) + ' м';
   }
 }
 const missionAt = h => h && G.missions.find(m => m.house === h);
@@ -1494,6 +1574,7 @@ function exitHouse(forced) {
 }
 
 function hitPlayer(m) {
+  if (P.god) { if (Math.random() < 0.35) popup(P.pos.clone().setY(2.6), '💰 Сорос плати', '#7cfc7c'); return; }
   if (P.invuln > 0) { popup(P.pos.clone().setY(2.6), '🛡️ охрана', '#8ecae6'); return; }
   const dmg = Math.max(1, Math.round(m.type.dmg * 0.55)); // global damage softener
   const price = m.price ?? m.type.price;
@@ -1517,6 +1598,7 @@ function die() {
   if (P.interview) { P.interview = false; G.ivFailed++; }
   hideTV(false);
   for (const h of HOSTS) { h.marker.visible = false; h.pin.style.display = 'none'; }
+  for (const d of BOSSES) d.pin.style.display = 'none';
   P.hp = 0; state = 'dead'; G.deadT = 0; P.house = null; hag.root.visible = true;
   sfx.die(); banner('СМЕМЕНА!', '#ff4fb0'); musicTo(0.12);
   document.exitPointerLock?.();
@@ -1543,6 +1625,8 @@ function showOver() {
   $('oInfl').textContent = '×' + G.inflation.toFixed(2);
   $('oIvFail').textContent = G.ivFailed;
   $('oWhacks').textContent = G.whacks;
+  $('oStars').textContent = G.starsTaken;
+  $('oBoss').textContent = G.bossesSeen;
   const bal = G.earned * KOP_EUR - G.spent;
   $('oBalance').textContent = G.interviews ? `≈ ${eur(G.earned * KOP_EUR)} по курса. ` + (bal >= 0 ? `Тя излезе на печалба с ${eur(bal)} пред бюджета на Елфите.` : `Елфите похарчиха ${eur(-bal)} повече, отколкото струваше цялата ѝ кариера.`) : 'Не даде нито едно интервю.';
   const eps = ['ТРОЛКАТА ПАДНА', 'ФАКТИТЕ ПОБЕДИХА', 'ДЕЗИНФОРМАЦИЯТА Е ОБЕЗВРЕДЕНА', 'MUCH DEFEAT. SO MEME.', 'КОПЕЙКАТА СЕ ОБЕЗЦЕНИ'];
@@ -1552,10 +1636,345 @@ function showOver() {
   $('over').classList.remove('hidden');
   $('hud').classList.add('hidden');
 }
-const calcScore = () => Math.floor(G.t * 10) + G.dodges * 5 + G.interviews * 500 + G.whacks * 25;
+const calcScore = () => Math.floor(G.t * 10) + G.dodges * 5 + G.interviews * 500 + G.whacks * 25 + G.bonus;
 
 /* ---------------- update ---------------- */
 const fwd = new THREE.Vector3(), right = new THREE.Vector3(), move = new THREE.Vector3();
+/* ---------------- hidden ★ pickups: take one and the hunt drops a star ---------------- */
+const STAR_STEPS = [0, 35, 85, 145, 210]; // heat where each wanted level starts
+const starGeo = (() => {
+  const sh = new THREE.Shape();
+  for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2 - Math.PI / 2, r = i % 2 ? 0.26 : 0.6; i ? sh.lineTo(Math.cos(a) * r, -Math.sin(a) * r) : sh.moveTo(Math.cos(a) * r, -Math.sin(a) * r); }
+  const g = new THREE.ExtrudeGeometry(sh, { depth: 0.16, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.05, bevelSegments: 1 }); g.center(); return g;
+})();
+const starMat = new THREE.MeshStandardMaterial({ color: 0xffd23f, emissive: 0xffa000, emissiveIntensity: 0.9, metalness: 0.3, roughness: 0.35 });
+const starGlowTex = canvasTex(64, 64, (g, w) => { const gr = g.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2); gr.addColorStop(0, '#fff6b0'); gr.addColorStop(0.35, '#ffd23f88'); gr.addColorStop(1, '#ffd23f00'); g.fillStyle = gr; g.fillRect(0, 0, w, w); });
+const starPickups = [];
+function hiddenStarSpot() {
+  for (let i = 0; i < 60; i++) {
+    const kind = Math.random();
+    let x, z, inBush = false;
+    if (kind < 0.4) { // behind a mushroom house (the side away from the door)
+      const h = pick(HOUSES), dx = h.x - h.door.x, dz = h.z - h.door.z, d = Math.hypot(dx, dz) || 1, a = R(-0.6, 0.6);
+      const ux = dx / d, uz = dz / d, c = Math.cos(a), sn = Math.sin(a);
+      x = h.x + (ux * c - uz * sn) * (h.r + 1.1); z = h.z + (ux * sn + uz * c) * (h.r + 1.1);
+    } else if (kind < 0.75) { const b = pick(BUSHES); x = b.x + R(-0.3, 0.3) * b.r; z = b.z + R(-0.3, 0.3) * b.r; inBush = true; } // tucked inside a bush
+    else { const tr = pick(VTREES), a = R(0, Math.PI * 2); x = tr.x + Math.cos(a) * (tr.r + 0.7); z = tr.z + Math.sin(a) * (tr.r + 0.7); } // at the roots of a tree
+    if (Math.hypot(x - P.pos.x, z - P.pos.z) < 40) continue;
+    if (!inBush && !freeSpot(x, z, 0.5)) continue;
+    if (Math.hypot(x, z) > WORLD - 4) continue;
+    return { x, z, inBush };
+  }
+  return null;
+}
+function spawnStarPickup() {
+  const sp = hiddenStarSpot(); if (!sp) return;
+  const g = new THREE.Group();
+  const star = new THREE.Mesh(starGeo, starMat); star.castShadow = true; g.add(star);
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: starGlowTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.8 }));
+  glow.scale.setScalar(2.2); g.add(glow);
+  g.position.set(sp.x, sp.inBush ? 0.9 : 0.75, sp.z); scene.add(g);
+  starPickups.push({ g, star, glow, x: sp.x, z: sp.z, life: R(55, 75), t: R(0, 6) });
+  ticker(G.starsTaken ? 'Някъде в селото пак проблясва звезда… ⭐' : 'Шшт… някъде в селото е скрита звезда ⭐ Намери я и хайката ще отслабне!');
+}
+function takeStarPickup(p) {
+  G.starsTaken++;
+  const s = G.stars;
+  if (s > 1) {
+    G.heat = (STAR_STEPS[s - 2] + STAR_STEPS[s - 1]) / 2; // middle of the level below
+    if (G.heat < 240) G.apoc = false;
+    updateStars(false);
+    banner(`⭐ −1 ЗВЕЗДА<br><span style="font-size:22px">Елфите се скараха в Телеграм групата</span>`, '#ffd23f');
+  } else {
+    G.heat = 0; G.bonus += 300;
+    banner(`⭐ +300 т.<br><span style="font-size:22px">Хайката и без това е на минимум</span>`, '#ffd23f');
+  }
+  popup(new THREE.Vector3(p.x, 2.2, p.z), '⭐ −1', '#ffd23f');
+  [1047, 784, 659, 523].forEach((f, i) => setTimeout(() => snd(f, 0.14, 'triangle', 0.06), i * 70));
+}
+function updateStarPickups(dt) {
+  G.starCd -= dt;
+  if (G.starCd <= 0 && starPickups.length < 1) { spawnStarPickup(); G.starCd = R(55, 80); }
+  for (let i = starPickups.length - 1; i >= 0; i--) {
+    const p = starPickups[i]; p.t += dt; p.life -= dt;
+    p.star.rotation.y += dt * 2.4; p.star.position.y = Math.sin(p.t * 3) * 0.12;
+    p.glow.material.opacity = 0.55 + Math.sin(p.t * 5) * 0.25;
+    const fade = p.life < 3 ? Math.max(0, p.life / 3) : 1; p.g.scale.setScalar(fade);
+    if (!P.house && Math.hypot(P.pos.x - p.x, P.pos.z - p.z) < 1.5 && P.pos.y < 1.6) { takeStarPickup(p); p.life = 0; }
+    if (p.life <= 0) { scene.remove(p.g); p.glow.material.dispose(); starPickups.splice(i, 1); }
+  }
+}
+
+/* ---------------- bosses: big, rare, short visits ---------------- */
+const BOSSES = [
+  { name: 'Капутин', img: 'assets/bosses/base1.png', full: 'assets/bosses/base1.png', elf: 'soldier',
+    lines: ['Гаргамела! Къде са ми резултатите?!', 'Платих ти в копейки — искам резултати в рубли!', 'Спецоперация „Памук“ — провал!', 'Ти си позор за ботофермата!', 'Елфите пак се смеят. Кой отговаря?!'] },
+  { name: 'Адолф Путлер', img: 'assets/bosses/base2.png', full: 'assets/bosses/base2.png', elf: 'kuker',
+    lines: ['Тук само аз съм клоунът!', 'Тази бабичка ми развали парада!', 'Взимам си копейките обратно!', 'Защо меметата са по-смешни от мен?!', 'Цирк! Пълен цирк!'] },
+  { name: 'Бункерина', img: 'assets/bosses/base3.png', full: 'assets/bosses/base3.png', elf: 'gamer',
+    lines: ['Аз пия кафе, ти бягаш. Честно е.', 'От бункера всичко се вижда, мила.', 'Картата казва, че си точно тук.', 'Отчетът ти закъснява с три интервюта.', 'Не ме карай да ставам от стола!'] },
+  { name: 'Бункер нюз', img: 'assets/bosses/base4.png', full: 'assets/bosses/base4.png', elf: 'fisher',
+    lines: ['ИЗВЪНРЕДНО: Гаргамела бяга! Повече след рекламите.', 'Източници от бункера потвърждават: провал.', 'Овцете гледат — бягай красиво!', 'Новините ги пишем ние. Теб — в загубите.', 'Пускаме те на живо… в меметата!'] },
+];
+const texLoader = new THREE.TextureLoader();
+for (const d of BOSSES) {
+  // full-body cut-out (transparent PNG) — the boss is drawn as this figure
+  d.fullTex = texLoader.load(d.full, t => { d.fullAspect = t.image.width / t.image.height; d.fullOk = true; }, undefined, () => console.warn('boss body failed to load:', d.full));
+  d.fullTex.colorSpace = THREE.SRGBColorSpace; d.fullTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  d.avatar = canvasTex(256, 256, () => {});
+  imgLoad(d.img).then(img => {
+    if (!img) { console.warn('boss avatar failed to load:', d.img); return; }
+    const g = d.avatar.image.getContext('2d'), c = 128;
+    g.save(); g.beginPath(); g.arc(c, c, 118, 0, 7); g.clip();
+    const sq = img.width * 0.62; // the head sits at the top-centre of the full-body cut-out
+    g.fillStyle = '#2a0a0a'; g.fillRect(0, 0, 256, 256);
+    g.drawImage(img, (img.width - sq) / 2, 0, sq, sq, 10, 10, 236, 236); g.restore();
+    g.lineWidth = 14; g.strokeStyle = '#d00000'; g.beginPath(); g.arc(c, c, 118, 0, 7); g.stroke();
+    g.lineWidth = 4; g.strokeStyle = '#000'; g.beginPath(); g.arc(c, c, 125, 0, 7); g.stroke();
+    try { g.getImageData(0, 0, 1, 1); d.avatar.needsUpdate = true; d.avatarOk = true; } // a tainted canvas (file://) can't be uploaded to WebGL
+    catch (e) {
+      console.warn('boss avatar canvas blocked, using plain texture:', d.img);
+      texLoader.load(d.img, t => { t.colorSpace = THREE.SRGBColorSpace; d.avatar = t; d.avatarOk = true; d.avatarPlain = true; }, undefined, () => {});
+    }
+  });
+  const drawLabel = g => {
+    g.clearRect(0, 0, 512, 96); g.fillStyle = '#d00000'; g.beginPath(); g.roundRect(4, 4, 504, 88, 20); g.fill(); g.lineWidth = 6; g.strokeStyle = '#000'; g.stroke();
+    g.fillStyle = '#fff'; g.font = '400 50px "Russo One", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('⚠ ' + d.name.toUpperCase(), 256, 52);
+  };
+  d.label = canvasTex(512, 96, drawLabel);
+  document.fonts?.ready.then(() => { drawLabel(d.label.image.getContext('2d')); d.label.needsUpdate = true; });
+  const el = document.createElement('div'); el.className = 'pin boss'; el.style.setProperty('--c', '#ff2020'); el.style.backgroundImage = `url(${d.img})`; el.style.display = 'none';
+  $('pins').appendChild(el); d.pin = el;
+}
+const BOSS_H = 5.2; // ~3× an elf
+function buildBoss(d) {
+  // a BG elf body, three times bigger, with the boss avatar for a head
+  const root = new THREE.Group();
+  const ti = Math.max(0, ELF_TYPES.findIndex(t => t.key === d.elf));
+  const elf = ELF_TEMPLATES[ti][0].clone(); elf.scale.setScalar(3); root.add(elf);
+  const g = n => elf.getObjectByName(n);
+  const body = g('body'), elfHead = g('head');
+  const head = new THREE.Group(); head.position.copy(elfHead.position); body.add(head);
+  const av = new THREE.Sprite(new THREE.SpriteMaterial({ map: d.avatar, transparent: true })); av.scale.setScalar(1.25); av.position.y = 0.2; head.add(av);
+  // never headless: until the avatar is ready the boss keeps its elf head
+  const syncHead = () => { if (av.material.map !== d.avatar) { av.material.map = d.avatar; av.material.needsUpdate = true; } av.visible = !!d.avatarOk; elfHead.visible = !d.avatarOk; };
+  syncHead();
+  // the real thing: full-body picture, ~3 elves tall, turned to the camera
+  const figWrap = new THREE.Group(); root.add(figWrap);
+  const fig = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: d.fullTex, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide }));
+  fig.castShadow = true; figWrap.add(fig);
+  fig.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: d.fullTex, alphaTest: 0.3 });
+  const blob = new THREE.Mesh(new THREE.CircleGeometry(1.1, 20), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.3, depthWrite: false }));
+  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; root.add(blob);
+  const prevSync = syncHead;
+  const syncAll = () => {
+    prevSync();
+    const ok = !!d.fullOk; figWrap.visible = ok; elf.visible = !ok;
+    if (ok && !fig.userData.sized) { fig.scale.set(BOSS_H * d.fullAspect, BOSS_H, 1); fig.position.y = BOSS_H / 2; fig.userData.sized = true; }
+  };
+  syncAll();
+  const tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: d.label, depthTest: false })); tag.scale.set(4.4, 0.83, 1); tag.position.y = 6.2; tag.renderOrder = 12; root.add(tag);
+  const ring = new THREE.Mesh(new THREE.RingGeometry(1.5, 1.85, 32), new THREE.MeshBasicMaterial({ color: 0xff2020, transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide }));
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.06; root.add(ring);
+  return { root, body, legs: [g('legL'), g('legR')], arms: [g('armL'), g('armR')], head, ring, syncHead: syncAll, figWrap, fig };
+}
+let boss = null;
+function removeBoss() { if (boss) { scene.remove(boss.m.root); boss.def.pin.style.display = 'none'; boss = null; } }
+function spawnBoss() {
+  const def = pick(BOSSES);
+  let x = 0, z = 0;
+  for (let i = 0; i < 50; i++) {
+    const a = R(0, Math.PI * 2), r = R(18, 26); x = P.pos.x + Math.cos(a) * r; z = P.pos.z + Math.sin(a) * r;
+    if (Math.hypot(x, z) < WORLD - 6 && freeSpot(x, z, 2)) break;
+  }
+  const m = buildBoss(def); m.root.position.set(x, 0, z); m.root.scale.setScalar(0.01); scene.add(m.root);
+  boss = { def, m, pos: m.root.position, face: 0, life: 10, born: 0, leaving: 0, stun: 0, cd: 1, lineT: 1, phase: 0, throwT: 0, s: 3, type: { acc: 1, big: 0, name: def.name } };
+  G.bossesSeen++;
+  if (G.stars < 5) { G.heat = Math.max(G.heat, STAR_STEPS[G.stars] + 1); updateStars(false); }
+  banner(`⚠ ${def.name.toUpperCase()} Е В СЕЛОТО! ⚠<br><span style="font-size:22px">Шефът дойде лично да те „мотивира“</span>`, '#ff4d4d');
+  [196, 185, 175, 165].forEach((f, i) => setTimeout(() => snd(f, 0.3, 'sawtooth', 0.07), i * 160));
+}
+function bossThrow(b, target, lead) {
+  const mega = false, n = 3; // always a volley of 3 memes at once
+  const start = new THREE.Vector3(b.pos.x, 3.3, b.pos.z);
+  const dx = target.x - b.pos.x, dz = target.z - b.pos.z, d = Math.hypot(dx, dz) || 1;
+  for (let i = 0; i < n; i++) {
+    const type = mega ? MEMES.find(m => m.big) : pickMeme(true);
+    const T = clamp(d / R(16, 20), 0.45, 1.8), sp = (mega ? 1.6 : 3.0) * (P.bush ? 1.4 : 1), side = (i - (n - 1) / 2) * 1.6;
+    const aim = new THREE.Vector3(target.x + (lead ? P.vel.x * T * 0.7 : 0) + R(-sp, sp) - dz / d * side, (target.y || 0) + 1.2, target.z + (lead ? P.vel.z * T * 0.7 : 0) + R(-sp, sp) + dx / d * side);
+    launchMeme(start, aim, type, T, b);
+  }
+  b.throwT = 0.45; sfx.throw(clamp(1 - d / 45, 0.2, 1));
+}
+function updateBoss(dt) {
+  if (state === 'play' && !boss && !P.interview && (G.bossCd -= dt) <= 0) { spawnBoss(); G.bossCd = 20; }
+  if (!boss) return;
+  const b = boss, m = b.m, t = G.t;
+  b.born = Math.min(1, b.born + dt * 1.5);
+  if (state === 'play') b.life -= dt;
+  if (b.life <= 0 && !b.leaving) { b.leaving = 1; ticker(`${b.def.name}: „Прибирам се в бункера. Ще проверя пак!“`); }
+  if (b.leaving) { b.leaving -= dt * 1.2; if (b.leaving <= 0) { removeBoss(); return; } }
+  const sc = b.leaving ? Math.max(0.01, b.leaving) : (b.born < 1 ? 1 - Math.pow(1 - b.born, 3) + Math.sin(b.born * Math.PI) * 0.15 : 1);
+  m.root.scale.setScalar(sc);
+  m.syncHead();
+  m.ring.rotation.z += dt * 2; m.ring.material.opacity = 0.4 + Math.sin(t * 6) * 0.2;
+  const dx = P.pos.x - b.pos.x, dz = P.pos.z - b.pos.z, dist = Math.hypot(dx, dz);
+  let moving = false;
+  if (b.stun > 0) {
+    b.stun -= dt; m.body.rotation.x = -0.35 * Math.min(1, b.stun * 2); m.body.rotation.z = Math.sin(t * 20) * 0.08;
+  } else if (state === 'play' && !b.leaving) {
+    m.body.rotation.x = 0; m.body.rotation.z = 0;
+    const sees = !P.house && !P.hidden && dist < 45 && los(b.pos.x, b.pos.z, P.pos.x, P.pos.z);
+    if (sees) { G.lastKnown.copy(P.pos); G.lastSeenT = t; }
+    const tgt = P.house ? P.house.door : sees ? P.pos : G.lastKnown;
+    const tx = tgt.x - b.pos.x, tz = tgt.z - b.pos.z, td = Math.hypot(tx, tz);
+    if (td > (P.house ? 6 : sees ? 12 : 2)) { b.pos.x += tx / td * 4.6 * dt; b.pos.z += tz / td * 4.6 * dt; moving = true; }
+    b.face += angDiff(b.face, Math.atan2(tx, tz)) * Math.min(1, 5 * dt);
+    collide(b.pos, 1.1);
+    // big boss shoves elves and the hag aside
+    for (const e of elves) { const ex = e.pos.x - b.pos.x, ez = e.pos.z - b.pos.z, ed = Math.hypot(ex, ez); if (ed < 1.6 && ed > 0.01) { e.pos.x += ex / ed * (1.6 - ed); e.pos.z += ez / ed * (1.6 - ed); } }
+    if (!P.house && dist < 1.7 && dist > 0.01) { P.pos.x += dx / dist * (1.7 - dist); P.pos.z += dz / dist * (1.7 - dist); }
+    b.cd -= dt;
+    if (b.cd <= 0) {
+      if (sees && dist < 32) { bossThrow(b, P.pos, true); b.cd = R(2.4, 3.2); }
+      else if (P.house && td < 18) { bossThrow(b, P.house.door, false); b.cd = R(2.4, 3.2); }
+    }
+    b.lineT -= dt;
+    if (b.lineT <= 0) { b.lineT = R(4.5, 6.5); ticker(`${b.def.name}: „${pick(b.def.lines)}“`); }
+  }
+  // animation
+  m.root.rotation.y = b.face;
+  b.phase += dt * (moving ? 7 : 2);
+  const s = Math.sin(b.phase), a = moving ? 1 : 0.1;
+  m.legs[0].rotation.x = s * 0.6 * a; m.legs[1].rotation.x = -s * 0.6 * a;
+  b.throwT = Math.max(0, b.throwT - dt);
+  m.arms[0].rotation.x = -s * 0.5 * a; m.arms[1].rotation.x = b.throwT > 0 ? -2.9 + (0.45 - b.throwT) * 6 : s * 0.5 * a;
+  if (state !== 'play' && !b.leaving) { m.arms[0].rotation.x = m.arms[1].rotation.x = -2.8; m.body.position.y = Math.abs(Math.sin(t * 5)) * 0.15; }
+  m.head.rotation.z = Math.sin(b.phase * 0.5) * 0.05;
+  if (m.figWrap.visible) {
+    // cylindrical billboard: always shows the picture, waddles when walking, rocks back when hit
+    m.figWrap.rotation.y = Math.atan2(camera.position.x - b.pos.x, camera.position.z - b.pos.z) - b.face;
+    const f = m.fig, bob = moving ? Math.abs(Math.sin(b.phase)) * 0.22 : Math.sin(t * 2) * 0.03;
+    f.position.y = BOSS_H / 2 + bob + (state !== 'play' && !b.leaving ? Math.abs(Math.sin(t * 5)) * 0.5 : 0);
+    f.rotation.z = (moving ? Math.sin(b.phase) * 0.06 : 0) + b.throwT * 0.35;
+    f.rotation.x = b.stun > 0 ? -0.4 * Math.min(1, b.stun * 2) : 0;
+  }
+}
+
+/* ---------------- railgun (console: gun) ---------------- */
+const railModel = (() => {
+  const g = new THREE.Group(); g.position.set(0, -0.78, 0.06); hag.arms[1].add(g);
+  const metal = M(0x3a3f45, { metalness: 0.7, roughness: 0.35 }), dark = M(0x1a1c1f, { metalness: 0.5, roughness: 0.5 });
+  const glow = new THREE.MeshBasicMaterial({ color: 0x3df2ff });
+  part(GEO.box, dark, g, 0, 0.02, 0, 0.13, 0.42, 0.16);           // body
+  part(GEO.box, dark, g, 0, 0.12, -0.12, 0.07, 0.2, 0.09);        // grip
+  part(new THREE.CylinderGeometry(0.045, 0.05, 0.85, 12), metal, g, 0, -0.55, 0);   // barrel
+  part(new THREE.CylinderGeometry(0.02, 0.02, 0.9, 8), glow, g, 0, -0.55, 0.07, 1, 1, 1, false); // energy rail
+  for (let i = 0; i < 5; i++) { const r = part(new THREE.TorusGeometry(0.065, 0.016, 6, 16), glow, g, 0, -0.2 - i * 0.17, 0, 1, 1, 1, false); r.rotation.x = Math.PI / 2; }
+  part(GEO.box, glow, g, 0, -0.02, 0.085, 0.04, 0.22, 0.01, false); // ammo light
+  g.visible = false; return g;
+})();
+const rails = [];
+const railCoreMat = new THREE.MeshBasicMaterial({ color: 0xdffcff, transparent: true, opacity: 1, blending: THREE.AdditiveBlending, depthWrite: false });
+function fireRail() {
+  if (state !== 'play' || P.house || P.railCd > 0) return;
+  P.railCd = 1.1; P.railKick = 1;
+  // aim along the camera; snap to a target inside a narrow cone
+  const fx = -Math.sin(yaw), fz = -Math.cos(yaw);
+  let dir = new THREE.Vector3(fx, 0, fz), best = 0.14;
+  const tgts = elves.filter(e => e.stun <= 0 || e.stun === undefined).map(e => e.pos); if (boss && !boss.leaving) tgts.push(boss.pos);
+  for (const tp of tgts) {
+    const dx = tp.x - P.pos.x, dz = tp.z - P.pos.z, d = Math.hypot(dx, dz); if (d < 1 || d > 60) continue;
+    const ang = Math.abs(angDiff(Math.atan2(fx, fz), Math.atan2(dx, dz))); if (ang < best) { best = ang; dir.set(dx / d, 0, dz / d); }
+  }
+  P.face = Math.atan2(dir.x, dir.z);
+  const sx = P.pos.x + dir.x * 0.9, sz = P.pos.z + dir.z * 0.9, sy = P.pos.y + 1.3;
+  // stop at the first house / tree
+  let len = 70;
+  for (const o of SOLIDS) {
+    const ox = o.x - sx, oz = o.z - sz, t = ox * dir.x + oz * dir.z; if (t <= 0 || t >= len) continue;
+    const px = ox - dir.x * t, pz = oz - dir.z * t, d2 = px * px + pz * pz; if (d2 < o.r * o.r) len = Math.max(0.5, t - Math.sqrt(o.r * o.r - d2));
+  }
+  const along = p => { const ox = p.x - sx, oz = p.z - sz, t = ox * dir.x + oz * dir.z; return { t, off: Math.abs(ox * dir.z - oz * dir.x) }; };
+  let hits = 0;
+  for (const e of elves) {
+    const { t, off } = along(e.pos); if (t < 0 || t > len || off > 0.9) continue;
+    hits++; G.whacks++; e.stun = R(4, 5); e.sees = false; e.kb = { x: dir.x * 9, z: dir.z * 9 }; e.throwT = 0;
+    if (hits <= 6) popup(e.pos.clone().setY(2.2), pick(['РЕЙЛНАТ! ⚡', 'IMPRESSIVE!', 'Зашеметен ⚡', 'ДЕБЪНКНАТ!']), '#7cfcff');
+  }
+  if (boss && !boss.leaving) { const { t, off } = along(boss.pos); if (t > 0 && t < len && off < 1.8) { hits++; boss.stun = 2.2; boss.cd = Math.max(boss.cd, 2.4); G.bonus += 100; popup(boss.pos.clone().setY(5.5), 'ШЕФЪТ Е РЕЙЛНАТ! ⚡', '#7cfcff'); } }
+  if (hits >= 3) banner(`⚡ ${hits} С ЕДИН ИЗСТРЕЛ ⚡`, '#7cfcff');
+  // beam: bright core + Quake-style blue spiral
+  const ex = sx + dir.x * len, ez = sz + dir.z * len, a = new THREE.Vector3(sx, sy, sz), b = new THREE.Vector3(ex, sy, ez);
+  const core = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, len, 6, 1, true), railCoreMat.clone());
+  core.position.copy(a).add(b).multiplyScalar(0.5); core.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone()); scene.add(core);
+  const perp = new THREE.Vector3(-dir.z, 0, dir.x), up = new THREE.Vector3(0, 1, 0), pts = [];
+  for (let i = 0, n = Math.ceil(len * 6); i <= n; i++) { const t = i / n * len, ang = t * 4.2; pts.push(new THREE.Vector3(sx + dir.x * t, sy, sz + dir.z * t).addScaledVector(perp, Math.cos(ang) * 0.22).addScaledVector(up, Math.sin(ang) * 0.22)); }
+  const spiral = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0x3d8bff, transparent: true, opacity: 1, blending: THREE.AdditiveBlending, depthWrite: false }));
+  scene.add(spiral);
+  rails.push({ core, spiral, t: 0 });
+  G.shake = Math.min(1, G.shake + 0.3);
+  snd(2400, 0.35, 'sawtooth', 0.06, -2200); snd(90, 0.3, 'square', 0.08, -40); setTimeout(() => snd(1400, 0.4, 'sine', 0.03, 600), 120);
+}
+function updateRails(dt) {
+  P.railCd = Math.max(0, (P.railCd || 0) - dt);
+  for (let i = rails.length - 1; i >= 0; i--) {
+    const r = rails[i]; r.t += dt; const k = 1 - r.t / 0.9;
+    r.core.material.opacity = Math.max(0, k * k); r.spiral.material.opacity = Math.max(0, k);
+    r.core.scale.x = r.core.scale.z = 1 + r.t * 3;
+    if (r.t >= 0.9) { scene.remove(r.core, r.spiral); r.core.geometry.dispose(); r.spiral.geometry.dispose(); rails.splice(i, 1); }
+  }
+}
+
+/* ---------------- Quake II console ( ` or § ) ---------------- */
+const CON = { open: false, hist: [], hi: 0 };
+function conPrint(text, cls = '') { const d = document.createElement('div'); if (cls) d.className = cls; d.textContent = text; $('conLog').appendChild(d); while ($('conLog').children.length > 200) $('conLog').firstChild.remove(); $('conLog').scrollTop = 1e9; }
+function updateCheatsHud() { $('cheats').textContent = [P.gun ? '⚡ RAILGUN' : '', P.god ? '💰 SOROS MODE' : ''].filter(Boolean).join(' · '); $('btnHit').textContent = P.gun ? '⚡' : '🍭'; }
+const COMMANDS = {
+  help: { d: 'списък с командите', f: () => { for (const [k, c] of Object.entries(COMMANDS)) conPrint(`  ${k.padEnd(7)} ${c.d}`); } },
+  gun: { d: 'сменя памука с railgun (пак — връща памука)', f: () => {
+    P.gun = !P.gun; updateCheatsHud();
+    if (P.gun) { conPrint('railgun: ВКЛ — F / клик стреля и зашеметява всичко по линията', 'ok'); ticker('Гаргамела намери railgun… Елфите са в шок ⚡'); }
+    else conPrint('railgun: ИЗКЛ — обратно към захарния памук', 'dim');
+  } },
+  soros: { d: 'безсмъртие (Сорос плаща всичко)', f: () => {
+    P.god = !P.god; updateCheatsHud();
+    if (P.god) { conPrint('soros: ВКЛ — меметата вече не болят. Сорос плаща.', 'ok'); P.hp = 100; ticker('💰 Пристигна превод от Сорос. Гаргамела е безсмъртна!'); }
+    else conPrint('soros: ИЗКЛ — преводът е спрян', 'dim');
+  } },
+  clear: { d: 'изчиства конзолата', f: () => { $('conLog').innerHTML = ''; } },
+};
+COMMANDS.cls = { d: 'същото като clear', f: COMMANDS.clear.f };
+function conExec(line) {
+  const cmd = line.trim().toLowerCase(); if (!cmd) return;
+  conPrint(']' + line, 'cmd');
+  CON.hist.push(line); CON.hi = CON.hist.length;
+  const c = COMMANDS[cmd.split(/\s+/)[0]];
+  if (c) c.f(); else conPrint(`Непозната команда: ${cmd} — напиши help`, 'err');
+}
+function toggleConsole(open = !CON.open) {
+  CON.open = open; $('console').classList.toggle('open', open);
+  for (const k in keys) keys[k] = false;
+  if (open) { document.exitPointerLock?.(); setTimeout(() => $('conInput').focus(), 30); }
+  else { $('conInput').blur(); $('conInput').value = ''; if (state === 'play' && !IS_TOUCH) canvas.requestPointerLock?.(); }
+}
+const isConKey = e => e.code === 'Backquote' || e.code === 'IntlBackslash' || e.key === '`' || e.key === '§' || e.key === '~' || e.key === '±';
+addEventListener('keydown', e => {
+  if (isConKey(e)) { e.preventDefault(); e.stopImmediatePropagation(); toggleConsole(); return; }
+  if (!CON.open) return;
+  e.stopImmediatePropagation(); // the game doesn't see keys while the console is down
+  const inp = $('conInput');
+  if (e.key === 'Escape') { e.preventDefault(); toggleConsole(false); }
+  else if (e.key === 'Enter') { e.preventDefault(); conExec(inp.value); inp.value = ''; }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); CON.hi = Math.max(0, CON.hi - 1); inp.value = CON.hist[CON.hi] || ''; }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); CON.hi = Math.min(CON.hist.length, CON.hi + 1); inp.value = CON.hist[CON.hi] || ''; }
+  else if (e.key === 'Tab') { e.preventDefault(); const v = inp.value.trim().toLowerCase(), m = Object.keys(COMMANDS).filter(k => k.startsWith(v)); if (m.length === 1) inp.value = m[0]; else if (m.length) conPrint(m.join('  '), 'dim'); }
+  else if (document.activeElement !== inp) inp.focus();
+}, true);
+addEventListener('keyup', e => { if (CON.open || isConKey(e)) e.stopImmediatePropagation(); }, true);
+conPrint('Гаргамела: Меме Хайка — конзола', 'ok');
+conPrint('Напиши help за списък с командите. ` или § затваря.', 'dim');
+
 /* ---------------- cotton candy melee ---------------- */
 const gooMat = new THREE.MeshStandardMaterial({ color: 0xff9fd0, roughness: 0.9, emissive: 0x551133, emissiveIntensity: 0.25 });
 const gooGeo = new THREE.IcosahedronGeometry(0.22, 0);
@@ -1572,14 +1991,25 @@ function gooElf(e) {
   e.gooT = 14;
 }
 function whack() {
+  if (CON.open) return;
+  if (P.gun) { fireRail(); return; }
   if (state !== 'play' || P.house || P.swingCd > 0) return;
   if (P.st < 8) { ticker('Нямаш дъх да размахаш памука…'); return; }
   P.st -= 8; P.swingCd = 0.55; P.swingT = 0.35;
   // auto-aim at the closest standing elf in reach
   let aim = null, ad = 3.6;
   for (const e of elves) { if (e.stun > 0) continue; const d = Math.hypot(e.pos.x - P.pos.x, e.pos.z - P.pos.z); if (d < ad) { ad = d; aim = e; } }
+  if (boss && !boss.leaving && Math.hypot(boss.pos.x - P.pos.x, boss.pos.z - P.pos.z) < 3.6) aim = boss; // the boss is the juiciest target
   if (aim) P.face = Math.atan2(aim.pos.x - P.pos.x, aim.pos.z - P.pos.z);
   let n = 0;
+  if (boss && !boss.leaving && boss.stun <= 0) {
+    const dx = boss.pos.x - P.pos.x, dz = boss.pos.z - P.pos.z, d = Math.hypot(dx, dz);
+    if (d < 3.6 && Math.abs(angDiff(P.face, Math.atan2(dx, dz))) < 1.2) {
+      n++; G.whacks++; G.bonus += 100; boss.stun = 1.3; boss.cd = Math.max(boss.cd, 1.5);
+      popup(boss.pos.clone().setY(5.5), `ОАКА ШЕФА! +100`, '#ff8fc8');
+      ticker(`${boss.def.name}: „${pick(['Как смееш?! Аз ти плащам!', 'Костюмът ми! Целият е лепкав!', 'Това е провокация на НАТО!', 'Охрана!!!'])}“`);
+    }
+  }
   for (const e of elves) {
     if (n >= 3 || e.stun > 0) continue;
     const dx = e.pos.x - P.pos.x, dz = e.pos.z - P.pos.z, d = Math.hypot(dx, dz);
@@ -1667,6 +2097,8 @@ function animateHag(dt) {
   const flail = P.flinch > 0 ? Math.sin(G.t * 60) * 0.6 : 0;
   hag.arms[0].rotation.x = -s * 1.2 * a - 0.2 * a + flail; hag.arms[1].rotation.x = -0.95 + s * 0.35 * a - flail * 0.5;
   if (P.swingT > 0) { const k = 1 - P.swingT / 0.35; hag.arms[1].rotation.x = k < 0.3 ? lerp(-0.95, -2.8, k / 0.3) : lerp(-2.8, -0.4, (k - 0.3) / 0.7); }
+  if (P.gun) { hag.arms[1].rotation.x = -1.5 - P.railKick * 0.7; hag.arms[1].rotation.z = 0.05; P.railKick = Math.max(0, P.railKick - dt * 4); }
+  hag.candy.visible = !P.gun; railModel.visible = !!P.gun;
   hag.candy.rotation.x = -hag.arms[1].rotation.x - hag.body.rotation.x;
   hag.arms[0].rotation.z = -0.12 - a * 0.35 - (P.flinch > 0 ? 0.8 : 0); hag.arms[1].rotation.z = 0.15 + (P.flinch > 0 ? 0.5 : 0);
   hag.body.rotation.x = a * 0.28 + (P.flinch > 0 ? -0.3 : 0);
@@ -1679,7 +2111,7 @@ function animateHag(dt) {
 function updateElves(dt) {
   const t = G.t;
   const playerTarget = !P.house;
-  G.throwBudget = Math.min(3, (G.throwBudget || 0) + dt * (0.6 + G.t / 100));
+  G.throwBudget = Math.min(3, (G.throwBudget || 0) + dt * (0.6 + G.heat / 100));
   for (const e of elves) {
     e.born = Math.min(1, e.born + dt * 2.5);
     e.m.root.scale.setScalar(e.s * (e.born < 1 ? 1 - Math.pow(1 - e.born, 3) * 1.0 + Math.sin(e.born * Math.PI) * 0.2 : 1));
@@ -1712,7 +2144,7 @@ function updateElves(dt) {
     }
     if (e.sees && state === 'play') { G.lastKnown.copy(P.pos); G.lastSeenT = t; }
 
-    let tx, tz, spd = Math.min(8.3, e.speed * (1 + t / 420));
+    let tx, tz, spd = Math.min(8.3, e.speed * (1 + G.heat / 420));
     if (state !== 'play') {
       // celebrate around the fallen hag
       const a = e.cheer + t * 0.3, r = 3.5 + (e.id % 5) * 0.9;
@@ -1749,7 +2181,7 @@ function updateElves(dt) {
       if (e.sees && dist < 22 && G.throwBudget >= 1 && t > 5) {
         G.throwBudget--;
         elfThrow(e, P.pos, true);
-        e.cd = R(2.8, 5.0) * e.type.cd * Math.max(0.5, 1 - t / 420);
+        e.cd = R(2.8, 5.0) * e.type.cd * Math.max(0.5, 1 - G.heat / 420);
       } else if (P.house && G.houseKnown && G.throwBudget >= 1 && Math.hypot(e.pos.x - P.house.x, e.pos.z - P.house.z) < 16) {
         G.throwBudget--;
         elfThrow(e, P.house.door, false); // wasted memes on the house door, still paid for
@@ -1809,7 +2241,7 @@ function updateMemes(dt) {
 }
 
 function updateRain(dt) {
-  if (G.t >= 240 && !G.apoc) { G.apoc = true; banner('☢ МЕМ АПОКАЛИПСИС ☢<br><span style="font-size:22px">Елфите пуснаха дроновете</span>', '#ff4d4d'); sfx.star(); }
+  if (G.heat >= 240 && !G.apoc) { G.apoc = true; banner('☢ МЕМЕ АПОКАЛИПСИС ☢<br><span style="font-size:22px">Елфите пуснаха дроновете</span>', '#ff4d4d'); sfx.star(); }
   if (!G.apoc || state !== 'play') return;
   G.rainCd -= dt;
   if (G.rainCd <= 0) {
@@ -1841,7 +2273,7 @@ function updateRain(dt) {
 
 function updateSpawns(dt) {
   if (state !== 'play') return;
-  const cap = Math.min(IS_TOUCH ? 80 : 140, 30 + Math.floor(G.t * 0.75));
+  const cap = Math.min(IS_TOUCH ? 80 : 140, 30 + Math.floor(G.heat * 0.75));
   G.spawnCd -= dt;
   if (G.spawnCd <= 0 && elves.length < cap) {
     // a whole Telegram group shows up at once
@@ -1851,12 +2283,13 @@ function updateSpawns(dt) {
     const n = Math.min(cap - elves.length, 3 + Math.floor(Math.random() * (3 + G.stars)));
     for (let i = 0; i < n; i++) spawnElf(false, at);
     if (Math.random() < 0.5) ticker(`Нова Телеграм група: +${n} елфи на хайка!`);
-    G.spawnCd = Math.max(1.6, 6 - G.t / 30);
+    G.spawnCd = Math.max(1.6, 6 - G.heat / 30);
   }
 }
 
 /* ---------------- camera ---------------- */
 const camPos = new THREE.Vector3(), camLook = new THREE.Vector3();
+let camBoss = 0;
 function updateCamera(dt) {
   if (state === 'title') {
     const a = performance.now() * 0.00006;
@@ -1866,6 +2299,10 @@ function updateCamera(dt) {
   }
   const base = P.house ? new THREE.Vector3(P.house.x, 2, P.house.z) : P.pos;
   let dist = P.house ? 13 : 7.2, look = P.house ? 3 : 1.7;
+  // a giant boss nearby: pull the camera back and aim higher so its avatar head stays in frame
+  const bossNear = boss && !boss.leaving && !P.house && state === 'play' && Math.hypot(boss.pos.x - P.pos.x, boss.pos.z - P.pos.z) < 40 ? 1 : 0;
+  camBoss = lerp(camBoss, bossNear, 1 - Math.exp(-2.5 * dt));
+  dist += camBoss * 3.5; look += camBoss * 1.6;
   if (state === 'dead' || state === 'over') { yaw += dt * 0.25; dist = 9; pitch = lerp(pitch, 0.6, dt); }
   const tgt = new THREE.Vector3(
     base.x + Math.sin(yaw) * Math.cos(pitch) * dist,
@@ -1905,6 +2342,12 @@ function drawRadar() {
     rctx.fillStyle = '#000'; rctx.font = '900 13px "Russo One", sans-serif'; rctx.textAlign = 'center'; rctx.textBaseline = 'middle';
     rctx.fillText(m.host.name.replace('проф. ', '')[0], x, y + 1);
   }
+  if (boss) {
+    let [x, y] = T(boss.pos.x, boss.pos.z);
+    const dx = x - C, dy = y - C, d = Math.hypot(dx, dy); if (d > C - 14) { x = C + dx / d * (C - 14); y = C + dy / d * (C - 14); }
+    rctx.fillStyle = '#d00000'; rctx.strokeStyle = '#fff'; rctx.lineWidth = 2.5; rctx.fillRect(x - 10, y - 10, 20, 20); rctx.strokeRect(x - 10, y - 10, 20, 20);
+    rctx.fillStyle = '#fff'; rctx.font = '900 14px "Russo One", sans-serif'; rctx.textAlign = 'center'; rctx.textBaseline = 'middle'; rctx.fillText('!', x, y + 1);
+  }
   if (G.t - G.lastSeenT < 22) { const [x, y] = T(G.lastKnown.x, G.lastKnown.z); rctx.strokeStyle = '#ffd23f'; rctx.setLineDash([5, 4]); rctx.lineWidth = 2; rctx.beginPath(); rctx.arc(x, y, 12, 0, 7); rctx.stroke(); rctx.setLineDash([]); }
   for (const r of rains) { const [x, y] = T(r.tgt.x, r.tgt.z); rctx.strokeStyle = '#ff3030'; rctx.lineWidth = 2; rctx.beginPath(); rctx.arc(x, y, 5, 0, 7); rctx.stroke(); }
   for (const m of memes) { const [x, y] = T(m.mesh.position.x, m.mesh.position.z); rctx.fillStyle = '#ffe66d'; rctx.fillRect(x - 2, y - 2, 4, 4); }
@@ -1930,6 +2373,13 @@ function updateHUD(dt) {
   $('time').textContent = fmtT(G.t);
   $('score').textContent = calcScore().toLocaleString('bg-BG') + ' т.';
   $('money').firstChild.nodeValue = eur(G.spent);
+  {
+    const bt = $('bossTimer');
+    if (boss && !boss.leaving) { bt.className = 'live'; bt.innerHTML = `⚠ ${boss.def.name} си тръгва след <b>${Math.ceil(boss.life)} с</b>`; }
+    else if (boss) { bt.className = ''; bt.innerHTML = `👔 Шефът се прибира…`; }
+    else if (P.interview && G.bossCd <= 0) { bt.className = 'soon'; bt.innerHTML = `👔 Шеф идва <b>след интервюто</b>`; }
+    else { const c = Math.max(0, Math.ceil(G.bossCd)); bt.className = c <= 10 ? 'soon' : ''; bt.innerHTML = `👔 Следващ шеф след <b>${c} с</b>`; }
+  }
   $('memecount').textContent = `${G.thrown} мемета хвърлени · ${elves.length} елфи на хайка`;
   updateStars(false);
   let list;
@@ -1996,9 +2446,10 @@ function frame() {
   const portrait = IS_TOUCH && innerHeight > innerWidth * 1.05;
   $('rotate').style.display = portrait && (state === 'play' || state === 'paused') ? 'flex' : 'none';
   if (portrait && state === 'play') { renderer.render(scene, camera); return; }
+  if (CON.open && state === 'play') { renderer.render(scene, camera); return; } // console down = game frozen
   if (state === 'play') {
-    G.t += dt;
-    updatePlayer(dt); updateSpawns(dt); updateElves(dt); updateMemes(dt); updateRain(dt);
+    G.t += dt; G.heat += dt; updateStarPickups(dt);
+    updatePlayer(dt); updateSpawns(dt); updateElves(dt); updateBoss(dt); updateMemes(dt); updateRain(dt); updateRails(dt);
     if (G.stars < 5 && G.regenBlock <= 0 && !P.interview) { // the interview has its own healing (max 20%)
       if ((P.hidden || P.house) && G.t - G.lastSeenT > 2) P.hp = Math.min(100, P.hp + 4 * dt);
       else if (G.t - G.lastSeenT > 5) P.hp = Math.min(100, P.hp + 1.5 * dt); // catch your breath when nobody sees you
@@ -2022,7 +2473,7 @@ function frame() {
   renderer.render(scene, camera);
 }
 frame();
-if (location.hash === '#debug') window.dbg = { G, P, elves, memes, music, camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact() };
+if (location.hash === '#debug') window.dbg = { G, P, elves, memes, music, getBoss: () => boss, spawnBoss: () => spawnBoss(), starPickups, spawnStarPickup: () => spawnStarPickup(), camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact() };
 </script>
 </body>
 </html>

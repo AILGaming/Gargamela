@@ -1,0 +1,20 @@
+{
+  "name": "Гаргамела: Меме Хайка",
+  "short_name": "Гаргамела",
+  "description": "Елфите те гонят с мемета, а всяко меме струва пари. Бягай, крий се и давай интервюта за копейки.",
+  "lang": "bg",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#0d1a10",
+  "theme_color": "#ff4fb0",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
