@@ -12,7 +12,8 @@
 <style>
   :root { --pink:#ff4fb0; --gold:#ffd23f; --red:#e63946; --ink:#111; }
   * { box-sizing: border-box; }
-  html, body { margin:0; height:100%; overflow:hidden; background:#0d1a10; font-family:'Rubik', system-ui, sans-serif; color:#fff; user-select:none; }
+  html, body { margin:0; height:100%; overflow:hidden; background:#0d1a10; font-family:'Rubik', system-ui, sans-serif; color:#fff; user-select:none; -webkit-user-select:none; touch-action:manipulation; overscroll-behavior:none; -webkit-text-size-adjust:100%; }
+  canvas, #hud, #tv, #dim { touch-action:none; }
   canvas#game { display:block; }
   .hidden { display:none !important; }
 
@@ -953,7 +954,7 @@ const keys = {};
 let yaw = Math.PI, pitch = 0.42, mouseDown = false;
 addEventListener('keydown', e => {
   keys[e.code] = true;
-  if (e.code === 'Space') { e.preventDefault(); if (P.interview && TV.t < TV.STEP - 0.6) TV.t = 0; }
+  if (e.code === 'Space') { e.preventDefault(); if (!e.repeat && P.interview) skipLine(); }
   if (e.code === 'KeyE' && state === 'play') interact();
   if (e.code === 'KeyP' && (state === 'play' || state === 'paused')) togglePause();
   if (e.code === 'KeyR' && state === 'over') startGame();
@@ -970,6 +971,20 @@ addEventListener('mousemove', e => {
   }
 });
 
+/* ---------------- no zoom on phones ---------------- */
+{
+  const stop = e => e.preventDefault();
+  document.addEventListener('dblclick', stop, { passive: false });
+  for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(ev, stop, { passive: false });
+  document.addEventListener('touchstart', e => { if (e.touches.length > 1 && !$('touchUI').contains(e.target)) e.preventDefault(); }, { passive: false });
+  let lastEnd = 0;
+  document.addEventListener('touchend', e => {
+    const now = performance.now();
+    if (e.cancelable && now - lastEnd < 350 && !e.target.closest('button, a, input')) e.preventDefault(); // kill double-tap zoom
+    lastEnd = now;
+  }, { passive: false });
+}
+
 /* ---------------- touch controls ---------------- */
 const joy = { id: null, ox: 0, oy: 0, x: 0, y: 0, mag: 0 }, look = { id: null, lx: 0, ly: 0 };
 {
@@ -980,7 +995,7 @@ const joy = { id: null, ox: 0, oy: 0, x: 0, y: 0, mag: 0 }, look = { id: null, l
   ui.addEventListener('pointerdown', e => {
     if (e.target.closest('.tbtn')) return;
     e.preventDefault();
-    if (P.interview) { if (TV.t < TV.STEP - 0.6) TV.t = 0; return; } // tap anywhere to advance the dialogue
+    if (P.interview) { skipLine(); return; } // tap anywhere to advance the dialogue
     if (e.clientX < innerWidth * 0.45 && joy.id === null) {
       joy.id = e.pointerId; joy.ox = e.clientX; joy.oy = e.clientY; joy.x = joy.y = joy.mag = 0;
       placeBase(e.clientX, e.clientY); base.classList.add('active');
@@ -1057,6 +1072,7 @@ function resetGame() {
 function startGame() {
   if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { } }
   AC?.resume?.();
+  document.activeElement?.blur?.(); // so SPACE never "clicks" a menu button
   resetGame();
   state = 'play';
   $('title').classList.add('hidden'); $('over').classList.add('hidden'); $('pause').classList.add('hidden');
@@ -1254,6 +1270,8 @@ function startInterview(h) {
 }
 /* ---- TV broadcast ---- */
 const TV = { lines: [], i: 0, t: 0, chatT: 0, hideT: 0, STEP: 5 };
+// jump straight to the next line (or end the interview after the last one); tiny guard against accidental double presses
+function skipLine() { if (P.interview && TV.t < TV.STEP - 0.25) TV.t = 0; }
 function showTV() {
   const m = G.mission, host = m.host;
   const pairs = [...QA].sort(() => Math.random() - 0.5).slice(0, 2 + Math.min(G.interviews, 2));
