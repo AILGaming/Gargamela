@@ -2,7 +2,9 @@
 <html lang="bg">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Гаргамела: Мем Хайка</title>
 <link rel="icon" href="assets/elf-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,6 +87,48 @@
   #popups .price { color:#9ef01a; font-size:13px; display:block; text-align:center; }
   #hint { position:absolute; right:18px; bottom:16px; font-size:12px; font-weight:800; opacity:.75; text-align:right; text-shadow:0 1px 2px #000; line-height:1.7; }
 
+  /* ---- touch controls (mobile) ---- */
+  .touch-only { display:none !important; }
+  body.touch .keys.touch-only { display:grid !important; }
+  body.touch .desk-only { display:none !important; }
+  body.touch, body.touch * { -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent; }
+  #touchUI { position:fixed; inset:0; z-index:3; touch-action:none; display:none; }
+  body.touch #touchUI.on { display:block; }
+  #joyBase { position:absolute; width:130px; height:130px; margin:-65px 0 0 -65px; border-radius:50%; background:#ffffff1c; border:3px solid #ffffff55; box-shadow:0 0 20px #0006; pointer-events:none; opacity:.55; transition:opacity .15s; }
+  #joyBase.active { opacity:1; }
+  #joyKnob { position:absolute; left:50%; top:50%; width:58px; height:58px; margin:-29px 0 0 -29px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #fff, #ffb6dd 60%, #ff4fb0); box-shadow:0 4px 10px #0008; }
+  #joyBase.sprint { border-color:var(--gold); box-shadow:0 0 18px var(--gold); }
+  .tbtn { position:absolute; border-radius:50%; border:3px solid #ffffff88; background:#0007; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Russo One'; text-align:center; line-height:1; box-shadow:0 4px 14px #0008; user-select:none; touch-action:none; }
+  .tbtn.down { transform:scale(.92); background:#ff4fb0aa; }
+  .tbtn small { display:block; font-size:9px; margin-top:3px; opacity:.85; }
+  #btnJump { width:84px; height:84px; right:max(22px, env(safe-area-inset-right)); bottom:28px; font-size:26px; }
+  #btnAct { width:72px; height:72px; right:max(122px, calc(env(safe-area-inset-right) + 100px)); bottom:44px; font-size:26px; }
+  #btnAct.idle { opacity:.3; }
+  #btnAct.hot { border-color:var(--gold); background:#ffd23f55; animation:pulse 1s infinite; }
+  @keyframes pulse { 50% { box-shadow:0 0 0 8px #ffd23f33, 0 4px 14px #0008; } }
+  #btnPause { width:44px; height:44px; left:50%; top:max(8px, env(safe-area-inset-top)); margin-left:-22px; font-size:18px; }
+  #rotate { position:fixed; inset:0; z-index:50; background:#120a18f2; display:none; flex-direction:column; align-items:center; justify-content:center; gap:14px; font-family:'Russo One'; font-size:20px; text-align:center; padding:24px; }
+  #rotate .ph { font-size:64px; animation:rot 1.6s ease-in-out infinite; }
+  @keyframes rot { 50% { transform:rotate(-90deg); } }
+  body.touch #prompt { bottom:auto; top:58%; }
+  body.touch #prompt kbd { display:none; }
+  body.touch #status { left:max(10px, env(safe-area-inset-left)); top:8px; gap:8px; }
+  body.touch #portrait { width:48px; height:48px; border-width:3px; }
+  body.touch .bar { width:150px; height:13px; }
+  body.touch .bar span { font-size:9px; line-height:10px; }
+  body.touch #name { font-size:12px; }
+  body.touch #right { right:max(10px, env(safe-area-inset-right)); top:6px; }
+  body.touch #stars { font-size:22px; }
+  body.touch .stat { font-size:15px; }
+  body.touch .stat small { font-size:10px; }
+  body.touch #mission { left:max(10px, env(safe-area-inset-left)); top:66px; width:250px; font-size:10.5px; padding:5px 8px; line-height:1.35; }
+  body.touch #mission .t { font-size:12px; }
+  body.touch #mission .topic { display:none; }
+  body.touch #radar { width:112px; height:112px; left:auto; right:max(10px, env(safe-area-inset-right)); top:118px; bottom:auto; border-width:3px; }
+  body.touch #hint { display:none; }
+  body.touch #ticker { top:56px; font-size:12px; padding:4px 10px; max-width:52vw; white-space:normal; text-align:center; }
+  body.touch #banner { font-size:28px; }
+  body.touch #hideState { bottom:auto; top:66%; font-size:15px; }
   /* Screens */
   .screen { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, #1a0f1fcc, #000e); z-index:10; padding:16px; overflow:auto; }
   .card { display:flex; gap:28px; max-width:980px; width:100%; align-items:center; flex-wrap:wrap; justify-content:center; }
@@ -112,6 +156,29 @@
   .grid div span { display:block; font-family:'Russo One'; font-size:22px; color:var(--gold); }
   #best { font-size:13px; opacity:.8; margin-left:14px; }
   #pause { z-index:11; }
+  @media (max-width: 860px), (max-height: 540px) {
+    #tv { width:min(96vw, 150vh); }
+    #tv .tvframe { flex:1 1 100%; padding:7px 7px 16px; }
+    #tvChat { display:none; }
+    .tvscreen { aspect-ratio:16/8; }
+    #tvSub { height:70px; font-size:14.5px; padding:6px 10px; }
+    .tvscreen .lower { bottom:70px; font-size:11px; }
+    h1 { font-size:34px; } h1 em { font-size:22px; }
+    .poster { width:min(170px, 34vw); }
+    .screen { align-items:flex-start; }
+    .card { flex-wrap:nowrap; align-items:flex-start; }
+    .poster .wanted { font-size:18px; }
+    .card { gap:16px; }
+    .lead { font-size:13px; margin:6px 0 10px; }
+    .keys { font-size:12px; gap:5px 10px; margin-bottom:12px; }
+    button.go { font-size:20px; padding:10px 24px; }
+    .bigstat { font-size:12px; padding:8px 12px; margin:8px 0; }
+    .bigstat .money { font-size:24px; }
+    .grid { font-size:11px; gap:4px 12px; margin-bottom:10px; }
+    .grid div span { font-size:16px; }
+  }
+
+  body.onair #joyBase, body.onair #btnJump { display:none; }
 </style>
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
@@ -156,6 +223,13 @@
   <div id="hint">WASD бягай · SHIFT спринт · SPACE скок<br>E скрий се в къщичка · храсти = прикритие<br>мишка = камера · P пауза</div>
 </div>
 <div id="flash"></div>
+<div id="touchUI">
+  <div id="joyBase"><div id="joyKnob"></div></div>
+  <div class="tbtn" id="btnAct">✋</div>
+  <div class="tbtn" id="btnJump">⤒<small>СКОК</small></div>
+  <div class="tbtn" id="btnPause">⏸</div>
+</div>
+<div id="rotate"><div class="ph">📱</div>Завърти телефона хоризонтално</div>
 
 <div id="title" class="screen">
   <div class="card">
@@ -168,7 +242,14 @@
       <h1>ГАРГАМЕЛА<em>МЕМ ХАЙКА</em></h1>
       <p class="lead">Цялото село на Елфите е по петите ти. Те нямат оръжия — имат <b>мемета</b>. И всяко мемe струва пари.
         Не можеш да спечелиш. Можеш само да бягаш, да се криеш и да оцелееш колкото се може по-дълго.</p>
-      <div class="keys">
+      <div class="keys touch-only" style="display:none">
+        <span>🕹️</span><span>джойстик вляво — бягай (до края = спринт)</span>
+        <span>👆</span><span>плъзгай вдясно — върти камерата</span>
+        <span>⤒</span><span>скок · ✋ — влез в къщичка / дай интервю</span>
+        <span>🎤</span><span><b>МИСИЯ:</b> давай интервюта в маркираните къщички — печелиш хонорари, но меметата на Елфите поскъпват</span>
+        <span>🌿</span><span>влез в храст — елфите не те виждат, докато не те надушат</span>
+      </div>
+      <div class="keys desk-only">
         <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>бягай</span>
         <span><kbd>SHIFT</kbd></span><span>спринт (харчи дъх)</span>
         <span><kbd>SPACE</kbd></span><span>скок</span>
@@ -240,9 +321,11 @@ const eur = v => v.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFr
 const angDiff = (a, b) => { let d = b - a; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; return d; };
 
 /* ---------------- renderer / scene ---------------- */
+const IS_TOUCH = matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+if (IS_TOUCH) document.body.classList.add('touch');
 const canvas = $('game');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, IS_TOUCH ? 1.5 : 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -259,7 +342,7 @@ const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 50
 scene.add(new THREE.HemisphereLight(0xe8f6ff, 0x4d7a2e, 1.0));
 const sun = new THREE.DirectionalLight(0xfff0d0, 2.0);
 sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.mapSize.set(IS_TOUCH ? 1024 : 2048, IS_TOUCH ? 1024 : 2048);
 Object.assign(sun.shadow.camera, { left: -55, right: 55, top: 55, bottom: -55, near: 1, far: 220 });
 sun.shadow.bias = -0.0005;
 scene.add(sun, sun.target);
@@ -887,6 +970,52 @@ addEventListener('mousemove', e => {
   }
 });
 
+/* ---------------- touch controls ---------------- */
+const joy = { id: null, ox: 0, oy: 0, x: 0, y: 0, mag: 0 }, look = { id: null, lx: 0, ly: 0 };
+{
+  const ui = $('touchUI'), base = $('joyBase'), knob = $('joyKnob'), R0 = 60;
+  const placeBase = (x, y) => { base.style.left = x + 'px'; base.style.top = y + 'px'; };
+  const restBase = () => placeBase(Math.max(110, innerWidth * 0.13), innerHeight - 110);
+  restBase(); addEventListener('resize', () => { if (joy.id === null) restBase(); });
+  ui.addEventListener('pointerdown', e => {
+    if (e.target.closest('.tbtn')) return;
+    e.preventDefault();
+    if (P.interview) { if (TV.t < TV.STEP - 0.6) TV.t = 0; return; } // tap anywhere to advance the dialogue
+    if (e.clientX < innerWidth * 0.45 && joy.id === null) {
+      joy.id = e.pointerId; joy.ox = e.clientX; joy.oy = e.clientY; joy.x = joy.y = joy.mag = 0;
+      placeBase(e.clientX, e.clientY); base.classList.add('active');
+    } else if (look.id === null) { look.id = e.pointerId; look.lx = e.clientX; look.ly = e.clientY; }
+    ui.setPointerCapture?.(e.pointerId);
+  });
+  ui.addEventListener('pointermove', e => {
+    if (e.pointerId === joy.id) {
+      let dx = e.clientX - joy.ox, dy = e.clientY - joy.oy; const d = Math.hypot(dx, dy);
+      if (d > R0) { dx *= R0 / d; dy *= R0 / d; }
+      joy.x = dx / R0; joy.y = dy / R0; joy.mag = Math.min(1, d / R0);
+      knob.style.transform = `translate(${dx}px, ${dy}px)`;
+      base.classList.toggle('sprint', joy.mag > 0.92 && !P.exhausted);
+    } else if (e.pointerId === look.id && state === 'play') {
+      yaw -= (e.clientX - look.lx) * 0.0065;
+      pitch = clamp(pitch + (e.clientY - look.ly) * 0.005, 0.08, 1.15);
+      look.lx = e.clientX; look.ly = e.clientY;
+    }
+  });
+  const end = e => {
+    if (e.pointerId === joy.id) { joy.id = null; joy.x = joy.y = joy.mag = 0; knob.style.transform = ''; base.classList.remove('active', 'sprint'); restBase(); }
+    if (e.pointerId === look.id) look.id = null;
+  };
+  ui.addEventListener('pointerup', end); ui.addEventListener('pointercancel', end);
+  const btn = (id, down, up) => {
+    const el = $(id);
+    el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); el.classList.add('down'); el.setPointerCapture?.(e.pointerId); down(); });
+    const u = e => { el.classList.remove('down'); up && up(); };
+    el.addEventListener('pointerup', u); el.addEventListener('pointercancel', u);
+  };
+  btn('btnJump', () => { keys.Space = true; }, () => { keys.Space = false; });
+  btn('btnAct', () => { if (state === 'play') interact(); });
+  btn('btnPause', () => { if (state === 'play' || state === 'paused') togglePause(); });
+}
+
 /* ---------------- game state ---------------- */
 let state = 'title';
 const hag = makeHag(); scene.add(hag.root);
@@ -932,7 +1061,9 @@ function startGame() {
   state = 'play';
   $('title').classList.add('hidden'); $('over').classList.add('hidden'); $('pause').classList.add('hidden');
   $('hud').classList.remove('hidden');
-  canvas.requestPointerLock?.();
+  if (!IS_TOUCH) canvas.requestPointerLock?.();
+  else { try { document.documentElement.requestFullscreen?.({ navigationUI: 'hide' })?.catch?.(() => {}); } catch (e) { } screen.orientation?.lock?.('landscape').catch?.(() => {}); }
+  $('touchUI').classList.add('on');
   ticker('Елфите те забелязаха! БЯГАЙ!');
 }
 $('startBtn').onclick = startGame;
@@ -940,7 +1071,7 @@ $('againBtn').onclick = startGame;
 $('resumeBtn').onclick = () => togglePause();
 function togglePause() {
   if (state === 'play') { state = 'paused'; $('pause').classList.remove('hidden'); document.exitPointerLock?.(); }
-  else if (state === 'paused') { state = 'play'; $('pause').classList.add('hidden'); canvas.requestPointerLock?.(); }
+  else if (state === 'paused') { state = 'play'; $('pause').classList.add('hidden'); if (!IS_TOUCH) canvas.requestPointerLock?.(); }
 }
 
 /* ---------------- UI helpers ---------------- */
@@ -1131,13 +1262,13 @@ function showTV() {
   TV.i = 0; TV.t = 0; TV.chatT = 0.8; TV.hideT = 0;
   $('tvOutlet').textContent = host.outlet; $('tvBug').textContent = host.show;
   $('tvChat').innerHTML = '<div class="h">💬 ЧАТ НА ЖИВО</div>';
-  $('tv').classList.remove('hidden', 'nosignal'); $('dim').classList.remove('hidden');
+  $('tv').classList.remove('hidden', 'nosignal'); $('dim').classList.remove('hidden'); document.body.classList.add('onair');
   $('tvProg').firstChild.style.transform = 'scaleX(0)';
   const tvS = markerGroup.userData.tv; tvS.material.map = host.tex; tvS.material.needsUpdate = true; tvS.visible = true;
   markerGroup.userData.icon.visible = false;
 }
 function hideTV(noSignal) {
-  $('dim').classList.add('hidden');
+  $('dim').classList.add('hidden'); document.body.classList.remove('onair');
   markerGroup.userData.tv.visible = false; markerGroup.userData.icon.visible = true;
   if (noSignal) { $('tv').classList.add('nosignal'); TV.hideT = 1.8; }
   else $('tv').classList.add('hidden');
@@ -1151,7 +1282,7 @@ function updateTV(dt) {
   if (TV.t <= 0 && TV.i < TV.lines.length) {
     const l = TV.lines[TV.i++]; TV.t = TV.STEP;
     $('tvProg').firstChild.style.transform = `scaleX(${TV.i / TV.lines.length})`;
-    $('tvHint').innerHTML = `<span>реплика ${TV.i} / ${TV.lines.length}</span><span>SPACE — следваща реплика · E — излез</span>`;
+    $('tvHint').innerHTML = `<span>реплика ${TV.i} / ${TV.lines.length}</span><span>${IS_TOUCH ? 'докосни екрана — следваща реплика · 🚪 — излез' : 'SPACE — следваща реплика · E — излез'}</span>`;
     const pic = $('tvPic');
     pic.style.backgroundImage = `url(${l.who === 'host' ? host.img : 'assets/gargamela.jpg'})`;
     pic.classList.toggle('garg', l.who === 'garg');
@@ -1254,6 +1385,7 @@ function die() {
 }
 function showOver() {
   state = 'over';
+  $('touchUI').classList.remove('on');
   const score = calcScore();
   $('overTime').textContent = `${fmtT(G.t)} на свобода`;
   $('oThrown').textContent = G.thrown.toLocaleString('bg-BG');
@@ -1310,9 +1442,11 @@ function updatePlayer(dt) {
   if (keys.KeyS || keys.ArrowDown) move.sub(fwd);
   if (keys.KeyD || keys.ArrowRight) move.add(right);
   if (keys.KeyA || keys.ArrowLeft) move.sub(right);
+  let analog = 1;
+  if (joy.mag > 0.12) { move.addScaledVector(fwd, -joy.y).addScaledVector(right, joy.x); analog = clamp(joy.mag * 1.15, 0.35, 1); }
   const moving = move.lengthSq() > 0;
-  if (moving) move.normalize();
-  const wantSprint = (keys.ShiftLeft || keys.ShiftRight) && moving && !P.exhausted;
+  if (moving) move.normalize().multiplyScalar(analog);
+  const wantSprint = (keys.ShiftLeft || keys.ShiftRight || joy.mag > 0.92) && moving && !P.exhausted;
   if (wantSprint) { P.st -= 24 * dt; if (P.st <= 0) { P.st = 0; P.exhausted = true; ticker('Бабата се задъха…'); } }
   else P.st = Math.min(100, P.st + (moving ? 12 : 22) * dt);
   if (P.exhausted && P.st > 35) P.exhausted = false;
@@ -1513,7 +1647,7 @@ function updateRain(dt) {
 
 function updateSpawns(dt) {
   if (state !== 'play') return;
-  const cap = Math.min(140, 30 + Math.floor(G.t * 0.75));
+  const cap = Math.min(IS_TOUCH ? 80 : 140, 30 + Math.floor(G.t * 0.75));
   G.spawnCd -= dt;
   if (G.spawnCd <= 0 && elves.length < cap) {
     // a whole Telegram group shows up at once
@@ -1618,6 +1752,11 @@ function updateHUD(dt) {
   const h = !P.house && state === 'play' && nearDoor();
   if (h) { pr.classList.remove('hidden'); pr.innerHTML = (G.mission && h === G.mission.house) ? `<kbd>E</kbd> Дай интервю за ${G.mission.outlet}` : h.usedUntil > G.t ? '🚫 Къщичката е наблюдавана' : '<kbd>E</kbd> Скрий се в къщичката'; }
   else pr.classList.add('hidden');
+  if (IS_TOUCH) {
+    const ba = $('btnAct'), hot = P.house || (h && (h.usedUntil <= G.t || (G.mission && h === G.mission.house)));
+    ba.textContent = P.house ? '🚪' : h ? (G.mission && h === G.mission.house ? '🎤' : h.usedUntil > G.t ? '🚫' : '🍄') : '✋';
+    ba.classList.toggle('idle', !P.house && !h); ba.classList.toggle('hot', !!hot && !P.interview);
+  }
   if (G.tickerT > 0) { G.tickerT -= dt; if (G.tickerT <= 0) $('ticker').style.opacity = 0; }
   if (bannerT > 0) { bannerT -= dt; if (bannerT <= 0) $('banner').style.opacity = 0; }
   for (let i = popups.length - 1; i >= 0; i--) {
@@ -1646,6 +1785,9 @@ camPos.set(0, 10, 30);
 function frame() {
   requestAnimationFrame(frame);
   let dt = Math.min(clock.getDelta(), 0.05);
+  const portrait = IS_TOUCH && innerHeight > innerWidth * 1.05;
+  $('rotate').style.display = portrait && (state === 'play' || state === 'paused') ? 'flex' : 'none';
+  if (portrait && state === 'play') { renderer.render(scene, camera); return; }
   if (state === 'play') {
     G.t += dt;
     updatePlayer(dt); updateSpawns(dt); updateElves(dt); updateMemes(dt); updateRain(dt);
