@@ -2,6 +2,15 @@
 <html lang="bg">
 <head>
 <meta charset="utf-8">
+<!-- Google Tag Manager -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+</script>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-P72K4CP5"></script>
+<!-- End Google Tag Manager -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -200,6 +209,9 @@
 </script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P72K4CP5" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <canvas id="game"></canvas>
 
 <div id="hud" class="hidden">
@@ -283,7 +295,7 @@
   </div>
 </div>
 
-<div id="pause" class="screen hidden"><div style="text-align:center"><h1>ПАУЗА</h1><button class="go" id="resumeBtn">ПРОДЪЛЖИ</button></div></div>
+<div id="pause" class="screen hidden"><div style="text-align:center"><h1>ПАУЗА</h1><button class="go" id="resumeBtn">ПРОДЪЛЖИ</button><br><button class="go" id="muteBtn" style="margin-top:14px;font-size:18px;padding:10px 22px;background:#333;color:#fff">🔊 МУЗИКА: ВКЛ</button><div style="opacity:.6;font-size:13px;margin-top:8px" class="desk-only">M — музика вкл/изкл</div></div></div>
 
 <div id="over" class="screen hidden">
   <div class="card">
@@ -1093,7 +1105,34 @@ function resetGame() {
   initMissions();
 }
 
+/* ---------------- music ---------------- */
+const music = new Audio('assets/music/balkan-chase.mp3');
+music.loop = true; music.preload = 'auto';
+const MUSIC_VOL = 0.45;
+let musicMuted = false; try { musicMuted = localStorage.getItem('gargamela-mute') === '1'; } catch (e) { }
+let musicTarget = 0;
+function musicTo(v, restart) {
+  musicTarget = musicMuted ? 0 : v;
+  if (restart) music.currentTime = 0;
+  if (musicTarget > 0 && music.paused) { music.volume = Math.min(music.volume, musicTarget); music.play().catch(() => {}); }
+}
+function updateMusic(dt) { // smooth fades; pause the element once silent
+  const d = musicTarget - music.volume, step = dt * 0.8;
+  music.volume = clamp(Math.abs(d) < step ? musicTarget : music.volume + Math.sign(d) * step, 0, 1);
+  if (musicTarget === 0 && music.volume === 0 && !music.paused) music.pause();
+}
+function toggleMute() {
+  musicMuted = !musicMuted; try { localStorage.setItem('gargamela-mute', musicMuted ? '1' : '0'); } catch (e) { }
+  $('muteBtn').textContent = musicMuted ? '🔇 МУЗИКА: ИЗКЛ' : '🔊 МУЗИКА: ВКЛ';
+  musicTo(state === 'play' ? MUSIC_VOL : state === 'paused' ? MUSIC_VOL * 0.35 : 0.15);
+}
+$('muteBtn').textContent = musicMuted ? '🔇 МУЗИКА: ИЗКЛ' : '🔊 МУЗИКА: ВКЛ';
+$('muteBtn').onclick = toggleMute;
+addEventListener('keydown', e => { if (e.code === 'KeyM' && !e.repeat) toggleMute(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) music.pause(); else if (musicTarget > 0) music.play().catch(() => {}); });
+
 function startGame() {
+  musicTo(MUSIC_VOL, true);
   if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { } }
   AC?.resume?.();
   document.activeElement?.blur?.(); // so SPACE never "clicks" a menu button
@@ -1110,8 +1149,8 @@ $('startBtn').onclick = startGame;
 $('againBtn').onclick = startGame;
 $('resumeBtn').onclick = () => togglePause();
 function togglePause() {
-  if (state === 'play') { state = 'paused'; $('pause').classList.remove('hidden'); document.exitPointerLock?.(); }
-  else if (state === 'paused') { state = 'play'; $('pause').classList.add('hidden'); if (!IS_TOUCH) canvas.requestPointerLock?.(); }
+  if (state === 'play') { state = 'paused'; $('pause').classList.remove('hidden'); document.exitPointerLock?.(); musicTo(MUSIC_VOL * 0.35); }
+  else if (state === 'paused') { state = 'play'; $('pause').classList.add('hidden'); if (!IS_TOUCH) canvas.requestPointerLock?.(); musicTo(MUSIC_VOL); }
 }
 
 /* ---------------- UI helpers ---------------- */
@@ -1338,10 +1377,12 @@ function showTV() {
   $('tvOutlet').textContent = host.outlet; $('tvBug').textContent = host.show;
   $('tvChat').innerHTML = '<div class="h">💬 ЧАТ НА ЖИВО</div>';
   $('tv').classList.remove('hidden', 'nosignal'); $('dim').classList.remove('hidden'); document.body.classList.add('onair');
+  musicTo(MUSIC_VOL * 0.4); // duck the music so the dialogue has focus
   $('tvProg').firstChild.style.transform = 'scaleX(0)';
 }
 function hideTV(noSignal) {
   $('dim').classList.add('hidden'); document.body.classList.remove('onair');
+  if (state === 'play') musicTo(MUSIC_VOL);
   if (noSignal) { $('tv').classList.add('nosignal'); TV.hideT = 1.8; }
   else $('tv').classList.add('hidden');
 }
@@ -1456,7 +1497,7 @@ function die() {
   hideTV(false);
   for (const h of HOSTS) { h.marker.visible = false; h.pin.style.display = 'none'; }
   P.hp = 0; state = 'dead'; G.deadT = 0; P.house = null; hag.root.visible = true;
-  sfx.die(); banner('СМЕМЕНА!', '#ff4fb0');
+  sfx.die(); banner('СМЕМЕНА!', '#ff4fb0'); musicTo(0.12);
   document.exitPointerLock?.();
 }
 function showOver() {
@@ -1930,6 +1971,7 @@ camPos.set(0, 10, 30);
 function frame() {
   requestAnimationFrame(frame);
   let dt = Math.min(clock.getDelta(), 0.05);
+  updateMusic(dt);
   const portrait = IS_TOUCH && innerHeight > innerWidth * 1.05;
   $('rotate').style.display = portrait && (state === 'play' || state === 'paused') ? 'flex' : 'none';
   if (portrait && state === 'play') { renderer.render(scene, camera); return; }
@@ -1959,7 +2001,7 @@ function frame() {
   renderer.render(scene, camera);
 }
 frame();
-if (location.hash === '#debug') window.dbg = { G, P, elves, memes, camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact() };
+if (location.hash === '#debug') window.dbg = { G, P, elves, memes, music, camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact() };
 </script>
 </body>
 </html>
