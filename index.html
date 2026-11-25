@@ -545,7 +545,9 @@
         <div>Визити от шефовете 👔<span id="oBoss">0</span></div>
         <div>Стигна до 🚌<span id="oCity">София</span></div>
       </div>
-      <button class="go" id="againBtn">ПАК! (R)</button><span id="best"></span>
+      <button class="go" id="againBtn">ПАК! (R)</button>
+      <button class="go" id="fbBtn" style="margin-left:10px;background:#1877f2;box-shadow:0 6px 0 #0b4fa8, 0 10px 24px #000a;font-size:20px;padding:13px 22px">📣 СПОДЕЛИ ВЪВ FACEBOOK</button><span id="best"></span>
+      <div id="shareNote" style="display:none;margin-top:12px;font-size:13px;font-weight:800;color:#9ef01a"></div>
     </div>
   </div>
 </div>
@@ -1488,6 +1490,44 @@ $('howBtn').onclick = () => showOnboard(null);
 $('finale').addEventListener('pointerdown', () => finaleNext());
 $('trip').addEventListener('pointerdown', () => skipTrip());
 $('againBtn').onclick = startGame;
+/* ---- share the result on Facebook ---- */
+const SHARE_URL = 'https://gargamelka.com/';
+// a 1200×630 result card (the size Facebook previews use) — shared as an image where the browser allows it
+async function resultCard(sh) {
+  const c = document.createElement('canvas'); c.width = 1200; c.height = 630; const g = c.getContext('2d');
+  const gr = g.createLinearGradient(0, 0, 1200, 630); gr.addColorStop(0, '#2a1630'); gr.addColorStop(1, '#0d1a10'); g.fillStyle = gr; g.fillRect(0, 0, 1200, 630);
+  const img = await imgLoad('assets/gargamela.jpg');
+  g.save(); g.translate(60, 70); g.rotate(-0.04); g.fillStyle = '#f1e3c4'; g.fillRect(-12, -12, 384, 552);
+  if (img) { const h = img.width / 0.75; g.drawImage(img, 0, img.height * 0.05, img.width, Math.min(h, img.height * 0.95), 0, 0, 360, 480); }
+  g.fillStyle = '#5a1a00'; g.font = '400 34px "Russo One", sans-serif'; g.textAlign = 'center'; g.fillText(G.finale ? 'НАЦИОНАЛИЗИРАНА' : 'СМЕМЕНА', 180, 535 - 20); g.restore();
+  g.textAlign = 'left'; g.fillStyle = '#ff4fb0'; g.font = '400 74px "Russo One", sans-serif'; g.fillText('ГАРГАМЕЛКА', 480, 130);
+  g.fillStyle = '#ffd23f'; g.font = '400 40px "Russo One", sans-serif'; g.fillText(G.finale ? 'Путин взе всичко 🪙' : `${sh.time} на свобода`, 480, 190);
+  const rows = [['Стигна до', sh.city], ['Точки', sh.score.toLocaleString('bg-BG')], ['Мемета от Елфите', sh.thrown.toLocaleString('bg-BG')], ['Цена на меметата', sh.spent], ['Интервюта', String(sh.iv)]];
+  rows.forEach(([k, v], i) => { const y = 260 + i * 64; g.fillStyle = '#ffffffb0'; g.font = '800 26px Rubik, sans-serif'; g.fillText(k, 480, y); g.fillStyle = '#fff'; g.font = '400 36px "Russo One", sans-serif'; g.textAlign = 'right'; g.fillText(v, 1140, y); g.textAlign = 'left'; });
+  g.fillStyle = '#9ef01a'; g.font = '400 30px "Russo One", sans-serif'; g.fillText('Можеш ли повече? → gargamelka.com', 480, 592);
+  return new Promise(res => c.toBlob(res, 'image/png'));
+}
+async function shareFacebook() {
+  const sh = G.share; if (!sh) return;
+  try { window.dataLayer?.push({ event: 'share', method: 'facebook', score: sh.score, city: sh.city }); } catch (e) { }
+  const note = t => { $('shareNote').textContent = t; $('shareNote').style.display = 'block'; };
+  // phones: the native share sheet (pick Facebook there) — with the result card image when supported
+  if (IS_TOUCH && navigator.share) {
+    try {
+      const blob = await resultCard(sh), file = blob && new File([blob], 'gargamelka-rezultat.png', { type: 'image/png' });
+      if (file && navigator.canShare?.({ files: [file] })) await navigator.share({ files: [file], text: sh.text + ' ' + SHARE_URL });
+      else await navigator.share({ title: 'Гаргамелка', text: sh.text, url: SHARE_URL });
+      return;
+    } catch (e) { if (e?.name === 'AbortError') return; }
+  }
+  // desktop: Facebook's share dialog (it only takes a link, so the result text goes to the clipboard to paste)
+  let copied = false; try { await navigator.clipboard.writeText(sh.text + ' ' + SHARE_URL); copied = true; } catch (e) { }
+  const u = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL);
+  const w = window.open(u, 'fbshare', 'width=640,height=560');
+  if (!w) location.href = u;
+  note(copied ? '✓ Резултатът е копиран — постави го (Ctrl/⌘+V) в публикацията във Facebook.' : 'Отвори се Facebook — опиши резултата си в публикацията.');
+}
+$('fbBtn').onclick = shareFacebook;
 $('resumeBtn').onclick = () => togglePause();
 function togglePause() {
   if (state === 'play') { state = 'paused'; $('pause').classList.remove('hidden'); document.exitPointerLock?.(); musicTo(MUSIC_VOL * 0.35); }
@@ -1912,6 +1952,14 @@ function showOver() {
   if (G.finale) $('oBalance').textContent = `Стигна до границата с ${FINAL_STOP}. Путин ѝ благодари за помощта и национализира всичките ${kop(G.nationalized)}.`;
   let best = 0; try { best = +localStorage.getItem('gargamela-best') || 0; if (score > best) { localStorage.setItem('gargamela-best', score); } } catch (e) { }
   $('best').textContent = score > best ? '🏆 Нов рекорд!' : `Рекорд: ${best.toLocaleString('bg-BG')}`;
+  G.share = {
+    score, time: fmtT(G.t), city: G.finale ? `границата с ${FINAL_STOP}` : CITY.name, thrown: G.thrown, spent: eur(G.spent), iv: G.interviews,
+    text: (G.finale
+      ? `Стигнах до границата с Москва в Гаргамелка 🚌… и Путин ми национализира ${kop(G.nationalized)} 🪙. Благодари ми за помощта и не ме пусна.`
+      : `Оцелях ${fmtT(G.t)} срещу Елфите в Гаргамелка ` + (CITY_I ? `и стигнах до ${CITY.name} 🚌 по пътя към Москва.` : 'но не успях да изляза от София 🚌.'))
+      + ` Елфите изстреляха ${G.thrown.toLocaleString('bg-BG')} мемета за ${eur(G.spent)}, за да ме смемят. Точки: ${score.toLocaleString('bg-BG')}. Можеш ли повече? 🍭`,
+  };
+  $('shareNote').style.display = 'none';
   $('over').classList.remove('hidden');
   $('hud').classList.add('hidden');
 }
@@ -2955,7 +3003,7 @@ function frame() {
   renderer.render(scene, camera);
 }
 frame();
-if (location.hash === '#debug') window.dbg = { G, P, elves, memes, music, getBoss: () => boss, spawnBoss: () => spawnBoss(), starPickups, spawnStarPickup: () => spawnStarPickup(), camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact(), getBus: () => bus, spawnBus: () => spawnBus(), boardBus: () => boardBus(), buildWorld, city: () => CITY_I, CITIES, HOUSES, PATHS };
+if (location.hash === '#debug') window.dbg = { G, P, elves, memes, music, getBoss: () => boss, spawnBoss: () => spawnBoss(), starPickups, spawnStarPickup: () => spawnStarPickup(), camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact(), getBus: () => bus, die: () => die(), resultCard: () => resultCard(G.share), spawnBus: () => spawnBus(), boardBus: () => boardBus(), buildWorld, city: () => CITY_I, CITIES, HOUSES, PATHS };
 </script>
 </body>
 </html>
