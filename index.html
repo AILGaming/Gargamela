@@ -107,6 +107,47 @@
   .pin.boss::after { color:#fff; background:#d00000; }
   @keyframes bosspulse { from { box-shadow:0 0 0 2px #000, 0 0 8px #ff2020; } to { box-shadow:0 0 0 2px #000, 0 0 26px #ff2020; } }
   body.onair #pins { display:none; }
+  .pin.bus { --c:#ff9f1c; display:flex; align-items:center; justify-content:center; font-size:26px; background:#2a1a00; border-radius:12px; }
+  #mission .busl { margin:-2px 0 5px; padding:3px 8px; border-radius:6px; background:#ff9f1c22; color:#ffc46b; font-size:12.5px; }
+  #mission .busl b { font-family:'Russo One'; font-weight:400; color:#fff; }
+  #mission .busl.go { background:#ff9f1c; color:#000; text-shadow:none; animation:buspulse .8s infinite alternate; }
+  #mission .busl.go b { color:#000; }
+  @keyframes buspulse { from { box-shadow:0 0 0 #ff9f1c; } to { box-shadow:0 0 14px #ff9f1c; } }
+  #trip { z-index:20; background:radial-gradient(ellipse at center, #2a1a08f2, #000f); }
+  .tripbox { width:min(820px, 94vw); text-align:center; }
+  .tripbox .tt { font-family:'Russo One'; font-size:34px; color:#ff9f1c; text-shadow:0 4px 0 #000; }
+  #tripTo { font-family:'Russo One'; font-size:22px; margin:6px 0 34px; color:#fff; }
+  #route { position:relative; display:flex; justify-content:space-between; margin:0 34px; }
+  #route::before { content:''; position:absolute; left:0; right:0; top:9px; height:6px; background:repeating-linear-gradient(90deg, #ffd23f 0 14px, #0000 14px 26px); opacity:.6; }
+  #route .stop { position:relative; width:0; display:flex; flex-direction:column; align-items:center; }
+  #route .stop i { width:24px; height:24px; border-radius:50%; background:#333; border:4px solid #888; flex:none; }
+  #route .stop span { margin-top:8px; font-weight:800; font-size:14px; white-space:nowrap; opacity:.7; }
+  #route .stop.done i { background:var(--pink); border-color:#fff; }
+  #route .stop.next i { background:#ff9f1c; border-color:#fff; box-shadow:0 0 16px #ff9f1c; }
+  #route .stop.next span { opacity:1; color:#ff9f1c; font-size:16px; }
+  #route .stop.moscow i { background:#d00000; border-color:#ffd23f; width:30px; height:30px; margin-top:-3px; }
+  #route .stop.moscow span { color:#ffd23f; opacity:1; }
+  #tripBus { position:absolute; top:-40px; font-size:40px; transform:translateX(-50%) scaleX(-1); transition:left 2.8s ease-in-out; }
+  #tripMsg { margin-top:44px; font-weight:800; font-size:17px; opacity:.9; }
+  #finale { position:fixed; inset:0; z-index:15; display:flex; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, #3a0000b0, #000e); }
+  #finale .tvframe { width:min(820px, 94vw, 128vh); }
+  #finPic { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 30%, #7a1010, #200000) ; }
+  #finPic::after { content:''; position:absolute; inset:0; background-repeat:no-repeat; transition:opacity .25s; }
+  #finPic.putin::after { background-image:url(assets/bosses/base1.png); background-size:auto 210%; background-position:50% 4%; }
+  #finPic.garg::after { background-image:url(assets/gargamela.jpg); background-size:cover; background-position:55% 12%; }
+  #finKopBox { position:absolute; top:40px; right:10px; background:#000c; border:3px solid #ffd23f; border-radius:10px; padding:6px 12px; text-align:right; }
+  #finKopBox span { display:block; font-size:12px; font-weight:800; opacity:.8; }
+  #finKopBox b { font-family:'Russo One'; font-weight:400; font-size:24px; color:#ffd23f; }
+  #finKopBox em { display:none; margin-top:6px; transform:rotate(-6deg); font:400 15px 'Russo One'; font-style:normal; color:#ff2020; border:3px solid #ff2020; padding:1px 8px; text-align:center; white-space:nowrap; }
+  #finKopBox.gone { border-color:#ff2020; }
+  #finKopBox.gone em { display:block; animation:stamp .25s ease-out; }
+  @keyframes stamp { from { transform:rotate(-6deg) scale(2.2); opacity:0; } }
+  #finKopBox.gone b { color:#ff6b6b; }
+  .poster .wanted.long { font-size:19px; padding:9px 0 6px; letter-spacing:1px; }
+  #finSub { position:absolute; left:0; right:0; bottom:0; min-height:96px; background:#000e; padding:10px 16px; font-size:20px; font-weight:800; line-height:1.35; display:flex; align-items:center; }
+  #finSub em { font-style:normal; color:#ff4d4d; } #finSub em.g { color:var(--pink); }
+  #finSub > div { animation:subIn .35s ease-out; }
+  #finHint { font-size:12px; font-weight:800; opacity:.75; margin-top:8px; display:flex; justify-content:space-between; }
   #dim { position:fixed; inset:0; z-index:4; background:radial-gradient(ellipse at center, #000a, #000d); pointer-events:none; }
   #tv { position:absolute; z-index:5; left:50%; top:50%; transform:translate(-50%,-50%); width:min(900px,94vw); display:flex; gap:12px; align-items:stretch; flex-wrap:wrap; }
   #tv .tvframe { flex:1 1 560px; }
@@ -189,7 +230,7 @@
   body.touch #banner { font-size:28px; }
   body.touch #hideState { bottom:auto; top:66%; font-size:15px; }
   /* Screens */
-  .screen { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, #1a0f1fcc, #000e); z-index:10; padding:16px; overflow:auto; }
+  .screen { position:fixed; inset:0; display:flex; align-items:center; align-items:safe center; justify-content:center; background:radial-gradient(ellipse at center, #1a0f1fcc, #000e); z-index:10; padding:16px; overflow:auto; }
   .card { display:flex; gap:28px; max-width:980px; width:100%; align-items:center; flex-wrap:wrap; justify-content:center; }
   .poster { width:300px; max-width:80vw; border:8px solid #f1e3c4; outline:3px solid #000; transform:rotate(-3deg); box-shadow:0 14px 40px #000; position:relative; background:#f1e3c4; }
   .poster img { width:100%; display:block; }
@@ -299,7 +340,7 @@
   <div id="prompt" class="hidden"></div>
   <canvas id="radar" width="380" height="380"></canvas>
   <div id="popups"></div>
-  <div id="pins"></div>
+  <div id="pins"><div id="busPin" class="pin bus" style="display:none">🚌</div></div>
   <div id="hint">WASD бягай · SHIFT спринт · SPACE скок<br>E скрий се в къщичка · F / клик фрасни с памука<br>мишка = камера · P пауза</div>
 </div>
 <div id="flash"></div>
@@ -322,13 +363,14 @@
     <div class="copy">
       <h1>ГАРГАМЕЛКА<em>МЕМЕ ХАЙКА</em></h1>
       <p class="lead">Цялото село на Елфите е по петите ти. Те нямат оръжия — имат <b>мемета</b>. И всяко меме струва пари.
-        Не можеш да спечелиш. Можеш само да бягаш, да се криеш и да оцелееш колкото се може по-дълго.</p>
+        Целта: <b>Москва</b>. На всеки 3 интервюта идва автобус към следващия град — София, Белград, Будапеща, Минск, Смоленск… Дали Москва ще я приеме?</p>
       <div class="keys touch-only" style="display:none">
         <span>🕹️</span><span>джойстик вляво — бягай (до края = спринт)</span>
         <span>👆</span><span>плъзгай вдясно — върти камерата</span>
         <span>⤒</span><span>скок · ✋ — влез в къщичка / дай интервю</span>
         <span>🍭</span><span>фрасни елфа със захарния памук — оаква го и го зашеметява</span>
         <span>🎤</span><span><b>МИСИЯ:</b> давай интервюта в маркираните къщички — печелиш хонорари, но меметата на Елфите поскъпват</span>
+        <span>🚌</span><span>след 3 интервюта в града идва <b>автобус</b> (оранжевият лъч) — качи се и пътуваш към следващия град, все по-близо до Москва</span>
         <span>🌿</span><span>влез в храст — елфите не те виждат, докато не те надушат</span>
         <span>⭐</span><span>рядко някъде се крие звезда (зад гъби, в храсти, до дървета) — вземи я и хайката пада с една звезда</span>
         <span>👔</span><span>понякога за малко идва шеф (Капутин, Адолф Путлер, Бункерина, Бункер нюз) — огромен, замеря със серии мемета и вдига хайката с една звезда. Бягай!</span>
@@ -340,6 +382,7 @@
         <span><kbd>E</kbd></span><span>скрий се в гъбена къщичка (за кратко)</span>
         <span><kbd>F</kbd> / 🖱️</span><span>фрасни елфа със захарния памук — оаква го целия и го зашеметява</span>
         <span>🎤</span><span><b>МИСИЯ:</b> давай интервюта в маркираните къщички — печелиш хонорари, но всяко интервю вдига цената на меметата на Елфите</span>
+        <span>🚌</span><span>след 3 интервюта в града идва <b>автобус</b> (оранжевият лъч) — качи се и пътуваш към следващия град, все по-близо до Москва</span>
         <span>🌿</span><span>влез в храст — елфите не те виждат, докато не те надушат</span>
         <span>⭐</span><span>рядко някъде се крие звезда (зад гъби, в храсти, до дървета) — вземи я и хайката пада с една звезда</span>
         <span>👔</span><span>понякога за малко идва шеф (Капутин, Адолф Путлер, Бункерина, Бункер нюз) — огромен, замеря със серии мемета и вдига хайката с една звезда. Бягай!</span>
@@ -357,13 +400,28 @@
   </div>
 </div>
 
-<div id="console"><div id="conLog"></div><div class="conIn"><span>]</span><input id="conInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div><div id="conVer">Гаргамелка v3.20</div></div>
+<div id="trip" class="screen hidden"><div class="tripbox">
+  <div class="tt">🚌 ЕДНОПОСОЧЕН АВТОБУС</div>
+  <div id="tripTo"></div>
+  <div id="route"></div>
+  <div id="tripMsg"></div>
+</div></div>
+<div id="finale" class="hidden">
+  <div class="tvframe"><div class="tvscreen">
+    <div id="finPic" class="putin"></div>
+    <div class="live">● ГРАНИЦАТА</div>
+    <div id="finKopBox"><span>💰 Касичка за билета</span><b id="finKop">0 копейки</b><em>НАЦИОНАЛИЗИРАНО</em></div>
+    <div class="lower"><b>🚌 → МОСКВА</b><span id="finName"></span></div>
+    <div id="finSub"></div>
+  </div><div id="finHint"></div></div>
+</div>
+<div id="console"><div id="conLog"></div><div class="conIn"><span>]</span><input id="conInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div><div id="conVer">Гаргамелка v4.0</div></div>
 <div id="pause" class="screen hidden"><div style="text-align:center"><h1>ПАУЗА</h1><button class="go" id="resumeBtn">ПРОДЪЛЖИ</button><br><button class="go" id="muteBtn" style="margin-top:14px;font-size:18px;padding:10px 22px;background:#333;color:#fff">🔊 МУЗИКА: ВКЛ</button><div style="opacity:.6;font-size:13px;margin-top:8px" class="desk-only">M — музика вкл/изкл</div></div></div>
 
 <div id="over" class="screen hidden">
   <div class="card">
     <div class="poster">
-      <div class="wanted">СМЕМЕНА</div>
+      <div class="wanted" id="overWanted">СМЕМЕНА</div>
       <img src="assets/gargamela.jpg" alt="" class="defeated">
       <div class="reward" id="epitaph">ТРОЛКАТА ПАДНА</div>
     </div>
@@ -393,6 +451,7 @@
         <div>Оакани елфи 🍭<span id="oWhacks">0</span></div>
         <div>Намерени звезди ⭐<span id="oStars">0</span></div>
         <div>Визити от шефовете 👔<span id="oBoss">0</span></div>
+        <div>Стигна до 🚌<span id="oCity">София</span></div>
       </div>
       <button class="go" id="againBtn">ПАК! (R)</button><span id="best"></span>
     </div>
@@ -424,7 +483,7 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') addEventListe
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-const rng = mulberry32(20261123);
+let rng = mulberry32(20261123);
 const rr = (a, b) => a + (b - a) * rng();
 const R = (a, b) => a + (b - a) * Math.random();
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -495,13 +554,60 @@ function canvasTex(w, h, draw) {
   return t;
 }
 
-/* ---------------- world layout ---------------- */
+/* ---------------- world layout: 5 cities on the road to Moscow ---------------- */
 const WORLD = 108;
+const CITIES = [
+  { name: 'София', sub: 'Начало на пътя към Москва', seed: 20261123,
+    sky: 0xa8daf5, fog: [70, 200], hemiG: 0x4d7a2e, outer: 0x5a8f30, radar: '#2f5a24',
+    grass: ['#6aa83c', ['#5e9a33', '#78b848', '#5a8f30', '#83c055', '#6fae3f'], 'rgba(40,80,20,0.12)'],
+    path: ['#a88552', '#d9b77c', ['#b9a98f', '#9c8c74', '#c8bca6', '#8d7a5e']],
+    caps: [0xd7372b, 0xe8661c, 0xd7372b, 0xef7f1a, 0xc2272d], leaf: [0x3f7d2a, 0x4f9433, 0x356b24], bush: [0x4c8f2f, 0x5aa23a, 0x3e7a26],
+    berries: [0xff6fa8, 0xffd23f, 0xffffff], minis: [0xd7372b, 0xe8661c, 0xc2272d, 0xb5651d], flowers: [0xff6fa8, 0xffd23f, 0xffffff, 0xe85d04, 0xa29bfe],
+    flag: [0xffffff, 0x00966e, 0xd62612], rings: [[40, 3, 3]], spokes: [0.3, 1.35, 2.4, 3.45, 4.5, 5.5], wig: 0.12, houses: 30 },
+  { name: 'Белград', sub: 'Братска спирка', seed: 4471,
+    sky: 0xf3dcb2, fog: [65, 190], hemiG: 0x7a6a2e, outer: 0x86a33e, radar: '#4f5f24',
+    grass: ['#8fae45', ['#86a33e', '#9dbb52', '#7c9636', '#a7c25d', '#b3b65a'], 'rgba(90,70,20,0.13)'],
+    path: ['#7d6243', '#c4a272', ['#a8957a', '#8c7a60', '#bfae92']],
+    caps: [0x1f4fa3, 0x2c6bd1, 0x3b7de0, 0x1c3f8a, 0x2a5bb8], leaf: [0x5b8a2a, 0x6f9a2f, 0x4c7a24], bush: [0x6a9a2f, 0x7aaa3a, 0x5a8a26],
+    berries: [0xffffff, 0xd62612, 0xffd23f], minis: [0x1f4fa3, 0x2c6bd1, 0xd62612], flowers: [0xffffff, 0xd62612, 0x4cc9f0, 0xffd23f],
+    flag: [0xc6363c, 0x0c4076, 0xffffff], rings: [[32, 4, 6], [76, 4, 4]], spokes: 4, wig: 0.2, houses: 32 },
+  { name: 'Будапеща', sub: 'Тук също обичат Москва', seed: 9127,
+    sky: 0xc9d8f5, fog: [65, 190], hemiG: 0x3f6d3a, outer: 0x4f8a3c, radar: '#284d24',
+    grass: ['#5f9e4a', ['#559241', '#6aaa55', '#4c8a3c', '#77b45e', '#5d9a48'], 'rgba(30,60,40,0.13)'],
+    path: ['#8a7a62', '#cbbd9e', ['#aaa08c', '#8d8472', '#c7bfae']],
+    caps: [0x8e44ad, 0x9b59b6, 0x6c3483, 0xb07cc6, 0x7d3c98], leaf: [0x2f7d3a, 0x3f9443, 0x2a6b30], bush: [0x3c8f3f, 0x4aa24a, 0x2e7a36],
+    berries: [0xffd23f, 0xffffff, 0xff6fa8], minis: [0x8e44ad, 0xce2939, 0xffffff], flowers: [0xce2939, 0xffffff, 0x7bf05a, 0xb388ff],
+    flag: [0xce2939, 0xffffff, 0x477050], rings: [[28, 0, 0], [66, 6, 4]], spokes: 5, wig: 0.1, houses: 34 },
+  { name: 'Минск', sub: 'Есен в последната диктатура', seed: 31337,
+    sky: 0xc9d2d9, fog: [55, 170], hemiG: 0x6d6a3a, outer: 0x8c8a3a, radar: '#4d4a24',
+    grass: ['#8a9a48', ['#7f8f3f', '#99a852', '#a39a45', '#8c8a3a', '#b0a04a'], 'rgba(90,60,20,0.14)'],
+    path: ['#6b6b6b', '#a5a5a0', ['#8f8f8a', '#7a7a75', '#b5b5b0']],
+    caps: [0x1aa3a3, 0x14857f, 0x2bbdb5, 0x0f6f6a, 0x23a090], leaf: [0xd98a1c, 0xc7631a, 0xe0b02a], bush: [0x8a8f2f, 0x9aa23a, 0xb0802a],
+    berries: [0xd62612, 0xffd23f], minis: [0xc8313e, 0x4aa657, 0xb5651d], flowers: [0xc8313e, 0x4aa657, 0xffffff, 0xffd23f],
+    flag: [0xc8313e, 0xc8313e, 0x4aa657], rings: [[46, 5, 2]], spokes: 8, wig: 0.03, houses: 32 },
+  { name: 'Смоленск', sub: 'Последната спирка преди Москва', seed: 1812, snow: true,
+    sky: 0xdfe7ee, fog: [45, 150], hemiG: 0xb0bcc8, outer: 0xe3eaf0, radar: '#55606a',
+    grass: ['#e9eff3', ['#dde6ec', '#f6f9fb', '#d0dae2', '#e3ebf0'], 'rgba(120,140,170,0.10)'],
+    path: ['#5d4a38', '#8b7862', ['#6d6358', '#9c9184', '#4e463d']],
+    caps: [0xd4a017, 0x8b1e1e, 0xc28a12, 0x6e1a1a, 0xb8860b], leaf: [0x2f5a3a, 0x3b6b45, 0xeef3f6], bush: [0x3a5d3f, 0x4a6e4c, 0xe8eef2],
+    berries: [0xd62612, 0xffffff], minis: [0x8b1e1e, 0xc28a12], flowers: [0xffffff, 0xdfe7ee, 0xa8c8e8],
+    flag: [0xffffff, 0x0039a6, 0xd52b1e], rings: [[26, 0, 0], [62, 7, 3]], spokes: 7, wig: 0.15, houses: 32 },
+];
+const FINAL_STOP = 'Москва';
+let CITY_I = -1, CITY = CITIES[0];
 const PATHS = [];
 function addPoly(pts) { for (let i = 0; i < pts.length - 1; i++) PATHS.push([pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1]]); }
-{ const ring = []; for (let i = 0; i <= 48; i++) { const a = i / 48 * Math.PI * 2; const r = 40 + Math.sin(a * 3) * 3; ring.push([Math.cos(a) * r, Math.sin(a) * r]); } addPoly(ring); }
-for (const a0 of [0.3, 1.35, 2.4, 3.45, 4.5, 5.5]) {
-  const pts = []; for (let r = 9; r <= 112; r += 6) { const a = a0 + Math.sin(r * 0.06 + a0) * 0.12; pts.push([Math.cos(a) * r, Math.sin(a) * r]); } addPoly(pts);
+function layoutPaths(c) {
+  PATHS.length = 0;
+  for (const [r0, lobes, amp] of c.rings) {
+    const ph = rr(0, 6), ring = [];
+    for (let i = 0; i <= 48; i++) { const a = i / 48 * Math.PI * 2; const r = r0 + Math.sin(a * lobes + ph) * amp; ring.push([Math.cos(a) * r, Math.sin(a) * r]); }
+    addPoly(ring);
+  }
+  const off = rr(0, 6), spokes = Array.isArray(c.spokes) ? c.spokes : Array.from({ length: c.spokes }, (_, i) => off + i / c.spokes * Math.PI * 2 + rr(-0.12, 0.12));
+  for (const a0 of spokes) {
+    const pts = []; for (let r = 9; r <= 112; r += 6) { const a = a0 + Math.sin(r * 0.06 + a0) * c.wig; pts.push([Math.cos(a) * r, Math.sin(a) * r]); } addPoly(pts);
+  }
 }
 function segDist(px, pz, s) {
   const dx = s[2] - s[0], dz = s[3] - s[1]; const l2 = dx * dx + dz * dz;
@@ -515,41 +621,44 @@ function pathInfo(x, z) {
   return best;
 }
 
-/* ground */
-const GS = 260, GPX = 2048;
-const groundTex = canvasTex(GPX, GPX, (g, w) => {
-  const k = w / GS, X = v => (v + GS / 2) * k;
-  g.fillStyle = '#6aa83c'; g.fillRect(0, 0, w, w);
-  for (let i = 0; i < 26000; i++) {
-    const x = Math.random() * w, y = Math.random() * w;
-    g.fillStyle = pick(['#5e9a33', '#78b848', '#5a8f30', '#83c055', '#6fae3f']);
-    g.fillRect(x, y, 2 + Math.random() * 3, 5 + Math.random() * 7);
-  }
-  for (let i = 0; i < 90; i++) { // darker patches
-    g.fillStyle = 'rgba(40,80,20,0.12)'; g.beginPath(); g.arc(Math.random() * w, Math.random() * w, 20 + Math.random() * 60, 0, 7); g.fill();
-  }
-  const strokePaths = (width, color) => {
-    g.strokeStyle = color; g.lineWidth = width * k; g.lineCap = 'round'; g.lineJoin = 'round';
-    for (const s of PATHS) { g.beginPath(); g.moveTo(X(s[0]), X(s[1])); g.lineTo(X(s[2]), X(s[3])); g.stroke(); }
-    g.fillStyle = color; g.beginPath(); g.arc(X(0), X(0), (11 + width / 2 - 2.5) * k, 0, 7); g.fill();
-  };
-  strokePaths(6.2, '#a88552'); strokePaths(5, '#d9b77c');
-  for (let i = 0; i < 3000; i++) { // pebbles
-    const s = pick(PATHS), t = Math.random();
-    const x = X(s[0] + (s[2] - s[0]) * t + R(-2.2, 2.2)), y = X(s[1] + (s[3] - s[1]) * t + R(-2.2, 2.2));
-    g.fillStyle = pick(['#b9a98f', '#9c8c74', '#c8bca6', '#8d7a5e']);
-    g.beginPath(); g.ellipse(x, y, R(1.5, 4), R(1, 2.5), R(0, 3), 0, 7); g.fill();
-  }
-});
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(GS, GS), new THREE.MeshStandardMaterial({ map: groundTex, roughness: 1 }));
+/* ground (repainted for every city) */
+const GS = 260, GPX = IS_TOUCH ? 1536 : 2048;
+function paintGround(c) {
+  return canvasTex(GPX, GPX, (g, w) => {
+    const k = w / GS, X = v => (v + GS / 2) * k, [base, strokes, patch] = c.grass, [edge, fill, pebbles] = c.path;
+    g.fillStyle = base; g.fillRect(0, 0, w, w);
+    for (let i = 0; i < 26000; i++) {
+      const x = Math.random() * w, y = Math.random() * w;
+      g.fillStyle = pick(strokes);
+      g.fillRect(x, y, 2 + Math.random() * 3, 5 + Math.random() * 7);
+    }
+    for (let i = 0; i < 90; i++) { // darker patches
+      g.fillStyle = patch; g.beginPath(); g.arc(Math.random() * w, Math.random() * w, 20 + Math.random() * 60, 0, 7); g.fill();
+    }
+    const strokePaths = (width, color) => {
+      g.strokeStyle = color; g.lineWidth = width * k; g.lineCap = 'round'; g.lineJoin = 'round';
+      for (const s of PATHS) { g.beginPath(); g.moveTo(X(s[0]), X(s[1])); g.lineTo(X(s[2]), X(s[3])); g.stroke(); }
+      g.fillStyle = color; g.beginPath(); g.arc(X(0), X(0), (11 + width / 2 - 2.5) * k, 0, 7); g.fill();
+    };
+    strokePaths(6.2, edge); strokePaths(5, fill);
+    for (let i = 0; i < 3000; i++) { // pebbles
+      const s = pick(PATHS), t = Math.random();
+      const x = X(s[0] + (s[2] - s[0]) * t + R(-2.2, 2.2)), y = X(s[1] + (s[3] - s[1]) * t + R(-2.2, 2.2));
+      g.fillStyle = pick(pebbles);
+      g.beginPath(); g.ellipse(x, y, R(1.5, 4), R(1, 2.5), R(0, 3), 0, 7); g.fill();
+    }
+  });
+}
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(GS, GS), new THREE.MeshStandardMaterial({ roughness: 1 }));
 ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
-const outer = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), M(0x5a8f30, { roughness: 1 }));
+const outer = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), new THREE.MeshStandardMaterial({ color: 0x5a8f30, roughness: 1 }));
 outer.rotation.x = -Math.PI / 2; outer.position.y = -0.05; scene.add(outer);
 
 const SOLIDS = [];   // {x,z,r}
 const HOUSES = [];
 const BUSHES = [];
 const VTREES = [];
+const worldG = new THREE.Group(); scene.add(worldG);
 
 /* mushroom houses */
 function makeHouse(capColor, s) {
@@ -560,10 +669,12 @@ function makeHouse(capColor, s) {
   body.receiveShadow = true;
   const cap = part(GEO.half, M(capColor, { roughness: 0.6 }), g, 0, 3.7, 0, 4.4, 3.3, 4.4);
   cap.receiveShadow = true;
+  if (CITY.snow) part(GEO.half, M(0xf4f8fb, { roughness: 0.9 }), g, 0, 6.0, 0, 3.05, 1.15, 3.05).receiveShadow = true;
   part(new THREE.CylinderGeometry(4.4, 3.4, 0.5, 24), M(0x8b5a3c), g, 0, 3.55, 0);
   const spotM = M(0xf4e8cc, { roughness: 0.7 });
   for (let i = 0; i < 11; i++) {
     const th = rr(0, Math.PI * 2), ph = rr(0.25, 1.35);
+    if (CITY.snow && ph < 0.8) continue; // the top is under snow
     const n = new THREE.Vector3(Math.sin(ph) * Math.cos(th), Math.cos(ph), Math.sin(ph) * Math.sin(th));
     const p = new THREE.Vector3(n.x * 4.4, 3.7 + n.y * 3.3, n.z * 4.4);
     const sp = part(GEO.sphLo, spotM, g, p.x, p.y, p.z, 1, 1, 1, false);
@@ -591,7 +702,7 @@ function makeHouse(capColor, s) {
     const d = new THREE.Group(); d.position.set(0, 5.1, 2.6); d.rotation.x = -0.35; g.add(d);
     part(GEO.box, M(0x8a5a35), d, 0, 0, 0, 1.4, 1.1, 1.2);
     part(GEO.box, M(0x9fd2ee, { roughness: 0.2 }), d, 0, 0, 0.62, 0.8, 0.7, 0.05, false);
-    const roof = part(new THREE.ConeGeometry(1.1, 0.7, 4), M(0x5c3317), d, 0, 0.9, 0, 1, 1, 1);
+    const roof = part(new THREE.ConeGeometry(1.1, 0.7, 4), M(CITY.snow ? 0xf4f8fb : 0x5c3317), d, 0, 0.9, 0, 1, 1, 1);
     roof.rotation.y = Math.PI / 4;
   }
   g.scale.setScalar(s);
@@ -605,17 +716,17 @@ function makeTree(s) {
   part(new THREE.CylinderGeometry(0.9, 1.5, 13, 10), bark, g, 0, 6.5, 0);
   for (let i = 0; i < 4; i++) { const a = i / 4 * Math.PI * 2 + rr(0, 1); const root = part(GEO.cone, bark, g, Math.cos(a) * 1.4, 0.6, Math.sin(a) * 1.4, 0.6, 1.6, 0.6); root.rotation.set(Math.sin(a) * 0.8, 0, -Math.cos(a) * 0.8); }
   for (let i = 0; i < 2; i++) part(GEO.sphLo, M(0xc79b6b), g, rr(-0.4, 0.4), rr(3, 8), 1.2, 0.8, 0.18, 0.6).rotation.y = rr(-0.5, 0.5);
-  const leaf = [M(0x3f7d2a), M(0x4f9433), M(0x356b24)];
-  for (let i = 0; i < 5; i++) part(GEO.sphLo, pick(leaf), g, rr(-3, 3), rr(13, 17), rr(-3, 3), rr(3.5, 5.5));
+  const leaf = CITY.leaf.map(c => M(c));
+  for (let i = 0; i < 5; i++) part(GEO.sphLo, leaf[Math.floor(rng() * leaf.length)], g, rr(-3, 3), rr(13, 17), rr(-3, 3), rr(3.5, 5.5));
   g.scale.setScalar(s);
   return g;
 }
 
 /* bushes */
 function makeBush(r) {
-  const g = new THREE.Group(); const leaf = [M(0x4c8f2f), M(0x5aa23a), M(0x3e7a26)];
+  const g = new THREE.Group(); const leaf = CITY.bush.map(c => M(c));
   for (let i = 0; i < 5; i++) part(GEO.sphLo, pick(leaf), g, rr(-0.5, 0.5) * r, r * rr(0.55, 0.85), rr(-0.5, 0.5) * r, r * rr(0.55, 0.75));
-  for (let i = 0; i < 4; i++) part(GEO.sphLo, M(pick([0xff6fa8, 0xffd23f, 0xffffff])), g, rr(-0.7, 0.7) * r, r * rr(0.8, 1.25), rr(-0.7, 0.7) * r, 0.12, 0.12, 0.12, false);
+  for (let i = 0; i < 4; i++) part(GEO.sphLo, M(pick(CITY.berries)), g, rr(-0.7, 0.7) * r, r * rr(0.8, 1.25), rr(-0.7, 0.7) * r, 0.12, 0.12, 0.12, false);
   return g;
 }
 
@@ -625,76 +736,93 @@ function freeSpot(x, z, minD) {
   return true;
 }
 
-// houses
-let tries = 0;
-while (HOUSES.length < 30 && tries++ < 6000) {
-  const a = rr(0, Math.PI * 2), r = rr(16, 98);
-  const x = Math.cos(a) * r, z = Math.sin(a) * r;
-  const pi = pathInfo(x, z);
-  if (pi.d < 7.5 || pi.d > 13) continue;
-  const s = rr(0.85, 1.2);
-  if (!freeSpot(x, z, 6 * s)) continue;
-  const h = makeHouse(pick([0xd7372b, 0xe8661c, 0xd7372b, 0xef7f1a, 0xc2272d]), s);
-  const rot = Math.atan2(pi.x - x, pi.z - z);
-  h.position.set(x, 0, z); h.rotation.y = rot; scene.add(h);
-  const door = new THREE.Vector3(Math.sin(rot) * 4.6 * s + x, 0, Math.cos(rot) * 4.6 * s + z);
-  const hs = { x, z, r: 3.1 * s, mesh: h, door, usedUntil: 0, shake: 0, isHouse: true };
-  HOUSES.push(hs); SOLIDS.push(hs);
-}
-// boundary forest
-for (let i = 0; i < 80; i++) {
-  const a = i / 80 * Math.PI * 2 + rr(-0.03, 0.03), r = rr(113, 132);
-  const t = makeTree(rr(1.0, 1.4)); t.position.set(Math.cos(a) * r, 0, Math.sin(a) * r); t.rotation.y = rr(0, 6); scene.add(t);
-}
-tries = 0;
-while (VTREES.length < 22 && tries++ < 4000) {
-  const x = rr(-100, 100), z = rr(-100, 100);
-  if (pathInfo(x, z).d < 6 || !freeSpot(x, z, 7)) continue;
-  const s = rr(0.8, 1.15); const t = makeTree(s); t.position.set(x, 0, z); t.rotation.y = rr(0, 6); scene.add(t);
-  const o = { x, z, r: 1.4 * s }; VTREES.push(o); SOLIDS.push(o);
-}
-// flagpole on the plaza
-{
-  const g = new THREE.Group(); scene.add(g);
-  part(GEO.cyl, M(0xcccccc, { metalness: 0.7, roughness: 0.3 }), g, 0, 6, 0, 0.12, 12, 0.12);
-  const flag = new THREE.Group(); flag.position.set(0, 10.8, 0); g.add(flag);
-  [[0xffffff, 0.8], [0x00966e, 0], [0xd62612, -0.8]].forEach(([c, y]) => part(GEO.box, M(c), flag, 1.6, y, 0, 3, 0.8, 0.06));
-  part(new THREE.CylinderGeometry(1.4, 1.8, 0.6, 16), M(0xa8a39a), g, 0, 0.3, 0);
-  SOLIDS.push({ x: 0, z: 0, r: 1.6 });
-  scene.userData.flag = flag;
-}
-// bushes
-tries = 0;
-while (BUSHES.length < 34 && tries++ < 6000) {
-  const x = rr(-100, 100), z = rr(-100, 100);
-  if (pathInfo(x, z).d < 4 || !freeSpot(x, z, 3.5)) continue;
-  if (BUSHES.some(b => Math.hypot(b.x - x, b.z - z) < 9)) continue;
-  const r = rr(1.7, 2.3); const m = makeBush(r); m.position.set(x, 0, z); scene.add(m);
-  BUSHES.push({ x, z, r, mesh: m, exposedUntil: 0, wob: 0 });
-}
-// decorative little mushrooms + flowers (instanced)
-{
-  const N = 260;
-  const stems = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.08, 0.11, 0.35, 6), M(0xf3ead7), N);
-  const caps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.28, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), M(0xffffff, { roughness: 0.6 }), N);
-  const flowers = new THREE.InstancedMesh(new THREE.SphereGeometry(0.13, 6, 5), M(0xffffff), 500);
-  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), p = new THREE.Vector3(), col = new THREE.Color();
-  let n = 0, f = 0, guard = 0;
-  while ((n < N || f < 500) && guard++ < 20000) {
-    const x = rr(-105, 105), z = rr(-105, 105);
-    if (pathInfo(x, z).d < 3.4 || !freeSpot(x, z, 0.6)) continue;
-    if (n < N) {
-      const s = rr(0.7, 1.8);
-      m4.compose(p.set(x, 0.17 * s, z), q.identity(), sc.set(s, s, s)); stems.setMatrixAt(n, m4);
-      m4.compose(p.set(x, 0.32 * s, z), q.identity(), sc.set(s, s * 0.8, s)); caps.setMatrixAt(n, m4);
-      caps.setColorAt(n, col.set(pick([0xd7372b, 0xe8661c, 0xc2272d, 0xb5651d]))); n++;
-    } else {
-      m4.compose(p.set(x, 0.12, z), q.identity(), sc.set(1, 1, 1)); flowers.setMatrixAt(f, m4);
-      flowers.setColorAt(f, col.set(pick([0xff6fa8, 0xffd23f, 0xffffff, 0xe85d04, 0xa29bfe]))); f++;
-    }
+const hemi = scene.children.find(o => o.isHemisphereLight);
+const SHARED_GEO = new Set(Object.values(GEO));
+// tear down the current town and build city #ci: different roads, colours, flag and season
+function buildWorld(ci) {
+  CITY_I = ci; CITY = CITIES[ci];
+  rng = mulberry32(CITY.seed);
+  worldG.traverse(o => { if (o.geometry && !SHARED_GEO.has(o.geometry)) o.geometry.dispose(); });
+  worldG.clear();
+  SOLIDS.length = HOUSES.length = BUSHES.length = VTREES.length = 0;
+  scene.background.set(CITY.sky); scene.fog.color.set(CITY.sky); [scene.fog.near, scene.fog.far] = CITY.fog;
+  if (hemi) hemi.groundColor.set(CITY.hemiG);
+  outer.material.color.set(CITY.outer);
+  layoutPaths(CITY);
+  const old = ground.material.map; ground.material.map = paintGround(CITY); ground.material.needsUpdate = true; old?.dispose();
+
+  // houses
+  let tries = 0;
+  while (HOUSES.length < CITY.houses && tries++ < 6000) {
+    const a = rr(0, Math.PI * 2), r = rr(16, 98);
+    const x = Math.cos(a) * r, z = Math.sin(a) * r;
+    const pi = pathInfo(x, z);
+    if (pi.d < 7.5 || pi.d > 13) continue;
+    const s = rr(0.85, 1.2);
+    if (!freeSpot(x, z, 6 * s)) continue;
+    const h = makeHouse(CITY.caps[Math.floor(rng() * CITY.caps.length)], s);
+    const rot = Math.atan2(pi.x - x, pi.z - z);
+    h.position.set(x, 0, z); h.rotation.y = rot; worldG.add(h);
+    const door = new THREE.Vector3(Math.sin(rot) * 4.6 * s + x, 0, Math.cos(rot) * 4.6 * s + z);
+    const hs = { x, z, r: 3.1 * s, mesh: h, door, usedUntil: 0, shake: 0, isHouse: true };
+    HOUSES.push(hs); SOLIDS.push(hs);
   }
-  scene.add(stems, caps, flowers);
+  // boundary forest
+  for (let i = 0; i < 80; i++) {
+    const a = i / 80 * Math.PI * 2 + rr(-0.03, 0.03), r = rr(113, 132);
+    const t = makeTree(rr(1.0, 1.4)); t.position.set(Math.cos(a) * r, 0, Math.sin(a) * r); t.rotation.y = rr(0, 6); worldG.add(t);
+  }
+  tries = 0;
+  while (VTREES.length < 22 && tries++ < 4000) {
+    const x = rr(-100, 100), z = rr(-100, 100);
+    if (pathInfo(x, z).d < 6 || !freeSpot(x, z, 7)) continue;
+    const s = rr(0.8, 1.15); const t = makeTree(s); t.position.set(x, 0, z); t.rotation.y = rr(0, 6); worldG.add(t);
+    const o = { x, z, r: 1.4 * s }; VTREES.push(o); SOLIDS.push(o);
+  }
+  // flagpole on the plaza — the local flag
+  {
+    const g = new THREE.Group(); worldG.add(g);
+    part(GEO.cyl, M(0xcccccc, { metalness: 0.7, roughness: 0.3 }), g, 0, 6, 0, 0.12, 12, 0.12);
+    const flag = new THREE.Group(); flag.position.set(0, 10.8, 0); g.add(flag);
+    CITY.flag.forEach((c, i) => part(GEO.box, M(c), flag, 1.6, 0.8 - i * 0.8, 0, 3, 0.8, 0.06));
+    part(new THREE.CylinderGeometry(1.4, 1.8, 0.6, 16), M(0xa8a39a), g, 0, 0.3, 0);
+    SOLIDS.push({ x: 0, z: 0, r: 1.6 });
+    scene.userData.flag = flag;
+  }
+  // bushes
+  tries = 0;
+  while (BUSHES.length < 34 && tries++ < 6000) {
+    const x = rr(-100, 100), z = rr(-100, 100);
+    if (pathInfo(x, z).d < 4 || !freeSpot(x, z, 3.5)) continue;
+    if (BUSHES.some(b => Math.hypot(b.x - x, b.z - z) < 9)) continue;
+    const r = rr(1.7, 2.3); const m = makeBush(r); m.position.set(x, 0, z); worldG.add(m);
+    BUSHES.push({ x, z, r, mesh: m, exposedUntil: 0, wob: 0 });
+  }
+  // decorative little mushrooms + flowers (instanced)
+  {
+    const N = 260;
+    const stems = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.08, 0.11, 0.35, 6), M(0xf3ead7), N);
+    const caps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.28, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), M(0xffffff, { roughness: 0.6 }), N);
+    const flowers = new THREE.InstancedMesh(new THREE.SphereGeometry(0.13, 6, 5), M(0xffffff), 500);
+    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), p = new THREE.Vector3(), col = new THREE.Color();
+    let n = 0, f = 0, guard = 0;
+    while ((n < N || f < 500) && guard++ < 20000) {
+      const x = rr(-105, 105), z = rr(-105, 105);
+      if (pathInfo(x, z).d < 3.4 || !freeSpot(x, z, 0.6)) continue;
+      if (n < N) {
+        const s = rr(0.7, 1.8);
+        m4.compose(p.set(x, 0.17 * s, z), q.identity(), sc.set(s, s, s)); stems.setMatrixAt(n, m4);
+        m4.compose(p.set(x, 0.32 * s, z), q.identity(), sc.set(s, s * 0.8, s)); caps.setMatrixAt(n, m4);
+        caps.setColorAt(n, col.set(pick(CITY.minis))); n++;
+      } else {
+        m4.compose(p.set(x, 0.12, z), q.identity(), sc.set(1, 1, 1)); flowers.setMatrixAt(f, m4);
+        flowers.setColorAt(f, col.set(pick(CITY.flowers))); f++;
+      }
+    }
+    worldG.add(stems, caps, flowers);
+  }
 }
+buildWorld(0);
 
 /* ---------------- characters ---------------- */
 const dressTex = canvasTex(512, 256, (g, w, h) => {
@@ -1068,6 +1196,7 @@ let yaw = Math.PI, pitch = 0.42, mouseDown = false;
 addEventListener('keydown', e => {
   keys[e.code] = true;
   if (e.code === 'Space') { e.preventDefault(); if (!e.repeat && P.interview) skipLine(); }
+  if (!e.repeat && (e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyE')) { if (state === 'finale') finaleNext(); else if (state === 'travel') skipTrip(); }
   if (e.code === 'KeyE' && state === 'play') interact();
   if (e.code === 'KeyF' && !e.repeat) whack();
   if (e.code === 'KeyP' && (state === 'play' || state === 'paused')) togglePause();
@@ -1174,7 +1303,10 @@ function resetGame() {
     lastKnown: new THREE.Vector3(), lastSeenT: -999, spawnCd: 2, stars: 1, shake: 0, apoc: false,
     rainCd: 0, deadT: 0, houseKnown: false, tickerT: 0, slow: 1, regenBlock: 0,
     interviews: 0, ivFailed: 0, earned: 0, inflation: 1, mission: null, missions: [], throwBudget: 0,
+    cityIv: 0, finale: false, nationalized: 0,
   });
+  removeBus();
+  if (CITY_I !== 0) buildWorld(0);
   Object.assign(P, { invuln: 0, hp: 100, st: 100, vy: 0, hidden: false, bush: null, house: null, houseT: 0, flinch: 0, exhausted: false, face: Math.PI, interview: false, ivT: 0, ivDur: 8, swingT: 0, swingCd: 0, railCd: 0, railKick: 0 });
   P.pos.set(0, 0, 18); P.vel.set(0, 0, 0);
   hag.root.visible = true; hag.root.rotation.set(0, 0, 0); hag.body.position.set(0, 0, 0); hag.body.rotation.set(0, 0, 0);
@@ -1230,6 +1362,8 @@ function startGame() {
   ticker('Елфите те забелязаха! БЯГАЙ!');
 }
 $('startBtn').onclick = startGame;
+$('finale').addEventListener('pointerdown', () => finaleNext());
+$('trip').addEventListener('pointerdown', () => skipTrip());
 $('againBtn').onclick = startGame;
 $('resumeBtn').onclick = () => togglePause();
 function togglePause() {
@@ -1418,6 +1552,23 @@ function updatePins() {
     el.classList.toggle('edge', edge); el.classList.toggle('near', m === nearest && !edge);
     el.dataset.d = Math.round(Math.hypot(m.house.x - P.pos.x, m.house.z - P.pos.z)) + ' м';
   }
+  {
+    const el = $('busPin');
+    if (!bus || state !== 'play' || bus.speed > 0) el.style.display = 'none';
+    else {
+      el.style.display = '';
+      pinV.set(bus.stop.x, 7, bus.stop.z).project(camera);
+      let x = pinV.x, y = pinV.y; const behind = pinV.z > 1;
+      if (behind) { x = -x; y = -y; }
+      const edge = behind || Math.abs(x) > 1 || Math.abs(y) > 1;
+      if (edge) { const k = 1 / Math.max(Math.abs(x), Math.abs(y), 1e-3); x *= k; y *= k; }
+      const px = clamp((x + 1) / 2 * W, pad, W - pad); let py = clamp((1 - y) / 2 * H, pad + 40, H - pad - 20);
+      if (px < avoidL.r + 30 && py < avoidL.b + 34) py = avoidL.b + 34;
+      if (px > avoidR.l - 30 && py < avoidR.b + 34) py = avoidR.b + 34;
+      el.style.transform = `translate(${px}px, ${py}px)`; el.classList.toggle('edge', edge);
+      el.dataset.d = bus.dest + ' · ' + Math.round(Math.hypot(bus.stop.x - P.pos.x, bus.stop.z - P.pos.z)) + ' м';
+    }
+  }
   for (const d of BOSSES) if (!boss || boss.def !== d) d.pin.style.display = 'none';
   if (boss && state === 'play') {
     const el = boss.def.pin; el.style.display = '';
@@ -1472,7 +1623,7 @@ function skipLine() { if (P.interview && TV.t < TV.STEP - 0.25) TV.t = 0; }
 function showTV() {
   const m = G.mission, host = m.host;
   const pairs = [...QA].sort(() => Math.random() - 0.5).slice(0, 2 + Math.min(G.interviews, 2));
-  TV.lines = [{ who: 'host', text: `Добър вечер! Днес в ${host.show} гостува Гаргамела. Темата: „${m.topic}“.` }];
+  TV.lines = [{ who: 'host', text: `Добър вечер от ${CITY.name}! Днес в ${host.show} гостува Гаргамела. Темата: „${m.topic}“.` }];
   for (const [q, a] of pairs) TV.lines.push({ who: 'host', text: q }, { who: 'garg', text: a });
   TV.i = 0; TV.t = 0; TV.chatT = 0.8; TV.hideT = 0; TV.healed = 0;
   $('tvOutlet').textContent = host.outlet; $('tvBug').textContent = host.show;
@@ -1517,7 +1668,7 @@ function updateTV(dt) {
 
 function finishInterview() {
   const fee = Math.round((20000 + G.interviews * 15000) * R(0.9, 1.15)); // in kopecks
-  G.interviews++; G.earned += fee;
+  G.interviews++; G.earned += fee; G.cityIv++;
   hideTV(false);
   G.inflation = 1 + G.interviews * 0.4;
   const h = P.house;
@@ -1526,6 +1677,7 @@ function finishInterview() {
   releaseMission(G.mission, 8);
   banner(`ИНТЕРВЮ ✓ +${kop(fee)}<br><span style="font-size:22px;color:#ff8fab">Елфите вдигат бюджета: мемета ×${G.inflation.toFixed(2)}</span>`, '#ffd23f');
   popup(P.pos.clone().setY(3), `+${kop(fee)} хонорар`, '#ffd23f');
+  { const top = Math.max(0, Math.min(TV.HEAL - TV.healed, 100 - P.hp)); P.hp += top; TV.healed += top; } // a finished interview always gives the full 20%, even when skipped
   if (TV.healed >= 1) popup(P.pos.clone().setY(2.2), `+${Math.round(TV.healed)} ❤ отдъхна в ефир`, '#7bf05a');
   [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => snd(f, 0.14, 'square', 0.05), i * 80));
   // angry elves rush in after the broadcast
@@ -1599,6 +1751,7 @@ function die() {
   hideTV(false);
   for (const h of HOSTS) { h.marker.visible = false; h.pin.style.display = 'none'; }
   for (const d of BOSSES) d.pin.style.display = 'none';
+  $('busPin').style.display = 'none';
   P.hp = 0; state = 'dead'; G.deadT = 0; P.house = null; hag.root.visible = true;
   sfx.die(); banner('СМЕМЕНА!', '#ff4fb0'); musicTo(0.12);
   document.exitPointerLock?.();
@@ -1607,7 +1760,9 @@ function showOver() {
   state = 'over';
   $('touchUI').classList.remove('on');
   const score = calcScore();
-  $('overTime').textContent = `${fmtT(G.t)} на свобода`;
+  $('overTime').textContent = G.finale ? 'Москва не я пусна' : `${fmtT(G.t)} на свобода`;
+  $('overWanted').textContent = G.finale ? 'НАЦИОНАЛИЗИРАНА' : 'СМЕМЕНА'; $('overWanted').classList.toggle('long', G.finale);
+  $('oCity').textContent = G.finale ? 'границата с Москва' : `${CITY.name} (${CITY_I + 1}/${CITIES.length})`;
   $('oThrown').textContent = G.thrown.toLocaleString('bg-BG');
   $('oSpent').textContent = eur(G.spent);
   $('oLev').textContent = `≈ ${(G.spent * 1.95583).toLocaleString('bg-BG', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} лв. (по стария курс)`;
@@ -1621,7 +1776,7 @@ function showOver() {
   $('oFav').textContent = fav ? `${fav[0]} ×${fav[1]}` : '—';
   $('oPerHp').textContent = eur(G.spent / 100);
   $('oIv').textContent = G.interviews;
-  $('oEarned').textContent = kop(G.earned);
+  $('oEarned').textContent = G.finale ? '0 копейки' : kop(G.earned);
   $('oInfl').textContent = '×' + G.inflation.toFixed(2);
   $('oIvFail').textContent = G.ivFailed;
   $('oWhacks').textContent = G.whacks;
@@ -1630,7 +1785,8 @@ function showOver() {
   const bal = G.earned * KOP_EUR - G.spent;
   $('oBalance').textContent = G.interviews ? `≈ ${eur(G.earned * KOP_EUR)} по курса. ` + (bal >= 0 ? `Тя излезе на печалба с ${eur(bal)} пред бюджета на Елфите.` : `Елфите похарчиха ${eur(-bal)} повече, отколкото струваше цялата ѝ кариера.`) : 'Не даде нито едно интервю.';
   const eps = ['ТРОЛКАТА ПАДНА', 'ФАКТИТЕ ПОБЕДИХА', 'ДЕЗИНФОРМАЦИЯТА Е ОБЕЗВРЕДЕНА', 'MUCH DEFEAT. SO MEME.', 'КОПЕЙКАТА СЕ ОБЕЗЦЕНИ'];
-  $('epitaph').textContent = pick(eps);
+  $('epitaph').textContent = G.finale ? pick(['ПОЛЕЗЕН ИДИОТ, ИЗПОЛЗВАН', 'БЛАГОДАРИМ ЗА ПОМОЩТА', 'КОПЕЙКИТЕ СЕ ПРИБРАХА ВКЪЩИ']) : pick(eps);
+  if (G.finale) $('oBalance').textContent = `Стигна до границата с ${FINAL_STOP}. Путин ѝ благодари за помощта и национализира всичките ${kop(G.nationalized)}.`;
   let best = 0; try { best = +localStorage.getItem('gargamela-best') || 0; if (score > best) { localStorage.setItem('gargamela-best', score); } } catch (e) { }
   $('best').textContent = score > best ? '🏆 Нов рекорд!' : `Рекорд: ${best.toLocaleString('bg-BG')}`;
   $('over').classList.remove('hidden');
@@ -2322,7 +2478,7 @@ function drawRadar() {
   const W = radar.width, C = W / 2, sc = 1.7; // px per world unit
   rctx.clearRect(0, 0, W, W);
   rctx.save(); rctx.beginPath(); rctx.arc(C, C, C, 0, 7); rctx.clip();
-  rctx.fillStyle = '#2f5a24'; rctx.fillRect(0, 0, W, W);
+  rctx.fillStyle = CITY.radar; rctx.fillRect(0, 0, W, W);
   const cy = Math.cos(yaw), sy = Math.sin(yaw);
   const T = (x, z) => { const dx = x - P.pos.x, dz = z - P.pos.z; return [C + (dx * cy - dz * sy) * sc, C + (dx * sy + dz * cy) * sc]; };
   rctx.strokeStyle = '#c9a66b'; rctx.lineWidth = 5 * sc; rctx.lineCap = 'round';
@@ -2341,6 +2497,12 @@ function drawRadar() {
     rctx.fillStyle = m.host.css; rctx.strokeStyle = '#000'; rctx.lineWidth = 3; rctx.beginPath(); rctx.arc(x, y, 11, 0, 7); rctx.fill(); rctx.stroke();
     rctx.fillStyle = '#000'; rctx.font = '900 13px "Russo One", sans-serif'; rctx.textAlign = 'center'; rctx.textBaseline = 'middle';
     rctx.fillText(m.host.name.replace('проф. ', '')[0], x, y + 1);
+  }
+  if (bus) {
+    let [x, y] = T(bus.stop.x, bus.stop.z);
+    const dx = x - C, dy = y - C, d = Math.hypot(dx, dy); if (d > C - 16) { x = C + dx / d * (C - 16); y = C + dy / d * (C - 16); }
+    rctx.fillStyle = '#ff9f1c'; rctx.strokeStyle = '#000'; rctx.lineWidth = 3; rctx.beginPath(); rctx.roundRect(x - 14, y - 11, 28, 22, 6); rctx.fill(); rctx.stroke();
+    rctx.font = '15px sans-serif'; rctx.textAlign = 'center'; rctx.textBaseline = 'middle'; rctx.fillText('🚌', x, y + 1);
   }
   if (boss) {
     let [x, y] = T(boss.pos.x, boss.pos.z);
@@ -2389,7 +2551,9 @@ function updateHUD(dt) {
     list = `<div class="t">🎤 ИНТЕРВЮТА — избери гъба</div>` + ms.map(({ m, d }, i) =>
       `<div class="hl${i === 0 && m.house ? ' near' : ''}"><i style="background:${m.host.css}"></i><span class="nm">${m.host.name}<small> · ${m.host.outlet}</small></span><b>${m.house ? Math.round(d) + ' м' : '⏳'}</b></div>`).join('');
   }
-  $('mission').innerHTML = list
+  const busLine = bus ? `<div class="busl go">🚌 АВТОБУС ЗА ${bus.dest.toUpperCase()} ЧАКА <b>${Math.round(Math.hypot(bus.stop.x - P.pos.x, bus.stop.z - P.pos.z))} м</b></div>`
+    : `<div class="busl">🚌 ${CITY.name} · интервюта <b>${Math.min(G.cityIv, IV_PER_CITY)}/${IV_PER_CITY}</b> до автобуса за ${nextStop()}</div>`;
+  $('mission').innerHTML = busLine + list
     + `<div class="row"><span class="earn">💰 Хонорари: ${kop(G.earned)} (${G.interviews})</span><span class="infl">Мемета ×${G.inflation.toFixed(2)}</span></div>`;
   const hs = $('hideState');
   if (P.interview) hs.innerHTML = '';
@@ -2435,6 +2599,197 @@ function updateWorldFx(dt) {
   sun.position.set(c.x + 35, 70, c.z + 25); sun.target.position.set(c.x, 0, c.z);
 }
 
+/* ---------------- the bus: every 3 interviews → next city; the last one goes to Moscow ---------------- */
+const IV_PER_CITY = 3;
+const nextStop = () => CITIES[CITY_I + 1]?.name ?? FINAL_STOP;
+let bus = null;
+function busLabelTex(text) {
+  return canvasTex(512, 128, (g, w, h) => {
+    g.fillStyle = '#111'; g.beginPath(); g.roundRect(4, 4, w - 8, h - 8, 22); g.fill();
+    g.strokeStyle = '#ff9f1c'; g.lineWidth = 8; g.stroke();
+    g.fillStyle = '#ffb000'; g.font = '400 56px "Russo One", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, w / 2, h / 2 + 3);
+  });
+}
+function makeBus(dest) {
+  const g = new THREE.Group();
+  const paint = M(0xffc531, { roughness: 0.5 }), glass = M(0x1d3557, { roughness: 0.15, metalness: 0.3 }), dark = M(0x222222);
+  part(GEO.box, paint, g, 0, 1.9, 0, 2.6, 2.6, 9);                 // body (front = +z)
+  part(GEO.box, M(0xff4fb0), g, 0, 1.25, 0, 2.64, 0.35, 9.02);      // pink stripe
+  part(GEO.box, M(0xeeeeee), g, 0, 3.3, 0, 2.4, 0.25, 8.6);         // roof
+  for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) part(GEO.box, glass, g, sx * 1.31, 2.35, -3.2 + i * 1.55, 0.05, 0.95, 1.2, false);
+  part(GEO.box, glass, g, 0, 2.3, 4.51, 2.2, 1.3, 0.05, false);      // windscreen
+  part(GEO.box, glass, g, 1.31, 1.6, 3.4, 0.06, 2.2, 1.1, false);    // door (right side)
+  for (const sx of [-1.2, 1.2]) for (const z of [-3, 3]) { const w = part(GEO.cyl, dark, g, sx, 0.55, z, 0.55, 0.4, 0.55); w.rotation.z = Math.PI / 2; }
+  for (const sx of [-0.85, 0.85]) part(GEO.sph, M(0xfff6c0, { emissive: 0xfff6c0, emissiveIntensity: 0.8 }), g, sx, 1.1, 4.52, 0.2, 0.2, 0.05, false);
+  const board = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.55), new THREE.MeshBasicMaterial({ map: busLabelTex('→ ' + dest.toUpperCase()) }));
+  board.position.set(0, 3.0, 4.53); g.add(board);
+  return g;
+}
+function makeStopSign() {
+  const g = new THREE.Group();
+  part(GEO.cyl, M(0x888888, { metalness: 0.6, roughness: 0.4 }), g, 0, 1.6, 0, 0.07, 3.2, 0.07);
+  const s = part(GEO.cyl, M(0x2b7de0), g, 0, 3.3, 0, 0.5, 0.06, 0.5); s.rotation.x = Math.PI / 2;
+  part(GEO.box, M(0xffffff), g, 0, 3.3, 0.04, 0.5, 0.3, 0.02, false);
+  // shelter
+  part(GEO.box, M(0x9fd2ee, { roughness: 0.1, transparent: true, opacity: 0.45 }), g, 1.6, 1.2, -0.9, 2.6, 2.4, 0.06, false);
+  part(GEO.box, M(0x555555), g, 1.6, 2.45, -0.4, 2.8, 0.1, 1.2);
+  part(GEO.box, M(0x7a4b26), g, 1.6, 0.5, -0.65, 2.2, 0.12, 0.4);
+  return g;
+}
+function spawnBus() {
+  if (bus) return;
+  const dest = nextStop();
+  // park at the outer end of a road, away from her
+  const cands = PATHS.filter(s => { const mx = (s[0] + s[2]) / 2, mz = (s[1] + s[3]) / 2, r = Math.hypot(mx, mz); return r > 74 && r < 94 && Math.hypot(mx - P.pos.x, mz - P.pos.z) > 35; });
+  let place = null;
+  for (let i = 0; i < 80 && !place; i++) {
+    const s = pick(cands.length ? cands : PATHS), t = Math.random();
+    const x = s[0] + (s[2] - s[0]) * t, z = s[1] + (s[3] - s[1]) * t;
+    const len = Math.hypot(s[2] - s[0], s[3] - s[1]) || 1, ux = (s[2] - s[0]) / len, uz = (s[3] - s[1]) / len;
+    const side = Math.random() < 0.5 ? 1 : -1, nx = -uz * side, nz = ux * side;
+    const bx = x + nx * 3.6, bz = z + nz * 3.6;
+    if (Math.hypot(bx, bz) > WORLD - 8) continue;
+    if (!freeSpot(bx + ux * 2.8, bz + uz * 2.8, 2) || !freeSpot(bx - ux * 2.8, bz - uz * 2.8, 2) || !freeSpot(x - nx * 2, z - nz * 2, 1)) continue;
+    place = { x, z, bx, bz, ux, uz, nx, nz };
+  }
+  if (!place) { const a = R(0, 6); place = { x: Math.cos(a) * 80, z: Math.sin(a) * 80, bx: Math.cos(a) * 84, bz: Math.sin(a) * 84, ux: -Math.sin(a), uz: Math.cos(a), nx: Math.cos(a), nz: Math.sin(a) }; }
+  const root = new THREE.Group(); worldG.add(root);
+  const m = makeBus(dest); m.position.set(place.bx, 0, place.bz); m.rotation.y = Math.atan2(place.ux, place.uz); root.add(m);
+  const sign = makeStopSign(); sign.position.set(place.x - place.nx * 2, 0, place.z - place.nz * 2); sign.rotation.y = Math.atan2(place.nx, place.nz); root.add(sign);
+  const beam = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 60, 16, 1, true),
+    new THREE.MeshBasicMaterial({ color: 0xff9f1c, fog: false, transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+  beam.position.set(place.x, 30, place.z); root.add(beam);
+  const tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: busLabelTex('🚌 ' + dest.toUpperCase()), depthTest: false, fog: false }));
+  tag.scale.set(6, 1.5, 1); tag.position.set(place.bx, 6.2, place.bz); tag.renderOrder = 12; root.add(tag);
+  const solids = [-2.8, 0, 2.8].map(k => ({ x: place.bx + place.ux * k, z: place.bz + place.uz * k, r: 1.5 }));
+  SOLIDS.push(...solids);
+  bus = { root, m, tag, beam, solids, dest, stop: new THREE.Vector3(place.x, 0, place.z), fwd: new THREE.Vector3(place.ux, 0, place.uz), speed: 0, t: 0 };
+  const last = CITY_I === CITIES.length - 1;
+  banner(`🚌 АВТОБУСЪТ ЗА ${dest.toUpperCase()} ЧАКА!<br><span style="font-size:22px">${last ? 'Последната спирка — Москва те чака!' : 'Тичай до спирката (оранжевия лъч)'}</span>`, '#ff9f1c');
+  ticker(`🚌 Еднопосочен автобус за ${dest} — тръгва, когато се качиш.`);
+  [392, 523, 659].forEach((f, i) => setTimeout(() => snd(f, 0.18, 'triangle', 0.06), i * 120));
+}
+function removeBus() {
+  if (!bus) return;
+  worldG.remove(bus.root);
+  for (const s of bus.solids) { const i = SOLIDS.indexOf(s); if (i >= 0) SOLIDS.splice(i, 1); }
+  $('busPin').style.display = 'none';
+  bus = null;
+}
+function updateBus(dt) {
+  if (!bus) { if (state === 'play' && G.cityIv >= IV_PER_CITY && !P.interview) spawnBus(); return; }
+  bus.t += dt;
+  bus.tag.position.y = 6.2 + Math.sin(bus.t * 3) * 0.25;
+  if (bus.speed > 0) { // driving off (to Moscow, without her)
+    bus.speed = Math.min(14, bus.speed + dt * 4);
+    bus.beam.visible = false;
+    bus.m.position.addScaledVector(bus.fwd, bus.speed * dt);
+    bus.tag.position.x = bus.m.position.x; bus.tag.position.z = bus.m.position.z;
+    return;
+  }
+  if (state === 'play' && !P.house && Math.hypot(P.pos.x - bus.stop.x, P.pos.z - bus.stop.z) < 3.4) boardBus();
+}
+
+/* ---- the trip between cities ---- */
+const TRIP_LINES = ['Елфите си купиха билети за същия автобус 🐕', 'Шофьорът пуска само Радио „Трол FM“ 📻', 'Граничарят провери паспорта… и хонорарите 🛂',
+  'Гаргамела брои копейките на всеки завой 🪙', 'В автобуса няма Wi-Fi. Само Телеграм 📱', 'Някой е лепнал меме на стъклото 🤡'];
+const TRIP = { t: 0, built: false, to: 0 };
+function boardBus() {
+  removeBoss();
+  for (const h of HOSTS) { h.marker.visible = false; h.pin.style.display = 'none'; }
+  if (CITY_I === CITIES.length - 1) { startFinale(); return; }
+  state = 'travel'; TRIP.t = 0; TRIP.built = false; TRIP.to = CITY_I + 1;
+  document.exitPointerLock?.();
+  $('hud').classList.add('hidden'); $('touchUI').classList.remove('on');
+  const stops = [...CITIES.map(c => c.name), FINAL_STOP];
+  $('route').innerHTML = stops.map((n, i) => `<div class="stop${i < TRIP.to ? ' done' : ''}${i === TRIP.to ? ' next' : ''}${i === stops.length - 1 ? ' moscow' : ''}"><i></i><span>${n}</span></div>`).join('') + '<div id="tripBus">🚌</div>';
+  const pos = i => (i / (stops.length - 1)) * 100;
+  const tb = $('tripBus'); tb.style.transition = 'none'; tb.style.left = pos(CITY_I) + '%';
+  requestAnimationFrame(() => requestAnimationFrame(() => { tb.style.transition = ''; tb.style.left = pos(TRIP.to) + '%'; }));
+  $('tripTo').textContent = `Следваща спирка: ${CITIES[TRIP.to].name}`;
+  $('tripMsg').textContent = pick(TRIP_LINES);
+  $('trip').classList.remove('hidden');
+  musicTo(MUSIC_VOL * 0.5);
+  [523, 659, 784].forEach((f, i) => setTimeout(() => snd(f, 0.12, 'square', 0.04), i * 90));
+}
+function updateTrip(dt) {
+  TRIP.t += dt;
+  if (!TRIP.built && TRIP.t > 0.15) { TRIP.built = true; buildWorld(TRIP.to); } // heavy — done while the overlay hides it
+  if (TRIP.t > 3.6) arrive();
+}
+function skipTrip() { if (state === 'travel' && TRIP.built && TRIP.t > 1) arrive(); }
+function arrive() {
+  clearWorld();
+  for (const sp of starPickups) scene.remove(sp.g); starPickups.length = 0;
+  bus = null;
+  Object.assign(P, { hp: Math.min(100, P.hp + 30), st: 100, invuln: 4, vy: 0, hidden: false, bush: null, house: null, houseT: 0, exhausted: false, interview: false, face: Math.PI });
+  P.pos.set(0, 0, 18); P.vel.set(0, 0, 0); hag.root.visible = true;
+  for (let i = 0; i < 60; i++) { const a = Math.PI / 2 + i * 0.7, r = 14 + i * 0.25, x = Math.cos(a) * r, z = Math.sin(a) * r; if (freeSpot(x, z, 3) && pathInfo(x, z).d < 3) { P.pos.set(x, 0, z); break; } } // a free spot on a road near the plaza
+  Object.assign(G, { cityIv: 0, bossCd: 20, spawnCd: 4, lastSeenT: -999, houseKnown: false, mission: null, starCd: R(35, 50) });
+  G.heat = STAR_STEPS[Math.min(CITY_I, 3)] + 1; // every city is a little more wanted
+  G.bonus += 2000;
+  for (let i = 0; i < 26 + CITY_I * 3; i++) spawnElf(true);
+  updateStars(true);
+  initMissions();
+  yaw = 0; pitch = 0.42;
+  state = 'play';
+  $('trip').classList.add('hidden'); $('hud').classList.remove('hidden'); $('touchUI').classList.add('on');
+  if (!IS_TOUCH) canvas.requestPointerLock?.();
+  musicTo(MUSIC_VOL);
+  banner(`🏙 ${CITY.name.toUpperCase()}<br><span style="font-size:22px">${CITY.sub} · +30 ❤ почивка в автобуса</span>`, '#ffd23f');
+  ticker(`Елфите те последваха до ${CITY.name}! ${IV_PER_CITY} интервюта до автобуса за ${nextStop()}.`);
+}
+
+/* ---- the finale: the Moscow bus, and the man who takes it all ---- */
+const FIN = { lines: [], i: 0, t: 0, STEP: 6, nat: false, natT: 0, kop: 0 };
+function startFinale() {
+  state = 'finale';
+  document.exitPointerLock?.();
+  $('hud').classList.add('hidden'); $('touchUI').classList.remove('on');
+  P.vel.set(0, 0, 0); hag.root.visible = true;
+  FIN.kop = G.earned; FIN.nat = false; FIN.natT = 0; FIN.i = 0; FIN.t = 0;
+  FIN.lines = [
+    { who: 'putin', text: 'Гаргамела! Добре дошла на границата на Руския свят.' },
+    { who: 'garg', text: `Владимир Владимирович! Пет града, ${G.interviews} интервюта, ${kop(G.earned)}! Ето ги — за билета до Москва!` },
+    { who: 'putin', text: 'Благодаря ви за помощта. Вашите интервюта бяха… много полезни. За нас.' },
+    { who: 'putin', text: 'Но с указ от днес всички копейки се национализират. В интерес на народа.', nat: true },
+    { who: 'garg', text: 'Но… билетът ми?! Аз съм ваш човек! Аз съм „независим анализатор“!' },
+    { who: 'putin', text: 'Москва няма нужда от полезни идиоти. Само от парите им.' },
+    { who: 'putin', text: 'Автобусът тръгва. Без вас. Елфите ще ви изпратят.', go: true },
+  ];
+  $('finKop').textContent = kop(FIN.kop); $('finKopBox').classList.remove('gone');
+  $('finale').classList.remove('hidden');
+  musicTo(MUSIC_VOL * 0.25);
+  finaleNext();
+}
+function finaleNext() {
+  if (state !== 'finale') return;
+  if (FIN.i >= FIN.lines.length) { endFinale(); return; }
+  const l = FIN.lines[FIN.i++]; FIN.t = FIN.STEP;
+  $('finPic').className = l.who;
+  $('finName').textContent = l.who === 'putin' ? 'Владимир Путин' : 'Гаргамела — „независим анализатор“';
+  $('finSub').innerHTML = `<div><em class="${l.who === 'garg' ? 'g' : ''}">${l.who === 'putin' ? 'Путин' : 'Гаргамела'}:</em> ${l.text}</div>`;
+  $('finHint').innerHTML = `<span>${FIN.i} / ${FIN.lines.length}</span><span>${IS_TOUCH ? 'докосни — напред' : 'SPACE — напред'}</span>`;
+  snd(l.who === 'putin' ? 196 : 520, 0.08, 'square', 0.03);
+  if (l.nat) { FIN.nat = true; FIN.natT = 0; snd(110, 0.6, 'sawtooth', 0.06, -60); }
+  if (l.go && bus) { bus.speed = 0.5; snd(150, 0.8, 'sawtooth', 0.04, 80); }
+}
+function updateFinale(dt) {
+  if (FIN.nat && FIN.natT < 1.6) { // the kopecks drain away
+    FIN.natT += dt; const left = Math.max(0, Math.round(FIN.kop * (1 - FIN.natT / 1.6)));
+    $('finKop').textContent = kop(left);
+    if (FIN.natT >= 1.6) { $('finKopBox').classList.add('gone'); G.nationalized = FIN.kop; }
+  }
+  if ((FIN.t -= dt) <= 0) finaleNext();
+}
+function endFinale() {
+  $('finale').classList.add('hidden');
+  G.finale = true; G.nationalized = FIN.kop; G.earned = 0; G.bonus += 10000;
+  state = 'dead'; G.deadT = 0;
+  banner('НАЦИОНАЛИЗИРАНА!', '#ff4d4d'); sfx.die(); musicTo(0.12);
+}
+
 /* ---------------- main loop ---------------- */
 const clock = new THREE.Clock();
 resetGame(); state = 'title';
@@ -2449,7 +2804,7 @@ function frame() {
   if (CON.open && state === 'play') { renderer.render(scene, camera); return; } // console down = game frozen
   if (state === 'play') {
     G.t += dt; G.heat += dt; updateStarPickups(dt);
-    updatePlayer(dt); updateSpawns(dt); updateElves(dt); updateBoss(dt); updateMemes(dt); updateRain(dt); updateRails(dt);
+    updatePlayer(dt); updateSpawns(dt); updateElves(dt); updateBoss(dt); updateMemes(dt); updateRain(dt); updateRails(dt); updateBus(dt);
     if (G.stars < 5 && G.regenBlock <= 0 && !P.interview) { // the interview has its own healing (max 20%)
       if ((P.hidden || P.house) && G.t - G.lastSeenT > 2) P.hp = Math.min(100, P.hp + 4 * dt);
       else if (G.t - G.lastSeenT > 5) P.hp = Math.min(100, P.hp + 1.5 * dt); // catch your breath when nobody sees you
@@ -2458,8 +2813,12 @@ function frame() {
     updateMissions(dt);
     if (TV.hideT > 0) updateTV(dt);
     updateHUD(dt);
+  } else if (state === 'travel') {
+    updateTrip(dt);
+  } else if (state === 'finale') {
+    updateFinale(dt); updateElves(dt); updateMemes(dt); updateBus(dt);
   } else if (state === 'dead' || state === 'over') {
-    G.deadT += dt;
+    G.deadT += dt; updateBus(dt);
     const sdt = dt * (G.deadT < 1.2 ? 0.35 : 1);
     updatePlayer(sdt); updateElves(sdt); updateMemes(sdt);
     if (state === 'dead') updateHUD(dt);
@@ -2473,7 +2832,7 @@ function frame() {
   renderer.render(scene, camera);
 }
 frame();
-if (location.hash === '#debug') window.dbg = { G, P, elves, memes, music, getBoss: () => boss, spawnBoss: () => spawnBoss(), starPickups, spawnStarPickup: () => spawnStarPickup(), camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact() };
+if (location.hash === '#debug') window.dbg = { G, P, elves, memes, music, getBoss: () => boss, spawnBoss: () => spawnBoss(), starPickups, spawnStarPickup: () => spawnStarPickup(), camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact(), getBus: () => bus, spawnBus: () => spawnBus(), boardBus: () => boardBus(), buildWorld, city: () => CITY_I, CITIES, HOUSES, PATHS };
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 // Гаргамелка — service worker (offline play + installability)
-const VERSION = 'gargamelka-v2';
+const VERSION = 'gargamelka-v3';
 const CORE = [
   './', './index.html', './manifest.webmanifest',
   './assets/gargamela.jpg', './assets/elf-logo.png',
