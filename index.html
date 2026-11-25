@@ -489,6 +489,7 @@
           <li>⭐ Звездите горе вдясно са хайката — колкото повече, толкова повече Елфи.</li>
           <li>🌿 Влез в <b>храст</b> — не те виждат, докато някой не те надуши.</li>
           <li>🍄 Скрий се в <b>къщичка</b> — но само за малко.</li>
+          <li>❄ Ако се криеш и никой не те вижда, <b>хайката се успокоява</b> и звездите падат.</li>
           <li>👔 На всеки 20 секунди идва <b>шеф</b> — огромен и хвърля по 3 мемета наведнъж.</li>
         </ul>
       </section>
@@ -1427,7 +1428,7 @@ function resetGame() {
     lastKnown: new THREE.Vector3(), lastSeenT: -999, spawnCd: 2, stars: 1, shake: 0, apoc: false,
     rainCd: 0, deadT: 0, houseKnown: false, tickerT: 0, slow: 1, regenBlock: 0,
     interviews: 0, ivFailed: 0, earned: 0, inflation: 1, mission: null, missions: [], throwBudget: 0,
-    cityIv: 0, finale: false, nationalized: 0, putin: false,
+    cityIv: 0, finale: false, nationalized: 0, putin: false, heatFloor: 0, cooling: false,
   });
   removeBus();
   if (CITY_I !== 0) buildWorld(0);
@@ -1590,6 +1591,13 @@ function popup(pos, html, color = '#fff') {
   popups.push({ el, pos: pos.clone().add(new THREE.Vector3(R(-0.6, 0.6), R(0, 0.5), 0)), t: 0 });
   while (popups.length > 5) popups.shift().el.remove();
 }
+// the hunt heats up with time (slower once it's already big) and cools down while she lies low unseen
+function updateHeat(dt) {
+  const unseen = G.t - G.lastSeenT;
+  G.cooling = unseen > 5 && (P.hidden || (P.house && !P.interview && !G.houseKnown));
+  if (G.cooling) { if (G.heat > G.heatFloor) G.heat = Math.max(G.heatFloor, G.heat - 2.5 * dt); }
+  else G.heat += dt * (G.heat < 85 ? 1 : 0.6);
+}
 function updateStars(silent) {
   const t = G.t;
   const h = G.heat, s = h < 35 ? 1 : h < 85 ? 2 : h < 145 ? 3 : h < 210 ? 4 : 5; // heat, not raw time: star pickups cool it down
@@ -1666,7 +1674,7 @@ function elfThrow(e, target, lead) {
   const type = (G.stars >= 2 && Math.random() < e.type.big) ? MEMES.find(m => m.big) : pickMeme(G.stars >= 3);
   const dist = Math.hypot(target.x - start.x, target.z - start.z);
   const T = clamp(dist / R(15, 19), 0.35, 1.6);
-  const spread = Math.max(0.8, 3.2 - G.heat / 120) * (P.bush ? 1.4 : 1) * e.type.acc;
+  const spread = Math.max(1.2, 3.2 - G.heat / 160) * (P.bush ? 1.4 : 1) * e.type.acc;
   const aim = new THREE.Vector3(
     target.x + (lead ? P.vel.x * T * R(0.5, 1.0) : 0) + R(-spread, spread),
     (target.y || 0) + 1.2,
@@ -2444,7 +2452,7 @@ function updatePlayer(dt) {
   else P.st = Math.min(100, P.st + (moving ? 12 : 22) * dt);
   if (P.exhausted && P.st > 35) P.exhausted = false;
   const inBushSlow = P.bush ? 0.7 : 1;
-  const speed = (wantSprint ? 9.6 : P.exhausted ? 4.2 : 6.4) * inBushSlow;
+  const speed = (wantSprint ? 11.5 : P.exhausted ? 5.2 : 7.8) * inBushSlow; // ~20% quicker than v4
   const k = 1 - Math.exp(-(P.pos.y > 0.01 ? 2.5 : 10) * dt);
   P.vel.x = lerp(P.vel.x, move.x * speed, k); P.vel.z = lerp(P.vel.z, move.z * speed, k);
   if (keys.Space && P.pos.y <= 0.001) { P.vy = 7.5; snd(300, 0.12, 'triangle', 0.04, 300); }
@@ -2495,7 +2503,7 @@ function animateHag(dt) {
 function updateElves(dt) {
   const t = G.t;
   const playerTarget = !P.house;
-  G.throwBudget = Math.min(3, (G.throwBudget || 0) + dt * (0.6 + G.heat / 100));
+  G.throwBudget = Math.min(2.5, (G.throwBudget || 0) + dt * (0.6 + Math.min(G.heat, 240) / 200));
   for (const e of elves) {
     e.born = Math.min(1, e.born + dt * 2.5);
     e.m.root.scale.setScalar(e.s * (e.born < 1 ? 1 - Math.pow(1 - e.born, 3) * 1.0 + Math.sin(e.born * Math.PI) * 0.2 : 1));
@@ -2518,7 +2526,7 @@ function updateElves(dt) {
     if (e.seeT <= 0 && state === 'play') {
       e.seeT = R(0.18, 0.3);
       const wasSeeing = e.sees;
-      const sight = 26 + G.stars * 6 + e.type.sight;
+      const sight = 26 + G.stars * 4 + e.type.sight;
       e.sees = playerTarget && !P.hidden && dist < sight && los(e.pos.x, e.pos.z, P.pos.x, P.pos.z);
       // shibas can sniff you out of a bush
       if (playerTarget && P.bush && dist < 2.6 && P.bush.exposedUntil < t) {
@@ -2528,7 +2536,7 @@ function updateElves(dt) {
     }
     if (e.sees && state === 'play') { G.lastKnown.copy(P.pos); G.lastSeenT = t; }
 
-    let tx, tz, spd = Math.min(8.3, e.speed * (1 + G.heat / 420));
+    let tx, tz, spd = Math.min(7.2, e.speed * (1 + Math.min(G.heat, 240) / 700)); // never faster than her sprint
     if (state !== 'play') {
       // celebrate around the fallen hag
       const a = e.cheer + t * 0.3, r = 3.5 + (e.id % 5) * 0.9;
@@ -2565,7 +2573,7 @@ function updateElves(dt) {
       if (e.sees && dist < 22 && G.throwBudget >= 1 && t > 5) {
         G.throwBudget--;
         elfThrow(e, P.pos, true);
-        e.cd = R(2.8, 5.0) * e.type.cd * Math.max(0.5, 1 - G.heat / 420);
+        e.cd = R(2.8, 5.0) * e.type.cd * Math.max(0.7, 1 - G.heat / 700);
       } else if (P.house && G.houseKnown && G.throwBudget >= 1 && Math.hypot(e.pos.x - P.house.x, e.pos.z - P.house.z) < 16) {
         G.throwBudget--;
         elfThrow(e, P.house.door, false); // wasted memes on the house door, still paid for
@@ -2657,17 +2665,17 @@ function updateRain(dt) {
 
 function updateSpawns(dt) {
   if (state !== 'play') return;
-  const cap = Math.min(IS_TOUCH ? 80 : 140, 30 + Math.floor(G.heat * 0.75));
+  const cap = Math.min(IS_TOUCH ? 55 : 90, 30 + Math.floor(G.heat * 0.45));
   G.spawnCd -= dt;
   if (G.spawnCd <= 0 && elves.length < cap) {
     // a whole Telegram group shows up at once
     const a = R(0, Math.PI * 2), r = R(40, 60);
     let at = { x: P.pos.x + Math.cos(a) * r, z: P.pos.z + Math.sin(a) * r };
     const d = Math.hypot(at.x, at.z); if (d > WORLD - 6) { at.x *= (WORLD - 6) / d; at.z *= (WORLD - 6) / d; }
-    const n = Math.min(cap - elves.length, 3 + Math.floor(Math.random() * (3 + G.stars)));
+    const n = Math.min(cap - elves.length, 2 + Math.floor(Math.random() * (2 + G.stars / 2)));
     for (let i = 0; i < n; i++) spawnElf(false, at);
     if (Math.random() < 0.5) ticker(`Нова Телеграм група: +${n} елфи на хайка!`);
-    G.spawnCd = Math.max(1.6, 6 - G.heat / 30);
+    G.spawnCd = Math.max(2.8, 6.5 - G.heat / 45);
   }
 }
 
@@ -2785,8 +2793,8 @@ function updateHUD(dt) {
     + `<div class="row"><span class="earn">💰 Хонорари: ${kop(G.earned)} (${G.interviews})</span><span class="infl">Мемета ×${G.inflation.toFixed(2)}</span></div>`;
   const hs = $('hideState');
   if (P.interview) hs.innerHTML = '';
-  else if (P.house) hs.innerHTML = `🍄 В КЪЩИЧКАТА${G.houseKnown ? ' — <span style="color:#ff6b6b">ОБСАДЕНА!</span>' : ''}<div class="tbar"><i style="transform:scaleX(${1 - P.houseT / P.houseMax})"></i></div><div style="font-size:12px;opacity:.8">E — излез</div>`;
-  else if (P.hidden) hs.innerHTML = '🌿 СКРИТА В ХРАСТА';
+  else if (P.house) hs.innerHTML = `🍄 В КЪЩИЧКАТА${G.houseKnown ? ' — <span style="color:#ff6b6b">ОБСАДЕНА!</span>' : ''}<div class="tbar"><i style="transform:scaleX(${1 - P.houseT / P.houseMax})"></i></div>${G.cooling && G.heat > G.heatFloor ? '<div style="font-size:13px;color:#8ecae6">❄ хайката се успокоява…</div>' : ''}<div style="font-size:12px;opacity:.8">E — излез</div>`;
+  else if (P.hidden) hs.innerHTML = '🌿 СКРИТА В ХРАСТА' + (G.cooling && G.heat > G.heatFloor ? '<div style="font-size:13px;color:#8ecae6">❄ хайката се успокоява…</div>' : '');
   else if (P.bush) hs.innerHTML = '<span style="color:#ff9f1c">🌿 ХРАСТЪТ Е РАЗКРИТ</span>';
   else hs.innerHTML = '';
   const pr = $('prompt');
@@ -2955,7 +2963,7 @@ function arrive() {
   P.pos.set(0, 0, 18); P.vel.set(0, 0, 0); hag.root.visible = true;
   for (let i = 0; i < 60; i++) { const a = Math.PI / 2 + i * 0.7, r = 14 + i * 0.25, x = Math.cos(a) * r, z = Math.sin(a) * r; if (freeSpot(x, z, 3) && pathInfo(x, z).d < 3) { P.pos.set(x, 0, z); break; } } // a free spot on a road near the plaza
   Object.assign(G, { cityIv: 0, bossCd: 20, spawnCd: 4, lastSeenT: -999, houseKnown: false, mission: null, starCd: R(35, 50) });
-  G.heat = STAR_STEPS[Math.min(CITY_I, 3)] + 1; // every city is a little more wanted
+  G.heat = G.heatFloor = STAR_STEPS[Math.min(CITY_I, 2)] + 1; // every city is a little more wanted (max 3 stars on arrival)
   G.bonus += 2000;
   for (let i = 0; i < 26 + CITY_I * 3; i++) spawnElf(true);
   updateStars(true);
@@ -3031,11 +3039,12 @@ function frame() {
   if (portrait && state === 'play') { renderer.render(scene, camera); return; }
   if (CON.open && state === 'play') { renderer.render(scene, camera); return; } // console down = game frozen
   if (state === 'play') {
-    G.t += dt; G.heat += dt; updateStarPickups(dt);
+    G.t += dt; updateHeat(dt); updateStarPickups(dt);
     updatePlayer(dt); updateSpawns(dt); updateElves(dt); updateBoss(dt); updateMemes(dt); updateRain(dt); updateRails(dt); updateBus(dt);
-    if (G.stars < 5 && G.regenBlock <= 0 && !P.interview) { // the interview has its own healing (max 20%)
-      if ((P.hidden || P.house) && G.t - G.lastSeenT > 2) P.hp = Math.min(100, P.hp + 4 * dt);
-      else if (G.t - G.lastSeenT > 5) P.hp = Math.min(100, P.hp + 1.5 * dt); // catch your breath when nobody sees you
+    if (G.regenBlock <= 0 && !P.interview) { // the interview has its own healing (max 20%)
+      const k = G.stars >= 5 ? 0.5 : 1; // even at 5 stars she still slowly recovers
+      if ((P.hidden || P.house) && G.t - G.lastSeenT > 2) P.hp = Math.min(100, P.hp + 4 * k * dt);
+      else if (G.t - G.lastSeenT > 5) P.hp = Math.min(100, P.hp + 1.5 * k * dt); // catch your breath when nobody sees you
     }
     G.regenBlock -= dt;
     updateMissions(dt);
@@ -3060,7 +3069,7 @@ function frame() {
   renderer.render(scene, camera);
 }
 frame();
-if (location.hash === '#debug') window.dbg = { G, P, elves, memes, music, getBoss: () => boss, spawnBoss: () => spawnBoss(), starPickups, spawnStarPickup: () => spawnStarPickup(), camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact(), getBus: () => bus, die: () => die(), resultCard: () => resultCard(G.share), spawnBus: () => spawnBus(), boardBus: () => boardBus(), buildWorld, city: () => CITY_I, CITIES, HOUSES, PATHS };
+if (location.hash === '#debug') window.dbg = { G, P, elves, memes, music, getBoss: () => boss, spawnBoss: () => spawnBoss(), starPickups, spawnStarPickup: () => spawnStarPickup(), camera, HOSTS, scene, whack: () => whack(), startGame, setYaw: v => { yaw = v; }, interact: () => interact(), BUSHES, getBus: () => bus, die: () => die(), resultCard: () => resultCard(G.share), spawnBus: () => spawnBus(), boardBus: () => boardBus(), buildWorld, city: () => CITY_I, CITIES, HOUSES, PATHS };
 </script>
 </body>
 </html>
