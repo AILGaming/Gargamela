@@ -108,6 +108,20 @@
   @keyframes bosspulse { from { box-shadow:0 0 0 2px #000, 0 0 8px #ff2020; } to { box-shadow:0 0 0 2px #000, 0 0 26px #ff2020; } }
   body.onair #pins { display:none; }
   #onboard { z-index:12; }
+  #shareModal { position:fixed; inset:0; z-index:30; display:flex; align-items:center; justify-content:center; padding:16px; background:#000b; backdrop-filter:blur(3px); animation:subIn .2s ease-out; }
+  .smCard { position:relative; width:min(520px, 96vw); background:linear-gradient(#14233f, #0b1428); border:3px solid #1877f2; border-radius:18px; padding:22px 24px 20px; box-shadow:0 20px 60px #000c, 0 0 40px #1877f255; text-align:center; }
+  .smIcon { font-size:44px; line-height:1; }
+  .smCard h2 { font-family:'Russo One'; font-weight:400; font-size:28px; margin:8px 0 10px; color:#9ef01a; text-shadow:0 3px 0 #000; }
+  .smCard h2.warn { color:var(--gold); }
+  .smCard ol { text-align:left; margin:0 auto 12px; padding-left:22px; font-size:16px; font-weight:800; line-height:1.7; display:inline-block; }
+  .smCard ol b { color:#7fb3ff; }
+  .smCard kbd { background:#fff; color:#000; border-radius:4px; padding:1px 7px; font-family:'Russo One'; font-size:13px; box-shadow:0 2px 0 #888; }
+  #smText { width:100%; resize:none; background:#0007; color:#fff; border:2px solid #ffffff30; border-radius:10px; padding:10px 12px; font:600 14px/1.45 'Rubik', sans-serif; user-select:text; -webkit-user-select:text; }
+  .smBtns { display:flex; gap:10px; justify-content:center; align-items:center; margin-top:14px; flex-wrap:wrap; }
+  #smOpen { background:#1877f2; box-shadow:0 6px 0 #0b4fa8, 0 10px 24px #000a; font-size:21px; padding:12px 24px; }
+  #smCopy { font:800 15px 'Rubik'; border:0; border-radius:8px; padding:10px 14px; background:#ffffff1c; color:#fff; cursor:pointer; }
+  .smX { position:absolute; top:10px; right:12px; border:0; background:none; color:#fff; font-size:22px; opacity:.6; cursor:pointer; }
+  .smX:hover { opacity:1; }
   .obCard { width:min(640px, 96vw); background:linear-gradient(#2a1630, #160b1a); border:3px solid var(--pink); border-radius:18px; box-shadow:0 20px 60px #000c, 0 0 40px #ff4fb044; padding:22px 26px 16px; }
   .obSlides section { display:none; animation:subIn .3s ease-out; }
   .obSlides section.on { display:block; }
@@ -507,6 +521,23 @@
     </div>
   </div>
 </div>
+<div id="shareModal" class="hidden">
+  <div class="smCard">
+    <button class="smX" id="smClose" aria-label="Затвори">✕</button>
+    <div class="smIcon">📋</div>
+    <h2 id="smTitle">Резултатът е копиран!</h2>
+    <ol>
+      <li>Натисни <b>„Отвори Facebook“</b></li>
+      <li>Кликни в полето на публикацията</li>
+      <li>Постави текста с <kbd id="smKey">Ctrl+V</kbd></li>
+    </ol>
+    <textarea id="smText" readonly rows="4"></textarea>
+    <div class="smBtns">
+      <button class="go" id="smOpen">📣 ОТВОРИ FACEBOOK</button>
+      <button id="smCopy">📋 Копирай пак</button>
+    </div>
+  </div>
+</div>
 <div id="console"><div id="conLog"></div><div class="conIn"><span>]</span><input id="conInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div><div id="conVer">Гаргамелка v4.0</div></div>
 <div id="pause" class="screen hidden"><div style="text-align:center"><h1>ПАУЗА</h1><button class="go" id="resumeBtn">ПРОДЪЛЖИ</button><br><button class="go" id="muteBtn" style="margin-top:14px;font-size:18px;padding:10px 22px;background:#333;color:#fff">🔊 МУЗИКА: ВКЛ</button><div style="opacity:.6;font-size:13px;margin-top:8px" class="desk-only">M — музика вкл/изкл</div></div></div>
 
@@ -547,7 +578,6 @@
       </div>
       <button class="go" id="againBtn">ПАК! (R)</button>
       <button class="go" id="fbBtn" style="margin-left:10px;background:#1877f2;box-shadow:0 6px 0 #0b4fa8, 0 10px 24px #000a;font-size:20px;padding:13px 22px">📣 СПОДЕЛИ ВЪВ FACEBOOK</button><span id="best"></span>
-      <div id="shareNote" style="display:none;margin-top:12px;font-size:13px;font-weight:800;color:#9ef01a"></div>
     </div>
   </div>
 </div>
@@ -1294,7 +1324,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyE' && state === 'play') interact();
   if (e.code === 'KeyF' && !e.repeat) whack();
   if (e.code === 'KeyP' && (state === 'play' || state === 'paused')) togglePause();
-  if (e.code === 'KeyR' && state === 'over') startGame();
+  if (e.code === 'KeyR' && state === 'over' && $('shareModal').classList.contains('hidden')) startGame();
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
@@ -1397,7 +1427,7 @@ function resetGame() {
     lastKnown: new THREE.Vector3(), lastSeenT: -999, spawnCd: 2, stars: 1, shake: 0, apoc: false,
     rainCd: 0, deadT: 0, houseKnown: false, tickerT: 0, slow: 1, regenBlock: 0,
     interviews: 0, ivFailed: 0, earned: 0, inflation: 1, mission: null, missions: [], throwBudget: 0,
-    cityIv: 0, finale: false, nationalized: 0,
+    cityIv: 0, finale: false, nationalized: 0, putin: false,
   });
   removeBus();
   if (CITY_I !== 0) buildWorld(0);
@@ -1510,7 +1540,6 @@ async function resultCard(sh) {
 async function shareFacebook() {
   const sh = G.share; if (!sh) return;
   try { window.dataLayer?.push({ event: 'share', method: 'facebook', score: sh.score, city: sh.city }); } catch (e) { }
-  const note = t => { $('shareNote').textContent = t; $('shareNote').style.display = 'block'; };
   // phones: the native share sheet (pick Facebook there) — with the result card image when supported
   if (IS_TOUCH && navigator.share) {
     try {
@@ -1520,14 +1549,32 @@ async function shareFacebook() {
       return;
     } catch (e) { if (e?.name === 'AbortError') return; }
   }
-  // desktop: Facebook's share dialog (it only takes a link, so the result text goes to the clipboard to paste)
-  let copied = false; try { await navigator.clipboard.writeText(sh.text + ' ' + SHARE_URL); copied = true; } catch (e) { }
-  const u = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL);
-  const w = window.open(u, 'fbshare', 'width=640,height=560');
-  if (!w) location.href = u;
-  note(copied ? '✓ Резултатът е копиран — постави го (Ctrl/⌘+V) в публикацията във Facebook.' : 'Отвори се Facebook — опиши резултата си в публикацията.');
+  // desktop: Facebook's share dialog only takes a link — so copy the result text and explain, in a modal, how to paste it
+  const full = sh.text + ' ' + SHARE_URL;
+  $('smText').value = full;
+  $('smKey').textContent = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘+V' : 'Ctrl+V';
+  const ok = await copyShareText();
+  $('smTitle').textContent = ok ? 'Резултатът е копиран!' : 'Копирай резултата';
+  $('smTitle').classList.toggle('warn', !ok);
+  $('shareModal').classList.remove('hidden');
+  if (!ok) { $('smText').focus(); $('smText').select(); }
+}
+async function copyShareText() {
+  const t = $('smText').value;
+  try { await navigator.clipboard.writeText(t); return true; } catch (e) { }
+  try { const ta = $('smText'); ta.focus(); ta.select(); return document.execCommand('copy'); } catch (e) { return false; }
 }
 $('fbBtn').onclick = shareFacebook;
+$('smOpen').onclick = () => {
+  const u = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL);
+  const w = window.open(u, 'fbshare', 'width=640,height=600');
+  if (!w) location.href = u;
+  $('shareModal').classList.add('hidden');
+};
+$('smCopy').onclick = async () => { const ok = await copyShareText(); $('smCopy').textContent = ok ? '✓ Копирано' : '⚠ Не успях — копирай ръчно'; setTimeout(() => $('smCopy').textContent = '📋 Копирай пак', 1800); };
+$('smClose').onclick = () => $('shareModal').classList.add('hidden');
+$('shareModal').addEventListener('pointerdown', e => { if (e.target === $('shareModal')) $('shareModal').classList.add('hidden'); });
+addEventListener('keydown', e => { if (e.code === 'Escape' && !$('shareModal').classList.contains('hidden')) $('shareModal').classList.add('hidden'); });
 $('resumeBtn').onclick = () => togglePause();
 function togglePause() {
   if (state === 'play') { state = 'paused'; $('pause').classList.remove('hidden'); document.exitPointerLock?.(); musicTo(MUSIC_VOL * 0.35); }
@@ -1924,7 +1971,7 @@ function showOver() {
   $('touchUI').classList.remove('on');
   const score = calcScore();
   $('overTime').textContent = G.finale ? 'Москва не я пусна' : `${fmtT(G.t)} на свобода`;
-  $('overWanted').textContent = G.finale ? 'НАЦИОНАЛИЗИРАНА' : 'СМЕМЕНА'; $('overWanted').classList.toggle('long', G.finale);
+  $('overWanted').textContent = G.finale ? 'НАЦИОНАЛИЗИРАНА' : G.putin ? 'ОТРОВЕНА' : 'СМЕМЕНА'; $('overWanted').classList.toggle('long', G.finale);
   $('oCity').textContent = G.finale ? 'границата с Москва' : `${CITY.name} (${CITY_I + 1}/${CITIES.length})`;
   $('oThrown').textContent = G.thrown.toLocaleString('bg-BG');
   $('oSpent').textContent = eur(G.spent);
@@ -1948,7 +1995,7 @@ function showOver() {
   const bal = G.earned * KOP_EUR - G.spent;
   $('oBalance').textContent = G.interviews ? `≈ ${eur(G.earned * KOP_EUR)} по курса. ` + (bal >= 0 ? `Тя излезе на печалба с ${eur(bal)} пред бюджета на Елфите.` : `Елфите похарчиха ${eur(-bal)} повече, отколкото струваше цялата ѝ кариера.`) : 'Не даде нито едно интервю.';
   const eps = ['ТРОЛКАТА ПАДНА', 'ФАКТИТЕ ПОБЕДИХА', 'ДЕЗИНФОРМАЦИЯТА Е ОБЕЗВРЕДЕНА', 'MUCH DEFEAT. SO MEME.', 'КОПЕЙКАТА СЕ ОБЕЗЦЕНИ'];
-  $('epitaph').textContent = G.finale ? pick(['ПОЛЕЗЕН ИДИОТ, ИЗПОЛЗВАН', 'БЛАГОДАРИМ ЗА ПОМОЩТА', 'КОПЕЙКИТЕ СЕ ПРИБРАХА ВКЪЩИ']) : pick(eps);
+  $('epitaph').textContent = G.finale ? pick(['ПОЛЕЗЕН ИДИОТ, ИЗПОЛЗВАН', 'БЛАГОДАРИМ ЗА ПОМОЩТА', 'КОПЕЙКИТЕ СЕ ПРИБРАХА ВКЪЩИ']) : G.putin ? pick(['ЧАЙ ОТ КРЕМЪЛ ☕', 'ПОДАРЪК ОТ ПРИЯТЕЛ', 'ПОЛЕЗНА ДО ПОСЛЕДНАТА ГЛЪТКА']) : pick(eps);
   if (G.finale) $('oBalance').textContent = `Стигна до границата с ${FINAL_STOP}. Путин ѝ благодари за помощта и национализира всичките ${kop(G.nationalized)}.`;
   let best = 0; try { best = +localStorage.getItem('gargamela-best') || 0; if (score > best) { localStorage.setItem('gargamela-best', score); } } catch (e) { }
   $('best').textContent = score > best ? '🏆 Нов рекорд!' : `Рекорд: ${best.toLocaleString('bg-BG')}`;
@@ -1956,10 +2003,11 @@ function showOver() {
     score, time: fmtT(G.t), city: G.finale ? `границата с ${FINAL_STOP}` : CITY.name, thrown: G.thrown, spent: eur(G.spent), iv: G.interviews,
     text: (G.finale
       ? `Стигнах до границата с Москва в Гаргамелка 🚌… и Путин ми национализира ${kop(G.nationalized)} 🪙. Благодари ми за помощта и не ме пусна.`
-      : `Оцелях ${fmtT(G.t)} срещу Елфите в Гаргамелка ` + (CITY_I ? `и стигнах до ${CITY.name} 🚌 по пътя към Москва.` : 'но не успях да изляза от София 🚌.'))
+      : G.putin ? `Оцелях ${fmtT(G.t)} срещу Елфите в Гаргамелка, но Путин ме почерпи с чай ☕.`
+      : `Оцелях ${fmtT(G.t)} срещу Елфите в Гаргамелка` + (CITY_I ? ` и стигнах до ${CITY.name} 🚌 по пътя към Москва.` : ', но не успях да изляза от София 🚌.'))
       + ` Елфите изстреляха ${G.thrown.toLocaleString('bg-BG')} мемета за ${eur(G.spent)}, за да ме смемят. Точки: ${score.toLocaleString('bg-BG')}. Можеш ли повече? 🍭`,
   };
-  $('shareNote').style.display = 'none';
+  $('shareModal').classList.add('hidden');
   $('over').classList.remove('hidden');
   $('hud').classList.add('hidden');
 }
@@ -2268,6 +2316,15 @@ const COMMANDS = {
     P.god = !P.god; updateCheatsHud();
     if (P.god) { conPrint('soros: ВКЛ — меметата вече не болят. Сорос плаща.', 'ok'); P.hp = 100; ticker('💰 Пристигна превод от Сорос. Гаргамела е безсмъртна!'); }
     else conPrint('soros: ИЗКЛ — преводът е спрян', 'dim');
+  } },
+  putin: { d: 'Путин черпи Гаргамелка с чай ☕ (край на играта)', f: () => {
+    if (state !== 'play') { conPrint('putin: Путин черпи само по време на игра.', 'err'); return; }
+    conPrint('putin: Владимир Владимирович те кани на чай… ☕', 'err');
+    toggleConsole(false);
+    G.putin = true; P.god = false; updateCheatsHud();
+    ticker('☕ Пристигна чай от Кремъл. Подарък. Изпий го.');
+    die();
+    banner('☕ ПОЧЕРПЕНА С ЧАЙ!<br><span style="font-size:22px">Путин благодари за услугите</span>', '#ff4d4d');
   } },
   clear: { d: 'изчиства конзолата', f: () => { $('conLog').innerHTML = ''; } },
 };
