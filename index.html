@@ -312,6 +312,8 @@
   .conIn { display:flex; align-items:center; gap:6px; padding:4px 14px 10px; }
   .conIn span { color:#fff2c2; }
   #conInput { flex:1; background:transparent; border:0; outline:0; color:#fff2c2; font:inherit; caret-color:#ffb000; }
+  #conClose { display:none; position:absolute; right:10px; top:10px; font:800 14px 'Rubik'; color:#fff2c2; background:#0006; border:2px solid #b5651d; border-radius:8px; padding:6px 12px; }
+  body.touch #conClose { display:block; }
   #conVer { position:absolute; right:12px; bottom:8px; color:#a07a4a; font-size:12px; }
   #cheats { margin-top:6px; font:400 12px 'Russo One'; color:#7cfcff; text-shadow:0 1px 2px #000, 0 0 8px #00e5ff; }
   #cheats:empty { display:none; }
@@ -539,7 +541,7 @@
     </div>
   </div>
 </div>
-<div id="console"><div id="conLog"></div><div class="conIn"><span>]</span><input id="conInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div><div id="conVer">Гаргамелка v4.0</div></div>
+<div id="console"><div id="conLog"></div><div class="conIn"><span>]</span><input id="conInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div><div id="conVer">Гаргамелка v4.1</div><button id="conClose">✕ ЗАТВОРИ</button></div>
 <div id="pause" class="screen hidden"><div style="text-align:center"><h1>ПАУЗА</h1><button class="go" id="resumeBtn">ПРОДЪЛЖИ</button><br><button class="go" id="muteBtn" style="margin-top:14px;font-size:18px;padding:10px 22px;background:#333;color:#fff">🔊 МУЗИКА: ВКЛ</button><div style="opacity:.6;font-size:13px;margin-top:8px" class="desk-only">M — музика вкл/изкл</div></div></div>
 
 <div id="over" class="screen hidden">
@@ -1358,6 +1360,17 @@ addEventListener('mousemove', e => {
 }
 
 /* ---------------- touch controls ---------------- */
+// secret on phones: flick the joystick forward ↔ back 10 times (nothing sideways, no buttons) to drop the console
+const CG = { last: null, n: 0, t: 0 };
+function conGesture(dir) {
+  if (dir === 'side' || dir === 'reset') { CG.n = 0; CG.last = null; return; }
+  if (!dir || dir === CG.last) return;
+  const now = performance.now();
+  if (now - CG.t > 1200) { CG.n = 0; CG.last = null; } // too slow — that's just walking
+  if (CG.last) CG.n++;
+  CG.last = dir; CG.t = now;
+  if (CG.n >= 10) { CG.n = 0; CG.last = null; if (state === 'play' && !CON.open) { toggleConsole(true); navigator.vibrate?.(60); } }
+}
 const joy = { id: null, ox: 0, oy: 0, x: 0, y: 0, mag: 0 }, look = { id: null, lx: 0, ly: 0 };
 {
   const ui = $('touchUI'), base = $('joyBase'), knob = $('joyKnob'), R0 = 60;
@@ -1379,6 +1392,7 @@ const joy = { id: null, ox: 0, oy: 0, x: 0, y: 0, mag: 0 }, look = { id: null, l
       let dx = e.clientX - joy.ox, dy = e.clientY - joy.oy; const d = Math.hypot(dx, dy);
       if (d > R0) { dx *= R0 / d; dy *= R0 / d; }
       joy.x = dx / R0; joy.y = dy / R0; joy.mag = Math.min(1, d / R0);
+      conGesture(joy.mag < 0.5 ? null : Math.abs(joy.x) < Math.abs(joy.y) * 0.55 ? (joy.y < 0 ? 'f' : 'b') : 'side');
       knob.style.transform = `translate(${dx}px, ${dy}px)`;
       base.classList.toggle('sprint', joy.mag > 0.92 && !P.exhausted);
     } else if (e.pointerId === look.id && state === 'play') {
@@ -1394,7 +1408,7 @@ const joy = { id: null, ox: 0, oy: 0, x: 0, y: 0, mag: 0 }, look = { id: null, l
   ui.addEventListener('pointerup', end); ui.addEventListener('pointercancel', end);
   const btn = (id, down, up) => {
     const el = $(id);
-    el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); el.classList.add('down'); el.setPointerCapture?.(e.pointerId); down(); });
+    el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); conGesture('reset'); el.classList.add('down'); el.setPointerCapture?.(e.pointerId); down(); });
     const u = e => { el.classList.remove('down'); up && up(); };
     el.addEventListener('pointerup', u); el.addEventListener('pointercancel', u);
   };
@@ -2245,6 +2259,23 @@ function updateBoss(dt) {
 }
 
 /* ---------------- railgun (console: gun) ---------------- */
+const FLY_H = 0.75; // how high the broom hovers
+const broom = (() => {
+  const g = new THREE.Group(); g.position.set(0, 0.88, 0.1); g.visible = false;
+  const wood = M(0x8a5a2b, { roughness: 0.8 }), straw = M(0xd9a441, { roughness: 1 }), band = M(0xff4fb0, { roughness: 0.6 });
+  const stick = part(GEO.cyl, wood, g, 0, 0, 0.05, 0.055, 2.7, 0.055); stick.rotation.x = Math.PI / 2;
+  const tip = part(GEO.sph, wood, g, 0, 0, 1.42, 0.08); tip.scale.set(0.08, 0.08, 0.08);
+  part(GEO.cyl, band, g, 0, 0, -1.2, 0.11, 0.12, 0.11).rotation.x = Math.PI / 2;
+  const brush = new THREE.Group(); brush.position.set(0, 0, -1.25); g.add(brush);
+  for (let i = 0; i < 16; i++) {
+    const a = i / 16 * Math.PI * 2, r = 0.05 + (i % 3) * 0.04;
+    const c = part(GEO.cone, straw, brush, Math.cos(a) * r, Math.sin(a) * r, -0.35, 0.09, 0.8, 0.09);
+    c.rotation.x = -Math.PI / 2; c.rotation.z = R(-0.2, 0.2);
+  }
+  const brushCore = part(GEO.cone, straw, brush, 0, 0, -0.3, 0.2, 0.75, 0.2); brushCore.rotation.x = -Math.PI / 2;
+  hag.body.add(g);
+  return g;
+})();
 const railModel = (() => {
   const g = new THREE.Group(); g.position.set(0, -0.78, 0.06); hag.arms[1].add(g);
   const metal = M(0x3a3f45, { metalness: 0.7, roughness: 0.35 }), dark = M(0x1a1c1f, { metalness: 0.5, roughness: 0.5 });
@@ -2312,7 +2343,7 @@ function updateRails(dt) {
 /* ---------------- Quake II console ( ` or § ) ---------------- */
 const CON = { open: false, hist: [], hi: 0 };
 function conPrint(text, cls = '') { const d = document.createElement('div'); if (cls) d.className = cls; d.textContent = text; $('conLog').appendChild(d); while ($('conLog').children.length > 200) $('conLog').firstChild.remove(); $('conLog').scrollTop = 1e9; }
-function updateCheatsHud() { $('cheats').textContent = [P.gun ? '⚡ RAILGUN' : '', P.god ? '💰 SOROS MODE' : ''].filter(Boolean).join(' · '); $('btnHit').textContent = P.gun ? '⚡' : '🍭'; }
+function updateCheatsHud() { $('cheats').textContent = [P.gun ? '⚡ RAILGUN' : '', P.god ? '💰 SOROS MODE' : '', P.fly ? '🧹 FLY' : ''].filter(Boolean).join(' · '); $('btnHit').textContent = P.gun ? '⚡' : '🍭'; }
 const COMMANDS = {
   help: { d: 'списък с командите', f: () => { for (const [k, c] of Object.entries(COMMANDS)) conPrint(`  ${k.padEnd(7)} ${c.d}`); } },
   gun: { d: 'сменя памука с railgun (пак — връща памука)', f: () => {
@@ -2324,6 +2355,11 @@ const COMMANDS = {
     P.god = !P.god; updateCheatsHud();
     if (P.god) { conPrint('soros: ВКЛ — меметата вече не болят. Сорос плаща.', 'ok'); P.hp = 100; ticker('💰 Пристигна превод от Сорос. Гаргамела е безсмъртна!'); }
     else conPrint('soros: ИЗКЛ — преводът е спрян', 'dim');
+  } },
+  fly: { d: 'Гаргамела яхва метла — лети над земята и е по-бърза (пак — слиза)', f: () => {
+    P.fly = !P.fly; updateCheatsHud();
+    if (P.fly) { conPrint('fly: ВКЛ — метлата е запалена. +30% скорост, храстите вече не я крият.', 'ok'); ticker('🧹 Гаргамела яхна метлата! Елфите не вярват на очите си.'); }
+    else conPrint('fly: ИЗКЛ — обратно на краката', 'dim');
   } },
   putin: { d: 'Путин черпи Гаргамелка с чай ☕ (край на играта)', f: () => {
     if (state !== 'play') { conPrint('putin: Путин черпи само по време на игра.', 'err'); return; }
@@ -2344,6 +2380,8 @@ function conExec(line) {
   const c = COMMANDS[cmd.split(/\s+/)[0]];
   if (c) c.f(); else conPrint(`Непозната команда: ${cmd} — напиши help`, 'err');
 }
+$('conClose').addEventListener('pointerdown', e => { e.preventDefault(); toggleConsole(false); });
+if (IS_TOUCH) $('conInput').placeholder = 'докосни тук и напиши код… (help)';
 function toggleConsole(open = !CON.open) {
   CON.open = open; $('console').classList.toggle('open', open);
   for (const k in keys) keys[k] = false;
@@ -2451,8 +2489,8 @@ function updatePlayer(dt) {
   if (wantSprint) { P.st -= 24 * dt; if (P.st <= 0) { P.st = 0; P.exhausted = true; ticker('Бабата се задъха…'); } }
   else P.st = Math.min(100, P.st + (moving ? 12 : 22) * dt);
   if (P.exhausted && P.st > 35) P.exhausted = false;
-  const inBushSlow = P.bush ? 0.7 : 1;
-  const speed = (wantSprint ? 11.5 : P.exhausted ? 5.2 : 7.8) * inBushSlow; // ~20% quicker than v4
+  const inBushSlow = P.bush && !P.fly ? 0.7 : 1;
+  const speed = (wantSprint ? 11.5 : P.exhausted ? 5.2 : 7.8) * inBushSlow * (P.fly ? 1.3 : 1); // the broom is 30% quicker
   const k = 1 - Math.exp(-(P.pos.y > 0.01 ? 2.5 : 10) * dt);
   P.vel.x = lerp(P.vel.x, move.x * speed, k); P.vel.z = lerp(P.vel.z, move.z * speed, k);
   if (keys.Space && P.pos.y <= 0.001) { P.vy = 7.5; snd(300, 0.12, 'triangle', 0.04, 300); }
@@ -2464,7 +2502,7 @@ function updatePlayer(dt) {
   // bushes
   P.bush = null;
   for (const b of BUSHES) if (Math.hypot(b.x - P.pos.x, b.z - P.pos.z) < b.r * 0.9) { P.bush = b; break; }
-  P.hidden = !!P.bush && P.bush.exposedUntil < G.t && P.pos.y < 0.5;
+  P.hidden = !!P.bush && !P.fly && P.bush.exposedUntil < G.t && P.pos.y < 0.5; // on the broom she floats above the bush
   if (P.bush) P.bush.wob = Math.min(1, P.bush.wob + dt * (moving ? 4 : 1));
   if (P.invuln > 0) { P.invuln -= dt; hag.root.visible = P.invuln <= 0 || Math.floor(P.invuln * 10) % 2 === 0; }
 }
@@ -2477,6 +2515,7 @@ function animateHag(dt) {
   hag.root.position.copy(P.pos);
   hag.root.rotation.y = P.face;
   if (state === 'dead' || state === 'over') {
+    broom.visible = false; hag.legs.forEach(l => l.rotation.z = 0); hag.body.rotation.z = 0;
     const t = Math.min(1, G.deadT * 2);
     hag.body.rotation.x = lerp(0, -Math.PI / 2, t * t);
     hag.body.position.y = lerp(0, 0.35, t);
@@ -2484,6 +2523,23 @@ function animateHag(dt) {
     hag.legs.forEach((l, i) => l.rotation.x = i ? 0.3 : -0.2);
     return;
   }
+  broom.visible = !!P.fly;
+  if (P.fly && state !== 'title') { // riding the broom: sitting, legs dangling, one hand on the stick
+    const t = performance.now() * 0.001;
+    hag.legs.forEach((l, i) => { l.rotation.x = -0.55 + Math.sin(t * 3 + i) * 0.08; l.rotation.z = (i ? -1 : 1) * 0.28; });
+    hag.arms[0].rotation.x = -0.75; hag.arms[0].rotation.z = 0.25;
+    hag.arms[1].rotation.x = P.swingT > 0 ? -2.4 * Math.sin((1 - P.swingT / 0.35) * Math.PI) - 0.6 : -0.6 + Math.sin(t * 2) * 0.1; hag.arms[1].rotation.z = 0.2;
+    if (P.gun) { hag.arms[1].rotation.x = -1.5 - P.railKick * 0.7; P.railKick = Math.max(0, P.railKick - dt * 4); }
+    hag.candy.visible = !P.gun; railModel.visible = !!P.gun;
+    hag.candy.rotation.x = -hag.arms[1].rotation.x - hag.body.rotation.x;
+    hag.body.rotation.x = 0.1 + a * 0.18 + (P.flinch > 0 ? -0.3 : 0);
+    hag.body.rotation.z = Math.sin(t * 1.7) * 0.05;
+    hag.body.position.y = FLY_H + Math.sin(t * 2.6) * 0.12;
+    hag.head.rotation.y = Math.sin(G.t * 2) * 0.2; hag.head.rotation.z = 0;
+    P.flinch = Math.max(0, P.flinch - dt);
+    return;
+  }
+  hag.legs.forEach(l => l.rotation.z = 0); hag.body.rotation.z = 0;
   const air = P.pos.y > 0.05;
   hag.legs[0].rotation.x = air ? -0.6 : s * 1.0 * a; hag.legs[1].rotation.x = air ? 0.4 : -s * 1.0 * a;
   const flail = P.flinch > 0 ? Math.sin(G.t * 60) * 0.6 : 0;
@@ -2603,7 +2659,7 @@ function updateElves(dt) {
 }
 
 function updateMemes(dt) {
-  const g = 14, chest = chestV.set(P.pos.x, P.pos.y + 1.3 + (P.bush ? -0.4 : 0), P.pos.z);
+  const g = 14, chest = chestV.set(P.pos.x, P.pos.y + 1.3 + (P.fly ? FLY_H : P.bush ? -0.4 : 0), P.pos.z);
   for (let i = memes.length - 1; i >= 0; i--) {
     const m = memes[i]; m.life += dt;
     m.vel.y -= g * dt;
